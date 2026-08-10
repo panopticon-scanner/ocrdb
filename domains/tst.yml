@@ -1,0 +1,648 @@
+# OCRDb domain file - DRAFT 0.1 (pre-ratification)
+# Codes are NOT yet stable: ratification may rename/split/merge/re-letter.
+# The stability contract (SCHEMA.md) activates at the 0.1 release tag.
+domain: TST
+name: testing
+areas:
+  A:
+    name: coverage
+    categories:
+      '1': untested-units
+      '2': partial-branch-coverage
+      '3': shallow-scenario-coverage
+      '4': tooling-and-output-validation
+  B:
+    name: assertion-quality
+    categories:
+      '1': weak-and-incomplete-assertions
+      '2': vacuous-and-tautological-tests
+      '3': fragile-and-gameable-assertions
+  C:
+    name: test-design
+    categories:
+      '1': discovery-and-organization
+      '2': duplication-and-reuse
+      '3': naming-and-intent-mismatch
+      '4': test-double-fidelity
+      '5': test-hygiene-and-setup
+  D:
+    name: isolation-hermeticity
+    categories:
+      '1': state-and-resource-cleanup
+      '2': filesystem-path-hermeticity
+  E:
+    name: fixtures-test-data
+    categories:
+      '1': fixture-hygiene
+      '2': fixture-fidelity-and-drift
+  F:
+    name: flakiness-determinism
+    categories:
+      '1': skip-and-environment-gated-execution
+      '2': ambiguous-pass-signals
+entries:
+  TST-A1A:
+    name: untested-cli-flag-or-entrypoint-wiring
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    examples:
+    - --tools-exclude CLI wiring in synthesize.py has no end-to-end test
+    - dispatch.main()'s --model-lens-sweep/--model-panel-review/--model-advisor and --agents-dir CLI flags are never
+      exercised
+  TST-A1B:
+    name: uncovered-function-or-method
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 73
+    examples:
+    - cargo-audit's dict-shaped CVSS severity branch has no test coverage
+    - No test exercises DependencyCheckAdapter.is_applicable()
+    - is_architecture_file() function lacks unit test coverage
+  TST-A1C:
+    name: untested-critical-recovery-function
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 12
+    examples:
+    - save_recovered_ledger() lacks direct test coverage
+    - build_verify_queue() lacks direct test coverage
+    - apply_verdict() lacks direct test coverage
+    - load_verdicts_detailed() lacks direct test coverage
+  TST-A1D:
+    name: zero-coverage-script
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 8
+    examples:
+    - smoke_adapters.py has zero automated test coverage
+    - run_fixture_tests.py has no unit tests and no injectable subprocess seam
+    - Untested error handling in _run_adapter.main()
+  TST-A2A:
+    name: untested-negative-boolean-branch
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 10
+    examples:
+    - is_applicable() false-path untested in bundler-audit and cargo-audit adapter tests
+    - is_applicable() only tested for the pom.xml true path
+    - SpotBugsAdapter.is_applicable test coverage is asymmetric compared to every sibling adapter
+  TST-A2B:
+    name: single-case-enum-mapping-coverage
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 9
+    examples:
+    - SpotBugs priority-to-severity mapping only exercised for priority "1"
+    - BrakemanAdapter._normalize_confidence only has test coverage for one of its four branches
+    - Category-derived CWE fallback is only tested for one of twelve categories
+  TST-A2C:
+    name: untested-error-handling-path
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 13
+    examples:
+    - run_tool tests do not cover timeout exception path
+    - roslyn_secguard.py invoke() error handling not covered
+    - Missing exception handling tests for JSON parsing in adapter parsers
+  TST-A2D:
+    name: untested-malformed-or-boundary-input
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 26
+    examples:
+    - BrakemanAdapter parse() lacks empty findings test
+    - Malformed/truncated (non-empty) XML tool output is untested, unlike other adapters' tests in this codebase
+    - No-CWE-mapping branch (citations key omitted) is never tested
+  TST-A2E:
+    name: untested-fallback-default-branch
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 6
+    examples:
+    - cargo_audit.parse's default-severity branch is reached by the module's own fixture but never asserted
+    - YAML parsing fallback in load_catalog() not tested
+    - 'brakeman.py: is_applicable()''s .gemspec fallback path is unreachable by the existing tests'
+  TST-A2F:
+    name: growth-blind-invariant-check
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    examples:
+    - No systemic test guards against a future adapter-prefix collision in the ADAPTERS registry
+    - Dockerfile tests only cover a stale subset of bundled tools; several later-added tool stages have no assertion
+      coverage
+  TST-A3A:
+    name: narrow-scenario-matrix
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 19
+    examples:
+    - Golden-render regression suite exercises only one (panel, depth, security_mode) combination
+    - Limited path traversal edge case testing
+    - Sparse dispatch integration test coverage
+  TST-A3B:
+    name: mocked-or-absent-integration-path
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 6
+    examples:
+    - Real-tool detection assertions for the vulnerable-python/vulnerable-node/insecure-js fixtures never execute
+    - osv-scanner is never integration-tested against the real vulnerable-python/vulnerable-node/vulnerable-rust
+      fixtures
+    - diff_map._mk_worktree_dir's realpath normalization is only ever mocked out, never exercised against a real
+      filesystem
+  TST-A3C:
+    name: unverified-planted-fixture-detection
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 6
+    examples:
+    - evil.csproj's own containment invariants (egress must fail, marker must stay off the mounted target) are asserted
+      nowhere
+    - main.rs's ~20 planted source-level CWE patterns have no adapter/tool able to detect them
+    - hostile-csproj's weak-Random() fixture is opt-in-only and gated, and its consuming test never asserts a finding
+  TST-A4A:
+    name: unenforced-fixture-presence-check
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 6
+    examples:
+    - Silent skip on missing fixture directory masks fixture rot with no alerting mechanism
+    - Fixture-presence check silently drops baked fixtures instead of surfacing a check failure, degrading CI signal
+  TST-A4B:
+    name: unvalidated-tool-output-schema
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    examples:
+    - Missing schema validation for adapter/tool output files
+    - tests/fixtures/manifest.json has no automated validation of its own shape or content
+  TST-A4C:
+    name: unvalidated-subprocess-output-format
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - No validation of Docker command output format; check_fixtures assumes docker run output is well-formed and
+      never validates the command succeeded
+  TST-B1A:
+    name: missing-positive-assertion
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    examples:
+    - Security-critical test lacks positive assertion of expected behavior (verifies cwd != target but never asserts
+      what cwd IS)
+    - test_unresolvable_recurring_finding_is_omitted lacks positive assertion
+  TST-B1B:
+    name: truthy-or-presence-only-assertion
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 10
+    examples:
+    - 'Weak assertion: only checks if findings list is truthy'
+    - 'Minimal asset validation coverage: test_assets.py only checks for string presence, not structure or completeness'
+    - Ambiguous assertTrue usage with confusing assertion semantics
+  TST-B1C:
+    name: substring-instead-of-structural-assertion
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - 'Weak assertion: checks for substring instead of validating citation structure'
+    - Fragile stringified-dict substring assertion instead of structural check on citations
+  TST-B1D:
+    name: unverified-critical-mock-argument
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - Test does not verify comment body argument passed to gh command
+    - Incomplete verification of command structure in mock assertion
+  TST-B1E:
+    name: regression-test-verifies-wrong-property
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - The only regression test for the SEC-101 HTML-injection fix in _render_provenance checks cosmetic normalization
+      instead of the injection-blocking property itself
+  TST-B2A:
+    name: environment-branch-vacuous-test
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - test_cargo_audit_skips_without_rust is a tautological test that never verifies adapter behavior regardless
+      of which branch executes
+  TST-B2B:
+    name: inverted-logic-assertion
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - Test with inverted logic and meaningless assertion
+  TST-B2C:
+    name: incomplete-loop-assertion-coverage
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - 'Test loop with redundant assertions: does not validate all rule mappings'
+  TST-B2D:
+    name: always-true-assertion
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - 'Pointless assertion: self.assertTrue(True) always passes, providing no actual test coverage'
+  TST-B3A:
+    name: unmanaged-golden-snapshot-assertion
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    examples:
+    - Golden fixtures are hand-maintained with no regeneration tooling or documented provenance
+    - Byte-exact prose snapshots can be satisfied by editing the fixture instead of fixing the regression
+  TST-B3B:
+    name: unsafe-index-based-assertion
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 6
+    examples:
+    - 'Brittle test assertion using unsafe list.index(): cmd.index(''--network'') without error handling raises
+      ValueError instead of a clear assertion failure'
+    - Fragile test with unsafe list indexing on command array
+  TST-C1A:
+    name: undiscoverable-test-function
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - Test function defined outside unittest.TestCase class
+    - Module-level test_multi_model_fields_in_schemas is invisible to unittest's own discovery
+  TST-C1B:
+    name: test-defined-after-main-guard
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 7
+    examples:
+    - 'TestRunTool is defined after the `if __name__ == "__main__": unittest.main()` guard'
+    - test_base.py places the __main__ guard mid-file, silently dropping TestRunTool from script-mode discovery
+  TST-C2A:
+    name: duplicated-test-helper-across-cases
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    examples:
+    - Fake subprocess-result class reimplemented locally in ~8 test methods instead of one shared helper
+    - Duplicate FIXTURE_ROOT initialization across integration tests
+    - Duplicate _target() helper method across test classes
+  TST-C2B:
+    name: monolithic-test-module
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - Single 2,669-line test module conflates dozens of unrelated concerns (~46 independent TestCase classes) for
+      synthesize.py
+  TST-C3A:
+    name: misleading-test-name
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - Test name claims coverage of all four dispatch roles but only pins tokens for two
+  TST-C3B:
+    name: misnamed-helper-inverted-semantics
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - Helper function _depth_gte is named for the opposite comparison it actually implements
+  TST-C3C:
+    name: misnamed-test-artifact
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - File/class name references a non-existent 'cs' scope and duplicates test_rust_integration.py
+  TST-C3D:
+    name: unrepresentative-test-input
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - test_clean_group_is_shallow exercises a panels input that build_result can never actually produce, masking
+      that the real code path is untested
+  TST-C4A:
+    name: inconsistent-mocking-pattern
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    examples:
+    - 'Inconsistent subprocess mocking pattern across test suite: patch.object(subprocess, "run") in one file vs.
+      mock.patch("scripts.tools.base.subprocess.run") in others'
+  TST-C4B:
+    name: undocumented-test-double-contract
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - Undocumented test double lacks contract specification
+  TST-C4C:
+    name: incomplete-test-double-masks-behavior
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - 'Incomplete mock_exists function masks unintended behavior: only explicitly returns True for the expected
+      path, silently returning False for everything else'
+  TST-C5A:
+    name: unexplained-magic-value-in-test
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - Magic number without explanation in test
+  TST-C5B:
+    name: nonstandard-import-placement
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    examples:
+    - 'Late imports: module imports inside test function'
+    - Redundant import shadowing module-level import
+  TST-C5C:
+    name: overengineered-fixture-builder
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - Overly complex test fixture builder with conditional branching
+  TST-C5D:
+    name: missing-import-for-referenced-symbol
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - test_synthesize.py calls unittest.mock.patch without importing unittest.mock
+  TST-D1A:
+    name: unscoped-env-var-mutation
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    examples:
+    - 'Test isolation violation: os.environ mutated without proper cleanup'
+    - test_env_override / test_cli_beats_env mutate os.environ directly instead of using mock.patch.dict
+  TST-D1B:
+    name: manual-state-patch-without-context-manager
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 5
+    examples:
+    - 'Test uses direct module state patching instead of context managers: saves original references then restores
+      via try/finally'
+    - Mock patch scope too broad; test depends on internal module structure
+    - Test mock restoration pattern creates isolation risk
+  TST-D1C:
+    name: unclosed-file-handle
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 13
+    examples:
+    - 'Resource leak: files opened without context manager'
+    - 'Unclosed file handle in test assertion: json.load(open(actions_path)) without context manager'
+    - Multiple unclosed file handles in test method
+  TST-D2A:
+    name: cwd-relative-fixture-path
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 5
+    examples:
+    - 'Non-hermetic test: fixture path is relative to invocation cwd, not the test file'
+    - Hard-coded relative path in test assumes repo-root execution
+    - test_status_is_in_schema_enum opens a bare CWD-relative path instead of anchoring to __file__/repo root
+  TST-D2B:
+    name: hardcoded-shared-tmp-path
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - Hardcoded /tmp path in test bypasses test isolation
+  TST-E1A:
+    name: orphaned-unused-fixture
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 6
+    examples:
+    - Fixture file vulnerable-python/requirements.txt exists but is unused by specified tests
+    - tests/fixtures/semgrep.sarif is an orphaned fixture with no consuming test
+    - Fixture file manifest.json exists but is unused by specified tests
+  TST-E1B:
+    name: unvalidated-fixture-existence-assumption
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - Tests depend on fixture files without existence validation; load_report() failures surface as confusing I/O
+      errors rather than clear test failures
+  TST-E2A:
+    name: unrealistic-synthetic-fixture-data
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - Synthetic dependency in Cargo.lock fixture may not reflect realistic resolution behavior (serde depending
+      on a package that isn't a real dependency)
+  TST-E2B:
+    name: hardcoded-machine-specific-path-in-fixture-data
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - Hardcoded, machine-specific absolute path embedded in committed test fixture data
+  TST-E2C:
+    name: fixture-lockfile-version-drift
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - Cargo.lock has time version mismatch with Cargo.toml (0.1.44 declared vs. 0.1.45 locked)
+  TST-E2D:
+    name: degenerate-fixture-values
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    examples:
+    - 'Test fixture with incomplete field values for reconciliation edge case: empty strings for severity, panel,
+      category, title'
+    - Test fixture contains intentionally degenerate/empty findings
+  TST-F1A:
+    name: unisolated-external-service-call
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - pip-audit/npm-audit integration tests make live network calls to third-party services with no opt-out marker
+  TST-F1B:
+    name: unexpected-outcome-silently-skipped
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - Unexpected cargo-audit exit codes are silently skipped instead of failing the test
+  TST-F1C:
+    name: environment-gated-test-execution
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 9
+    examples:
+    - Docker availability tests depend on runtime environment
+    - Conditional test execution based on external tool availability
+    - Schema validation tests skipped when jsonschema not installed
+  TST-F1D:
+    name: cascading-skip-guard-chain
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 7
+    examples:
+    - Integration tests have cascading skipTest guards making coverage uncertain
+    - Five cascading skip conditions plus an implicit network dependency reduce this test to a near-permanent skip
+    - Containment probe test has multiple exit paths that skip validation
+  TST-F2A:
+    name: exit-code-conflates-pass-with-no-op
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    examples:
+    - 'No validation that tests actually executed: a returncode of 0 could mean tests passed OR pytest -k matched
+      nothing'
+    - Non-zero exit code handling in run_adapters not fully tested
+  TST-F2B:
+    name: unverified-test-selection-filter
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - 'Fragile test discovery with assumed pytest naming convention: pytest -k ''test_{test}_integration'' never
+      validates that matching tests exist'
