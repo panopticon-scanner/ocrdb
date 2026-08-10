@@ -194,3 +194,69 @@ Currently homeless — each needs a target ruling (likely COD or QAL per the min
 - Hardcoded Docker Container Paths in Test Fixtures
 - Shallow copy in citation merge without deep copy protection
 - Greedy regex matches from first to last brace in advisor output
+
+---
+
+## Gates (adopted 2026-08-10, from the 5.x roadmap combined review)
+
+**Gate A — assignment-stability eval, run BEFORE the session.** ≥100 run-3 findings sampled across all five domains; the panel-tier model assigns codes 3× independently from the menu one-liners; agreement reported at full-code and category-prefix tier. Sibling entries confused above threshold get merged or coarsened — **taxonomy granularity is bounded by assigner reliability, not conceptual distinctness.** Results attach here when the eval completes; the data also drives the panopticon reconcile-tier ruling (prior: category-prefix identity, full code carried for trends).
+
+**Gate B — singleton rule.** A `recurrence: 1` entry survives ratification only with a prior-art crosswalk or an explicit invention-budget note; otherwise it parks on an incubation list. The 62 singletons (verified against the draft):
+`ARC-C1C ARC-C1D ARC-D1A ARC-D1D ARC-D1F ARC-D2E ARC-E2E ARC-E3C ARC-F1D ARC-F2E ARC-F2F ARC-G1C ARC-G2B COD-B2A COD-B2B COD-B2C COD-B2D COD-B2E COD-C1B COD-C2C COD-C3A COD-D2C COD-D2D COD-D3C COD-E1A COD-E1B COD-E1C COD-E1E COD-E2A COD-E2B COD-F1A COD-F1B QAL-B3C QAL-C1C QAL-C2C QAL-C2D QAL-C2E QAL-F2B QAL-F2C QAL-F3B SEC-B1A SEC-B1B SEC-B1D SEC-B3B SEC-C1A SEC-C1E SEC-G1B SEC-H1A SEC-H2A SEC-H3A TST-B1E TST-B2B TST-B2C TST-B2D TST-C3D TST-C4B TST-C5A TST-C5C TST-C5D TST-D2B TST-E1B TST-F1A`
+
+**Gate C — menu discipline.** The bundle build emits a menu form per entry: one line, `CODE name (SEV)`. Criteria text is advisor-stage only; whole-domain slices render as area/category headers + one-liners. Bounds the permanent per-dispatch tax the identity spine introduces.
+
+**Big rock #10 (added): corpus-blind territories.** Appendix C's gap clusters need three structural placements ruled — concurrency (proposed `COD-G`), resilience (proposed `ARC-I`), observability (proposed `QAL-I`) — plus per-entry adoption of the crosswalk-backed gap candidates.
+
+## Appendix C — external gap analysis (Gemini, 2026-08-10), triaged
+
+An independent Gemini review proposed 33 additions. **Its codes are unusable** — it worked from CHARTER/SCHEMA alone and every proposed code collides with an assigned draft slot (its `SEC-C1A crypto-weak-hash-algorithm` vs. our `SEC-C1A container-runs-as-root`, etc.). Content triaged name-level against all 320 entries:
+
+### Already covered (14 — adopt nothing; convergence evidence)
+
+| Gemini proposal | Draft entry |
+|---|---|
+| crypto-hardcoded-secret | SEC-B3C (severity note: they say CRITICAL, draft HIGH) |
+| auth-missing-rate-limit | SEC-C2B (exact, CWE-307) |
+| deps-unpinned-manifest | SEC-E1A/E2B/E2C (manifest-range nuance → examples) |
+| error-swallowed-exception | SEC-F1A + COD-B2 |
+| error-generic-catch | ARC-F2A |
+| logic-off-by-one | COD-A2 |
+| resource-unclosed-handle | COD-A1 / SEC-F2A / TST-D1C (already a routing question) |
+| concurrency shared-state (partial) | SEC-F2B + ARC-E2A |
+| boundary-circular-dependency | ARC-A2E |
+| boundary-leaky-abstraction | ARC-A2A |
+| flaky-shared-state-bleed | TST-D1 |
+| assert-missing-validation | TST-B2 |
+| assert-broad-equality | TST-B1B (exact) |
+| doc-drift / nested-conditionals / god-class / misleading-identifier | QAL-C2 / QAL-H1B / ARC-A1A+QAL-F2B / QAL-A1B |
+
+### Gap candidates (13 — adopt at ratification, provenance `[prior-art, gemini-gap-review]`, Gate B note each)
+
+All from territories a stdlib-Python self-scan corpus is structurally blind to. Severities to be graded fresh at ratification (Gemini's run hot).
+
+| Candidate | Proposed placement | Crosswalk stub |
+|---|---|---|
+| weak-standard-crypto-algorithm (MD5/SHA-1) | SEC-C3 (beside C3A ad-hoc checksum) | CWE-327/328, OWASP A02 |
+| pii-logged | SEC-B2 | CWE-359, CWE-532 |
+| abandoned-unmaintained-dependency | SEC-E1 (distinct from known-vulnerable E1C) | CWE-1104, OpenSSF Scorecard |
+| race-condition (production) | **new COD-G concurrency** | CWE-362 |
+| blocking-call-on-event-loop | COD-G | async ecosystem guidance |
+| stale-cache-read | COD-G (state/caching category) | common prior art |
+| unbounded-collection-load | QAL-G (efficiency; `character: defect`) or perf home per big rock #10 | CWE-400/770 |
+| missing-timeout-on-remote-call | **new ARC-I resilience** | CWE-1088 |
+| missing-retry-transient-failure | ARC-I | resilience patterns |
+| missing-trace-propagation | **new QAL-I observability** | OTel; homes the TST miner's routed-out diagnostics strays |
+| vague-log-context | QAL-I | CWE-778 adjacent |
+| time-dependent-flaky-test | TST-F (new category: timing sensitivity) | flaky-test literature |
+| mock-internal-behavior | TST-C4 | "change-detector tests" (Google) |
+
+Also noted, not an entry: n-plus-one placement (QAL-G1D today) feeds the big-rock-#10 performance-home ruling. `doc-missing-why-context` → QAL-C candidate (INFO), weakest of the set — owner's call.
+
+### Declined (1)
+
+`input-missing-sanitization` — generic catch-all duplicating SEC-A's specific injection issues; conflicts with the `<DOM>-X0X` fallback discipline (the "nothing specific fits" signal must stay a counted fallback, not an entry).
+
+### Budget
+
+Adopting all candidates ≈ 15 prior-art entries of ~333 (≈4.5%) — ceiling is 25%.
