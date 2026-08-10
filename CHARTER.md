@@ -33,30 +33,15 @@ SEC                 → A (authentication) → 2 (hijack)  → D (named issue)
 
 ## Entry schema
 
-Lean core, forward-compatible enrichment — optional fields attach per-entry without schema breakage:
+Lean core, forward-compatible enrichment — optional fields attach per-entry without schema breakage. The normative schema (required fields, enrichment fields, file format, severity scale, stability mechanics) lives in **`SCHEMA.md`**; domain content lives in `domains/<dom>.yml`.
 
-```yaml
-# domains/sec.yml
-SEC-A2D:
-  name: session-hijack-transport        # required — kebab-case, stable
-  typical_severity: HIGH                # required
-  status: active                        # required — active | deprecated
-  provenance: [corpus-run3, cwe-align]  # required — where this entry came from
-  # ---- optional enrichment (any subset, added when needed) ----
-  definition: "…"                       # one paragraph
-  criteria: "qualifies when …; elevate if …"   # grading rubric text
-  superseded_by: SEC-A3B                # required iff deprecated
-  cwe: [CWE-294]
-  iso5055_measure: [security]           # security|reliability|performance|maintainability
-  iso25010: [security.integrity]
-  odc: {type: checking, trigger: logic-flow}
-  owasp: {top10_2025: A07, asvs: [v5.0.0-3.2.1]}
-  cert_rule: []
-  sonar_rule: []                        # S-ids; mapping only, no content reuse
-  codeql: {tags: [security/cwe/cwe-294]}
-  semgrep: {category: security}
-  mantyla_class: functional             # functional | evolvability
-  examples: {bad: "…", good: "…"}
-  remediation: "…"
-```
+## Consumers & emitting classes
+
+Two kinds of consumers cite OCRDb codes:
+
+- **Review pipelines** (e.g. panopticon) — grade findings against catalog slices, override typical severity per-instance under their own disclosed discipline, and map their internal panels/lenses onto OCRDb domains via a consumer-side mapping file. Nothing in OCRDb knows any consumer exists.
+- **Agentic review & simplification skills** (/simplify-class tools, Copilot review, CodeRabbit, reviewer subagents) — an emitting class in their own right, and a curation corpus source. Rules for this class:
+  1. **Quality-only skills MUST NOT emit `SEC` or `COD` codes**, even when a quality finding brushes against a correctness or security concern. A simplification that is correctness-entangled is declined and deferred to a review pipeline's domain codes — the skill's self-fencing is the boundary.
+  2. Findings from this class default to `character: opportunity` (see `SCHEMA.md`) unless the skill is explicitly running in a defect-hunting mode.
+  3. Skills should be able to self-tag a finding **considered-and-declined** (with the reason), so a deliberately-not-applied change is not re-surfaced as new on every subsequent run.
 
