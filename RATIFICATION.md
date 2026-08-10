@@ -19,7 +19,9 @@ Every corpus title landed in an entry's `examples`, in `unplaced`, or in a routi
 
 ## Big rocks — structural rulings needed
 
-1. **SEC-G (ai-agent-trust-boundary): keep in SEC, or spin up a dedicated agentic/LLM domain?** ~20 corpus items (prompt injection, self-asserted trust metadata, single-verifier override authority) recur heavily in agentic-review corpora and map to OWASP LLM Top 10 territory. Draft keeps them in SEC; a future `AGT` domain is the alternative.
+0. **Single-homing (P0 — rule this BEFORE any per-entry work; Appendix D / R1).** The draft carries verified cross-domain duplicate entries — `COD-E1D`=`SEC-A3A` (identical name+severity), `COD-E1E`≈`SEC-E3C`, `COD-E1A`≈`SEC-A4B`, `COD-E1B`≈`SEC-B1E`, `COD-E1C`≈`SEC-D1C`, thread-safety with THREE homes (`COD-E2A`/`ARC-E2A`/`SEC-F2B`), unclosed-handle with three (`COD-A1B`/`SEC-F2A`/`TST-D1C`), plus the already-flagged ARC-F2/SEC-G2 and ARC-H/TST pairs. Under code-as-identity every duplicated home is a guaranteed reconcile split. Proposed rule (charter/SCHEMA text): *each hazard single-homes in exactly one domain; other domains may cross-reference (`see_also:`) but never re-enter the hazard.* Suggested resolutions: adversary-exploitable classes → SEC (COD-E1 dissolves to cross-refs); concurrency → new COD-G (absorbing all three thread-safety homes); resource leaks → COD (SEC-F2A becomes cross-ref); TST-D1C survives as leak-in-test-code (different remediation owner).
+
+1. **SEC-G (ai-agent-trust-boundary): keep in SEC, or spin up a dedicated agentic/LLM domain?** *(Appendix D recommends: PROMOTE, with two corpus entries SEC-G cannot express — see AGT.)* ~20 corpus items (prompt injection, self-asserted trust metadata, single-verifier override authority) recur heavily in agentic-review corpora and map to OWASP LLM Top 10 territory. Draft keeps them in SEC; a future `AGT` domain is the alternative.
 2. **SEC-H (security-tooling-and-scan-integrity): SEC, or a meta/process domain?** Heavily represented because this corpus is panopticon reviewing itself; may not generalize. Draft keeps it in SEC with a note.
 3. **ARC-H (test-suite-architecture) vs TST.** The ARC miner itself recommended migrating Area H to TST. Draft keeps ARC-H intact; the overlap map: ARC-H1A↔TST-C2B, ARC-H1B/H2C↔TST-C2A, ARC-H2D↔TST-C4A, ARC-H2E↔TST-D2A, ARC-H2F↔TST-C5B, ARC-H3A↔TST-B1B, ARC-H3C↔TST-C1B. Options: (a) migrate ARC-H into TST and re-letter, (b) keep both with cross-references (structural/organizational angle in ARC, per-test quality in TST), (c) draft's default — decide per-pair.
 4. **TST "silent non-verification" siblings.** TST-F1C, TST-F1D, TST-A4A, TST-A3C all describe "a test exists but a gate prevents its assertions from running" via different mechanisms. Keep the four distinct mechanisms (draft) or merge into one coarser issue?
@@ -211,6 +213,7 @@ Currently homeless — each needs a target ruling (likely COD or QAL per the min
   - *Cross-area confusion (3)*: TST-A3A↔A2F (2 of 3 passes missed that the draft's own A2F example IS this finding — "growth-blind-invariant-check" name lacks scent), QAL-F3D↔F1B ("inconsistent mock import style" straddles mocking-idiom vs import-style — boundary rule needed), ARC-A2D↔H3A (doc-regex enforcement straddles hidden-contract vs weak-test-assertion — cross-ref note).
   - *Fallback wobble (3)*: #13 requirements-file selection — SEC-D1B (uncontrolled-search-path-element) lists this exact case as an example, yet 2 of 3 passes chose X0X: **menu one-liner names need more scent** (rename candidates at ratification). #28/#39 — COD strays already routing-flagged to QAL/TST; consistent X0X here is the menu behaving honestly.
 - **Menu-clarity lesson (Gate C feedback):** assigner misses correlated with abstract entry names, not taxonomy depth. Ratification renames should optimize for one-line recognizability.
+- **Design caveat (per Appendix D):** this eval PINNED each finding's domain, so the big-rock-#0 cross-domain duplicates could not corrupt it — but cross-domain ambiguity was therefore never measured. **After the single-homing resolutions, re-run Gate A domain-UNPINNED** (the true 5.0 shape, where panel↔domain mapping routes) — three dispatches, cheap.
 
 **Gate B — singleton rule.** A `recurrence: 1` entry survives ratification only with a prior-art crosswalk or an explicit invention-budget note; otherwise it parks on an incubation list. The 62 singletons (verified against the draft):
 `ARC-C1C ARC-C1D ARC-D1A ARC-D1D ARC-D1F ARC-D2E ARC-E2E ARC-E3C ARC-F1D ARC-F2E ARC-F2F ARC-G1C ARC-G2B COD-B2A COD-B2B COD-B2C COD-B2D COD-B2E COD-C1B COD-C2C COD-C3A COD-D2C COD-D2D COD-D3C COD-E1A COD-E1B COD-E1C COD-E1E COD-E2A COD-E2B COD-F1A COD-F1B QAL-B3C QAL-C1C QAL-C2C QAL-C2D QAL-C2E QAL-F2B QAL-F2C QAL-F3B SEC-B1A SEC-B1B SEC-B1D SEC-B3B SEC-C1A SEC-C1E SEC-G1B SEC-H1A SEC-H2A SEC-H3A TST-B1E TST-B2B TST-B2C TST-B2D TST-C3D TST-C4B TST-C5A TST-C5C TST-C5D TST-D2B TST-E1B TST-F1A`
@@ -271,3 +274,31 @@ Also noted, not an entry: n-plus-one placement (QAL-G1D today) feeds the big-roc
 ### Budget
 
 Adopting all candidates ≈ 15 prior-art entries of ~333 (≈4.5%) — ceiling is 25%.
+
+## Appendix D — deep gap analysis & expansion (external review, 2026-08-10), verified
+
+Source (full entry lists live there): `reviews/2026-08-10-ocrdb-0.1-gap-analysis-and-expansion.md`. Verification status: the R1 duplicate inventory checked entry-by-entry against the draft — **all real** (elevated to big rock #0). The two AGT corpus incidents confirmed verbatim in panopticon DEVELOPMENT.md 2.3.0 ("a panel confabulated an issue-filing it never did; another copied a live DSN into its findings JSON"). `QAL-B1A` recurrence 20 confirmed. The unmapped `database` panel confirmed (panopticon has six panels; the 5.0 consumer mapping covers four).
+
+**Adopted as session running order (P0 → P1 → P2):**
+
+### P0 — before any per-entry work
+- **R1 single-homing** = big rock #0 (above).
+- **R2 severity calibration**: walk every CRITICAL/HIGH anchor against the bar *exploitable now, data loss, or silently wrong results at scale*. Known inflated: `ARC-D3C` (CRITICAL→HIGH at most), `ARC-E1C` (CRITICAL→MEDIUM/HIGH). Anchors are load-bearing in 5.0 (every deviation = disclosed override + advisor adjudication).
+- **R3 `automated_by` schema field**: optional list mapping an entry to the linter rule that catches it mechanically (`automated_by: [ruff:E401]`). Candidates already in the draft: QAL-B1A (n=20 — twenty reviewer-model reports of a free lint), B1B, B1C, B2B, F3C, TST-C5B. Consumer twin (5.0): when the tool scan ran, panels SKIP `automated_by` entries; report discloses the suppression class. R4 grammar capacity: checked, no action — all expansions below fit.
+
+### P1 — in the 0.1 tag (per-entry adoption at the session)
+- **SEC-I web-session-and-browser-boundary** (the credibility hole: CSRF, session mgmt, CORS, open-redirect, clickjacking, JWT/OAuth, ReDoS, unbounded-request-size) [prior-art: ASVS/OWASP; baskin dogfood claims corpus CSRF].
+- **SEC-B4 privacy-and-data-protection** (pii-in-logs, excessive-collection, retention) — supersedes Appendix C's B2-fold placement for pii-logged.
+- **COD-G concurrency-and-asynchrony** — third independent convergence (Gemini Appendix C + this review); single-homes the three thread-safety entries per big rock #0.
+- **COD-H data-representation-and-time** (datetime/DST/epoch, float-money, integer overflow, bytes/str, encoding, unit confusion) — the most language-agnostic review catches; corpus-blind territory.
+- **QAL-G restructure**: G1 redundant-computation (keep) + G2 algorithmic-complexity + G3 io-and-round-trips + G4 memory-and-allocation; `QAL-G1D` n-plus-one **moves to DAT-C**.
+- **TST flakiness fills**: unseeded-randomness, wall-clock-dependent (matches Appendix C's time-flakiness), test-order-coupling, universal-invariant-only-example-tested.
+- **DAT domain skeleton** (schema-design, migrations, query-patterns, transactions, data-lifecycle) — the inverse gap: panopticon's `database` panel exists with no domain to map to. Seeding synergy: make the 4.3.x external cost-baseline repo DB-heavy — one run, two deliverables.
+- **AGT domain promotion** (rules big rock #1 = PROMOTE): areas prompt-injection / tool-permission-scoping / output-trust / autonomy-oversight (incl. the two 2.3.0 corpus entries: agent-confabulated-action, secret-materialized-into-agent-output) / resource-cost-safety / data-egress. SEC keeps a cross-ref stub; SEC-G2 splits per big rock #0 (general fail-open resolves with ARC-F2; only agent-mediation G2C moves).
+- **Incubating declarations (charter prose, no codes burned): OPS, A11Y, I18N.** *Reconciliation with Appendix C: the ARC-I resilience proposal (missing-timeout/retry) is WITHDRAWN in favor of parking those entries on the OPS incubation list — single future home, no premature area.*
+
+### P2 — 0.2+
+OPS/A11Y/I18N content (each after a shaped mining run), PRV promotion decision, performance criteria enrichment.
+
+### Consumer-side implications (recorded for the 5.0 mapping audit; execute per roadmap)
+`database`→DAT mapping (5.0); new `agentic` panel→AGT (5.0–5.1, the niche — prioritize); web-security lens→SEC-I, performance lens→QAL-G, concurrency lens→COD-G (5.1); `automated_by` panel skip-rule (5.0, Track-2 twin); OPS panel with OPS content (0.2+).
