@@ -49,7 +49,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-710
@@ -62,7 +62,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 11
     cwe:
     - CWE-1120
@@ -76,7 +76,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-1120
@@ -89,7 +89,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     cwe:
     - CWE-1047
@@ -102,7 +102,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     cwe:
     - CWE-1008
@@ -117,7 +117,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     cwe:
     - CWE-710
@@ -132,7 +132,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     cwe:
     - CWE-1061
@@ -147,7 +147,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 7
     cwe:
     - CWE-1041
@@ -170,7 +170,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     cwe:
     - CWE-1041
@@ -183,7 +183,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 10
     cwe:
     - CWE-710
@@ -199,7 +199,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-710
@@ -213,7 +213,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-390
@@ -226,8 +226,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - pr945
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - SEV_ORDER and PANELS redefined locally in synthesize.py and html_report.py instead of owned by evidence.py
@@ -247,8 +246,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - pr945
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - dispatch.py's AGENT_NAME dict was a byte-for-byte parallel derivation of ROLE_FILES; replaced with agent_name(role)
@@ -258,7 +256,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - pyyaml, jsonschema, and pytest are imported and used throughout the project but never declared as dependencies
@@ -268,7 +266,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1059
@@ -289,7 +287,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - pyproject.toml declares rich PyPI-style [project] metadata but has no [build-system] table, so the package
@@ -299,7 +297,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-710
@@ -310,7 +308,7 @@ entries:
     typical_severity: INFO
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - README documents symlink-based installation into agent skill directories instead of a pip package install
@@ -319,7 +317,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     examples:
     - ci.yml tests Python 3.11-3.13 but the Dockerfile base image only uses 3.12, so tested versions never match
@@ -333,7 +331,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - panopticon-tools Dockerfile installs 8+ language toolchains plus 10+ security scanners into one image
@@ -342,7 +340,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1047
@@ -353,7 +351,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-693
@@ -365,7 +363,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - 'docker-publish.yml''s trigger paths: filter doesn''t cover everything the Dockerfile COPYs into the published
@@ -375,7 +373,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Phase-1 tool-adapter integration tests never execute with real tooling in any CI workflow
@@ -384,7 +382,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Top-level ops scripts that call the GitHub API are excluded from the CI lint job's file globs
@@ -393,7 +391,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-732
@@ -404,7 +402,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-390
@@ -416,7 +414,7 @@ entries:
     typical_severity: INFO
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-392
@@ -428,7 +426,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-436
@@ -440,7 +438,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-1059
@@ -462,7 +460,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-436
@@ -475,7 +473,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 7
     cwe:
     - CWE-436
@@ -499,7 +497,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-1041
@@ -510,7 +508,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Pipeline phase coordination (scout -> dispatch -> synthesize) relies on JSON artifact contracts with no version
@@ -520,7 +518,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-1059
@@ -541,7 +539,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-436
@@ -553,7 +551,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-662
@@ -567,7 +565,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - The scout prompt never populates several ScopeProfile fields, orphaning the facet feature the schema was built
@@ -577,7 +575,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-436
@@ -589,7 +587,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     cwe:
     - CWE-1059
@@ -603,7 +601,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - skill/reference/codex-runner-instructions.md is referenced by scope assignment but does not exist in the repository
@@ -613,7 +611,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-1059
@@ -626,7 +624,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-547
@@ -640,7 +638,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-547
@@ -652,7 +650,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-547
@@ -674,7 +672,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - triage-ledger.jsonl and filed-issues.json - durable audit ledgers - live inside the fully gitignored, run-scratch
@@ -684,7 +682,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Generated host-native agent registration writes to a global, non-project-scoped directory, in tension with
@@ -694,7 +692,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - SKILL.md documents that the pipeline MUST run from the repo root where .panopticon/ lives, but nothing in
@@ -704,7 +702,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - main() silently auto-discovers .panopticon/groups.json when no --groups argument is given, with no log line
@@ -714,7 +712,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1120
@@ -726,7 +724,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - There is no architecture-panel equivalent of security-checklists.md, so the architecture lens has less supporting
@@ -736,7 +734,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - model-profiles.yml's openrouter host profile has no corresponding hardcoded fallback in model_resolver.py,
@@ -747,7 +745,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-367
@@ -762,7 +760,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-778
@@ -774,7 +772,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-862
@@ -786,7 +784,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-755
@@ -798,7 +796,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-693
@@ -811,7 +809,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-693
@@ -823,7 +821,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-284
@@ -835,7 +833,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-20
@@ -857,7 +855,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-636
@@ -881,15 +879,14 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-636
     - CWE-280
     examples:
-    - Write-guard fails silently open (no deny, no warning) when the allowlist file is missing, malformed, or looked
-    - Tool-policy enforcement silently degrades to prompt-only ("advisory") when a host agent isn't registered,
-      whic
+    - Write-guard fails silently open (no deny, no warning) when the allowlist file is missing or malformed
+    - Tool-policy enforcement silently degrades to prompt-only ("advisory") when a host agent isn't registered
     criteria: >-
       Qualifies — and is the single home for the write-guard fail-open incident —
       when a SECURITY / ENFORCEMENT control (write-guard, tool-policy) degrades to
@@ -907,7 +904,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-396
@@ -919,7 +916,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-1059
@@ -931,7 +928,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-1059
@@ -944,7 +941,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1059
@@ -957,7 +954,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-1059
@@ -969,7 +966,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1059
@@ -983,7 +980,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - skill/.DS_Store is tracked in git despite .gitignore's own 'OS / editor noise' rule listing .DS_Store

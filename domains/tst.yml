@@ -50,7 +50,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 8
     examples:
     - smoke_adapters.py has zero automated test coverage
@@ -61,7 +61,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 73
     examples:
     - cargo-audit's dict-shaped CVSS severity branch has no test coverage
@@ -72,7 +72,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 12
     examples:
     - save_recovered_ledger() lacks direct test coverage
@@ -84,7 +84,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - --tools-exclude CLI wiring in synthesize.py has no end-to-end test
@@ -95,7 +95,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - No systemic test guards against a future adapter-prefix collision in the ADAPTERS registry
@@ -106,7 +106,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 13
     examples:
     - run_tool tests do not cover timeout exception path
@@ -117,7 +117,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     examples:
     - cargo_audit.parse's default-severity branch is reached by the module's own fixture but never asserted
@@ -128,7 +128,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 26
     examples:
     - BrakemanAdapter parse() lacks empty findings test
@@ -139,7 +139,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 9
     examples:
     - SpotBugs priority-to-severity mapping only exercised for priority "1"
@@ -150,7 +150,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 10
     examples:
     - is_applicable() false-path untested in bundler-audit and cargo-audit adapter tests
@@ -161,7 +161,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     examples:
     - Real-tool detection assertions for the vulnerable-python/vulnerable-node/insecure-js fixtures never execute
@@ -174,7 +174,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     examples:
     - evil.csproj's own containment invariants (egress must fail, marker must stay off the mounted target) are asserted
@@ -186,7 +186,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 19
     examples:
     - Golden-render regression suite exercises only one (panel, depth, security_mode) combination
@@ -197,7 +197,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - No validation of Docker command output format; check_fixtures assumes docker run output is well-formed and
@@ -207,7 +207,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - Missing schema validation for adapter/tool output files
@@ -217,7 +217,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     examples:
     - Silent skip on missing fixture directory masks fixture rot with no alerting mechanism
@@ -235,7 +235,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - The only regression test for the SEC-101 HTML-injection fix in _render_provenance checks cosmetic normalization
@@ -245,7 +245,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - 'Weak assertion: checks for substring instead of validating citation structure'
@@ -255,7 +255,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 10
     examples:
     - 'Weak assertion: only checks if findings list is truthy'
@@ -266,7 +266,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Test does not verify comment body argument passed to gh command
@@ -276,7 +276,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - Security-critical test lacks positive assertion of expected behavior (verifies cwd != target but never asserts
@@ -293,7 +293,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - 'Pointless assertion: self.assertTrue(True) always passes, providing no actual test coverage'
@@ -302,7 +302,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - test_cargo_audit_skips_without_rust is a tautological test that never verifies adapter behavior regardless
@@ -312,7 +312,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - 'Test loop with redundant assertions: does not validate all rule mappings'
@@ -321,7 +321,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Test with inverted logic and meaningless assertion
@@ -330,7 +330,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     examples:
     - 'Brittle test assertion using unsafe list.index(): cmd.index(''--network'') without error handling raises
@@ -341,7 +341,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     examples:
     - Golden fixtures are hand-maintained with no regeneration tooling or documented provenance
@@ -351,7 +351,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 7
     examples:
     - 'TestRunTool is defined after the `if __name__ == "__main__": unittest.main()` guard'
@@ -370,7 +370,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Test function defined outside unittest.TestCase class
@@ -380,7 +380,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-710
@@ -394,7 +394,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     examples:
     - Fake subprocess-result class reimplemented locally in ~8 test methods instead of one shared helper
@@ -412,7 +412,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - test_clean_group_is_shallow exercises a panels input that build_result can never actually produce, masking
@@ -422,7 +422,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Test name claims coverage of all four dispatch roles but only pins tokens for two
@@ -433,7 +433,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-710
@@ -446,7 +446,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-561
@@ -458,7 +458,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - 'Incomplete mock_exists function masks unintended behavior: only explicitly returns True for the expected
@@ -468,7 +468,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-710
@@ -491,7 +491,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Undocumented test double lacks contract specification
@@ -500,7 +500,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - test_synthesize.py calls unittest.mock.patch without importing unittest.mock
@@ -509,7 +509,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Overly complex test fixture builder with conditional branching
@@ -518,7 +518,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     examples:
     - 'Late imports: module imports inside test function'
@@ -528,7 +528,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Magic number without explanation in test
@@ -537,7 +537,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     examples:
     - 'Test uses direct module state patching instead of context managers: saves original references then restores
@@ -549,7 +549,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 13
     examples:
     - 'Resource leak: files opened without context manager'
@@ -560,7 +560,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     examples:
     - 'Test isolation violation: os.environ mutated without proper cleanup'
@@ -570,7 +570,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     cwe:
     - CWE-710
@@ -585,7 +585,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Hardcoded /tmp path in test bypasses test isolation
@@ -594,7 +594,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Tests depend on fixture files without existence validation; load_report() failures surface as confusing I/O
@@ -612,7 +612,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     cwe:
     - CWE-561
@@ -625,7 +625,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     examples:
     - 'Test fixture with incomplete field values for reconciliation edge case: empty strings for severity, panel,
@@ -636,7 +636,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Cargo.lock has time version mismatch with Cargo.toml (0.1.44 declared vs. 0.1.45 locked)
@@ -645,7 +645,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Hardcoded, machine-specific absolute path embedded in committed test fixture data
@@ -656,7 +656,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Synthetic dependency in Cargo.lock fixture may not reflect realistic resolution behavior (serde depending
@@ -666,7 +666,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 7
     examples:
     - Integration tests have cascading skipTest guards making coverage uncertain
@@ -677,7 +677,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 9
     examples:
     - Docker availability tests depend on runtime environment
@@ -688,7 +688,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Unexpected cargo-audit exit codes are silently skipped instead of failing the test
@@ -709,7 +709,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - pip-audit/npm-audit integration tests make live network calls to third-party services with no opt-out marker
@@ -718,7 +718,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - 'Fragile test discovery with assumed pytest naming convention: pytest -k ''test_{test}_integration'' never
@@ -728,7 +728,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - 'No validation that tests actually executed: a returncode of 0 could mean tests passed OR pytest -k matched
@@ -745,7 +745,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     cwe:
     - CWE-710
@@ -760,7 +760,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-1041
@@ -781,7 +781,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-710
@@ -793,7 +793,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-710
@@ -805,7 +805,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1041
@@ -817,7 +817,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-710
@@ -831,7 +831,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1059
@@ -842,7 +842,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - BrakemanAdapter's exit-code remap (2/3 -> 0) and its ok_codes=(0,1,2,3) wiring into run_tool are never exercised
@@ -852,7 +852,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-400
@@ -864,7 +864,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Hand-built ScopeProfile test fixtures omit schema-required fields and are never validated against scope-profile-schema.json
@@ -875,7 +875,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - The write-guard hook's live enforcement path is only exercised via its in-process decide() function - the
@@ -885,7 +885,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     examples:
     - A test mocks builtins.open globally via mock_open, so it can never detect a wrong report path or misread content

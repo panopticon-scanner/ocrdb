@@ -32,13 +32,12 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-1427
     examples:
-    - Reviewer agent prompt templates never tell the model that reviewed file content is untrusted, leaving the
-      pipe
+    - Reviewer agent prompt templates never tell the model that reviewed file content is untrusted
     - Advisor prompt embeds an unfiltered agent-authored finding JSON, opening an indirect-prompt-injection channel
   AGT-A1B:
     name: untrusted-content-in-agent-context
@@ -46,7 +45,7 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-1427
   AGT-B1A:
@@ -54,13 +53,13 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-863
     - CWE-284
     examples:
-    - Write-guard covers only Write/Edit/NotebookEdit tool_name calls; Bash (the exact vector the hook's own project
+    - Write-guard covers only Write/Edit/NotebookEdit tool_name calls
     criteria: >-
       Qualifies when a mediation/enforcement mechanism EXISTS but fails to cover a
       class of invocations — a coverage gap in the control itself (e.g. a
@@ -81,7 +80,7 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-862
     criteria: >-
@@ -100,7 +99,7 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-284
     criteria: >-
@@ -119,7 +118,7 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-269
     criteria: >-
@@ -137,21 +136,18 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 9
     cwe:
     - CWE-290
     - CWE-345
     - CWE-807
     examples:
-    - Self-asserted corroborated/corroborated_by fields bypass agent-trust sanitization and forge cross-panel verifi
-    - Self-asserted source/reinforced fields let an agent finding forge tool_confirmed evidence and bypass advisor
-      v
+    - Self-asserted corroborated/corroborated_by fields bypass agent-trust sanitization and forge cross-panel verification
+    - Self-asserted source/reinforced fields let an agent finding forge tool_confirmed evidence
     - Agent-authored `cvss`/`exploit_scenario` unconditionally overwrite a tool-verified finding's own metadata
-      duri
-    - Self-asserted `corroborated`/`corroborated_by` fields let an untrusted reviewer finding forge verification
-      sta
-    - Self-asserted _group field can misattribute a finding to the wrong review group when the source filename doesn
+    - Self-asserted `corroborated`/`corroborated_by` fields let an untrusted reviewer finding forge verification status
+    - Self-asserted _group field can misattribute a finding to the wrong review group
     - corroborated/corroborated_by are self-assertable by agents even though the semantically-equivalent source/reinforced
       fields are explicitly stripped as forbidden, allowing spoofed cross-panel corroboration
   AGT-C1B:
@@ -159,51 +155,48 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-693
     examples:
-    - Findings from an undeclared/unexpected findings file are flagged in meta.integrity but still merged into the
-      c
+    - Findings from an undeclared/unexpected findings file are flagged in meta.integrity
   AGT-C1C:
     name: unauthenticated-external-data-rebuilds-trust-mapping
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-345
     - CWE-290
     examples:
-    - 'recover-linkage rebuilds the fingerprint-to-issue trust mapping from unauthenticated issue body text, with
-      no '
+    - recover-linkage rebuilds the fingerprint-to-issue trust mapping from unauthenticated issue body text
     - Ledger recovery trusts unauthenticated GitHub issue-body content to rebuild the fingerprint-to-issue linkage
   AGT-C1D:
     name: unstructured-llm-output-trusted-for-control-decision
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-345
     examples:
-    - Advisor verdict ingestion trusts lenient, unauthenticated free-text LLM output that can silently suppress
-      conf
+    - Advisor verdict ingestion trusts lenient, unauthenticated free-text LLM output
   AGT-D1A:
     name: agent-confabulated-action
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-2.3.0
+    - corpus
   AGT-D1B:
     name: secret-materialized-into-agent-output
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-2.3.0
+    - corpus
     cwe:
     - CWE-532
   AGT-D1C:
@@ -211,19 +204,19 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-863
     examples:
-    - Evidence model gives a single advisor-LLM verdict unilateral, uncorroborated power to null out a tool-confirme
+    - Evidence model gives a single advisor-LLM verdict unilateral, uncorroborated power
   AGT-E1A:
     name: unbounded-agent-loop
     typical_severity: HIGH
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-834
   AGT-E1B:

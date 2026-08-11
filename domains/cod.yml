@@ -47,7 +47,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 11
     cwe:
     - CWE-772
@@ -60,7 +60,7 @@ entries:
     typical_severity: CRITICAL
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-787
@@ -72,7 +72,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-193
@@ -84,7 +84,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-129
@@ -97,7 +97,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-636
@@ -116,7 +116,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-284
@@ -128,7 +128,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-476
@@ -140,7 +140,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - --changes mode's error message blames 'not a git repository' when the real failure is a merge-base lookup
@@ -149,7 +149,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-755
@@ -161,7 +161,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - write_report()'s oversize split does one unbounded halving pass and never re-validates the result against
@@ -171,7 +171,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - recover_linkage_from_github caps at --limit 1000 with no detection or warning that results were truncated
@@ -180,34 +180,32 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - Brakeman has no real severity field; adapter derives both confidence and severity from the same High/Medium/Weak
       vocabulary via a map missing a 'low' entry
     - SpotBugs BugInstance.priority (its confidence) is mapped onto our severity field, while our confidence field
       is hardcoded
-    - osv-scanner adapter silently downgrades known vulnerabilities to INFO severity when a group lacks a numeric
-      ma
-    - Shared severity normalizer silently defaults unmapped/un-rated severity strings to INFO across every dependenc
+    - osv-scanner adapter silently downgrades known vulnerabilities to INFO severity
+    - Shared severity normalizer silently defaults unmapped/un-rated severity strings to INFO across every dependency
   COD-C1B:
     name: severity-hardcoded-ignoring-tool-value
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - roslyn_secguard's parse() hardcodes severity to 'HIGH' for every SecurityCodeScan finding instead of reading
       the SARIF 'level' field
-    - pip-audit adapter hardcodes severity to MEDIUM for essentially all findings, masking the true severity of
-      know
+    - pip-audit adapter hardcodes severity to MEDIUM for essentially all findings, masking the true severity
   COD-C2A:
     name: incorrect-source-file-selection-heuristic
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-706
@@ -219,7 +217,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - PipAuditAdapter records the manifest into self._manifest_path in invoke(), but parse() runs in a separate
@@ -230,7 +228,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     examples:
     - LABEL_RE.fullmatch() only matches a single backtick-quoted label, silently failing on multi-label lines
@@ -241,7 +239,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-706
@@ -252,7 +250,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 7
     examples:
     - Findings F-DUP-1/F-DUP-2 lack the required location.line_start field
@@ -263,7 +261,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - CWE-to-OWASP mapping in the reference catalog is incomplete
@@ -275,7 +273,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - cargo-audit adapter's non-standard 'rustsec' citation key is dropped by the downstream citation pipeline with
@@ -285,7 +283,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - confirmation_status field carries a value outside its own schema enum
@@ -304,7 +302,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - report-schema.json's finding-id pattern (2-4 letters) is stricter than what agents/synthesize.py actually
@@ -326,7 +324,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Finding object schema is inconsistent across the findings array
@@ -336,7 +334,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     examples:
     - report-schema.json's required list omits provenance/citations despite docs mandating 'MUST include provenance/citations'
@@ -354,7 +352,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     examples:
     - README Quick Start documents a --mode flag that doesn't exist in the CLI
@@ -376,7 +374,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - A spec's Advisor Confirmation Flow prescribes a severity-downgrade behavior that the same-day epistemics-core
@@ -386,7 +384,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - '''openrouter'' host profile has no corresponding documentation in SKILL.md''s Host dispatch section'
@@ -396,7 +394,7 @@ entries:
     typical_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-628
@@ -408,7 +406,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-573
@@ -421,7 +419,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-704
@@ -433,7 +431,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - build_diff silently drops a run3 finding that shares a coarse key with an already-exact-matched run2 fingerprint
@@ -442,7 +440,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - NODE_PATH loop breaks after the first global_node, leaving incomplete directory coverage
@@ -451,7 +449,7 @@ entries:
     typical_severity: CRITICAL
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-670
@@ -469,7 +467,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-706
@@ -484,7 +482,7 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-362
   COD-F1B:
@@ -493,8 +491,8 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
-    - corpus-4x
+    - gap-review
+    - corpus
     recurrence: 2
     cwe:
     - CWE-367
@@ -507,7 +505,7 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     - corpus
     cwe:
     - CWE-362
@@ -518,7 +516,7 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-833
   COD-F2B:
@@ -527,21 +525,21 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-F3A:
     name: stale-cache-read-without-invalidation
     typical_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-F3B:
     name: thread-unsafe-lazy-initialization
     typical_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-543
   COD-F3C:
@@ -550,14 +548,14 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-F3D:
     name: unsafe-signal-handler
     typical_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-479
   COD-G1A:
@@ -566,35 +564,35 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G1B:
     name: epoch-unit-confusion-ms-vs-s
     typical_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G1C:
     name: naive-aware-datetime-mixing
     typical_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G1D:
     name: wall-clock-used-for-elapsed-time
     typical_severity: LOW
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G2A:
     name: monetary-value-in-float
     typical_severity: HIGH
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-681
   COD-G2B:
@@ -603,7 +601,7 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-190
   COD-G2C:
@@ -612,7 +610,7 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-681
   COD-G2D:
@@ -621,21 +619,21 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G3A:
     name: bytes-string-conflation
     typical_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G3B:
     name: default-encoding-assumption
     typical_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-176
   COD-G3C:
@@ -644,13 +642,13 @@ entries:
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G3D:
     name: unicode-normalization-mismatch
     typical_severity: LOW
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-176

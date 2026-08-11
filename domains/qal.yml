@@ -54,9 +54,7 @@ entries:
     typical_severity: INFO
     status: active
     provenance:
-    - code-simplifier-agent
-    - coderabbit
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - maintain consistent naming conventions across a module
@@ -65,7 +63,7 @@ entries:
     typical_severity: INFO
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Filename orchestrator.py collides with the unrelated 'orchestrator' concept used throughout the pipeline docs/agent
@@ -76,7 +74,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-1078
@@ -89,10 +87,8 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - coderabbit
-    - copilot
-    - corpus-4x
-    - skills-class
+    - tool-observed
+    - corpus
     recurrence: 4
     examples:
     - title_for() truncates with `room = 240 - len(suffix)`, no comment explaining where 240 comes from
@@ -104,8 +100,7 @@ entries:
     typical_severity: INFO
     status: active
     provenance:
-    - code-simplifier-agent
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - removing comments that describe obvious code
@@ -114,7 +109,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 20
     cwe:
     - CWE-1078
@@ -129,7 +124,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 8
     cwe:
     - CWE-1078
@@ -144,7 +139,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 11
     cwe:
     - CWE-1041
@@ -159,7 +154,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-1078
@@ -173,7 +168,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1078
@@ -185,7 +180,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1078
@@ -197,7 +192,7 @@ entries:
     typical_severity: INFO
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1078
@@ -209,7 +204,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     cwe:
     - CWE-1078
@@ -222,7 +217,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-1078
@@ -235,7 +230,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-1078
@@ -246,7 +241,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     criteria: >-
       Qualifies when a URL or reference in documentation or code is STALE — it
@@ -262,7 +257,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - DEVELOPMENT.md's version History list is in neither ascending nor descending order
@@ -271,7 +266,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 7
     cwe:
     - CWE-1059
@@ -284,7 +279,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     cwe:
     - CWE-1059
@@ -296,8 +291,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
-    - incl. 1 correctness-tagged
+    - corpus
     recurrence: 3
     examples:
     - report-schema.json constrains finding IDs to a 2-4 letter prefix pattern, but the real convention elsewhere
@@ -320,8 +314,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
-    - correctness-tagged
+    - corpus
     recurrence: 1
     examples:
     - SKILL.md's 'Notes' section makes a blanket self-write claim that directly contradicts the Codex and generic-host
@@ -331,7 +324,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     examples:
     - README Quick Start examples use a --mode/--target CLI syntax that no longer matches the documented flags
@@ -351,7 +344,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - acquire_pr()'s docstring promises a loud RuntimeError on any failure, but a missing gh/git binary actually
@@ -361,7 +354,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Shipped commit-message template contains the typo 'kim port' instead of 'kimi port'
@@ -370,7 +363,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - cwe_owasp mapping's intentional sparseness (8 of 34 catalog CWEs unmapped) is undocumented
@@ -381,10 +374,8 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
-    - pr945
-    - simplify-skill
-    - skills-class
+    - corpus
+    - tool-observed
     recurrence: 7
     cwe:
     - CWE-1041
@@ -405,7 +396,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 8
     cwe:
     - CWE-1041
@@ -423,9 +414,8 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
-    - pr945
-    - skills-class
+    - corpus
+    - tool-observed
     recurrence: 10
     cwe:
     - CWE-1041
@@ -439,8 +429,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
-    - 1 correctness-tagged
+    - corpus
     recurrence: 2
     cwe:
     - CWE-561
@@ -452,8 +441,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
-    - incl. 1 test-coverage-tagged
+    - corpus
     recurrence: 4
     cwe:
     - CWE-561
@@ -477,7 +465,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-561
@@ -493,8 +481,7 @@ entries:
     typical_severity: INFO
     status: active
     provenance:
-    - pr945
-    - skills-class
+    - tool-observed
     character: defect
     examples:
     - .grades and .heatmap-more CSS classes in html_report.py with no referencing template markup
@@ -503,9 +490,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - pr945
-    - receiving-code-review-skill
-    - skills-class
+    - tool-observed
     character: defect
     examples:
     - 'run_adapters: no production caller'
@@ -517,7 +502,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 12
     examples:
     - group_runner.py imports scripts.evidence without ensuring the parent directory is on sys.path, relying implicitly
@@ -528,7 +513,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     cwe:
     - CWE-1099
@@ -541,7 +526,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Gate logic is embedded as an inline Python heredoc inside the CI workflow YAML instead of living in a reusable,
@@ -551,7 +536,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-1078
@@ -572,7 +557,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     examples:
     - Bare except Exception blocks in orchestrator.py omit the codebase's noqa:BLE001 tolerant-by-design convention
@@ -586,7 +571,7 @@ entries:
     typical_severity: INFO
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-1099
@@ -598,10 +583,8 @@ entries:
     typical_severity: INFO
     status: active
     provenance:
-    - coderabbit
-    - copilot
-    - corpus-4x
-    - skills-class
+    - tool-observed
+    - corpus
     recurrence: 4
     examples:
     - select_adapters() and run_adapters() carry full PEP 484 type annotations while most other functions in the
@@ -612,8 +595,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - pr945
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - eligible_ids set recomputed inside synthesize's per-group loop despite being loop-invariant
@@ -622,8 +604,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - pr945
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - dispatch.load_template re-read and re-parsed advisor.md once per verify-queue entry — 412 times in run-3
@@ -633,8 +614,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - pr945
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - orchestrator._within recomputed os.path.realpath(repo) per candidate file on large expansions; cached via
@@ -653,8 +633,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - coderabbit
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - function flagged for high cyclomatic complexity / too many responsibilities combined into one function
@@ -663,8 +642,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - code-simplifier-agent
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - nested ternary operators flagged for conversion to switch/if-else chains
@@ -674,8 +652,7 @@ entries:
     typical_severity: MEDIUM
     status: active
     provenance:
-    - code-simplifier-agent
-    - skills-class
+    - tool-observed
     character: defect
     examples:
     - removing a helpful abstraction that improves organization
@@ -687,8 +664,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - pr945
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - 'eslint _strip_prefix vs sarif_utils._norm_uri: two normalization functions look mergeable but intersect an
@@ -700,9 +676,7 @@ entries:
     typical_severity: LOW
     status: active
     provenance:
-    - code-simplifier-agent
-    - simplify-skill
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - eliminating redundant code and abstractions
@@ -713,13 +687,13 @@ entries:
     status: active
     provenance:
     - prior-art
-    - gemini-gap-review
+    - gap-review
   QAL-I1B:
     name: vague-log-message-without-context
     typical_severity: INFO
     status: active
     provenance:
     - prior-art
-    - gemini-gap-review
+    - gap-review
     cwe:
     - CWE-778
