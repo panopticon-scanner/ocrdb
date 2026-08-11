@@ -1,6 +1,6 @@
-# OCRDb Catalog — v0.1.0
+# OCRDb Catalog — v0.2.0
 
-381 finding types across 7 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.1.0.html`.
+357 finding types across 7 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.2.0.html`.
 
 **Severity** INFO · LOW · MEDIUM · HIGH · CRITICAL — the *typical* grade for the defect type, not a per-instance verdict. **character**: `defect` (absent) or `opportunity`.
 
@@ -9,12 +9,12 @@
 | Domain | Name | Entries |
 |---|---|---:|
 | [`AGT`](#agt--agentic-trust) | agentic-trust | 16 |
-| [`ARC`](#arc--architecture) | architecture | 77 |
-| [`COD`](#cod--correctness) | correctness | 58 |
+| [`ARC`](#arc--architecture) | architecture | 70 |
+| [`COD`](#cod--correctness) | correctness | 55 |
 | [`DAT`](#dat--data-and-persistence) | data-and-persistence | 19 |
-| [`QAL`](#qal--quality-maintainability) | quality-maintainability | 58 |
-| [`SEC`](#sec--security) | security | 73 |
-| [`TST`](#tst--testing) | testing | 80 |
+| [`QAL`](#qal--quality-maintainability) | quality-maintainability | 51 |
+| [`SEC`](#sec--security) | security | 70 |
+| [`TST`](#tst--testing) | testing | 76 |
 
 ## AGT — agentic-trust
 
@@ -44,7 +44,7 @@
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `AGT-C1A` | self-asserted-trust-metadata-spoofing | HIGH | CWE-290, CWE-345 | — |
+| `AGT-C1A` | self-asserted-trust-metadata-spoofing | HIGH | CWE-290, CWE-345, CWE-807 | — |
 | `AGT-C1B` | findings-from-undeclared-source-merged-despite-flagging | MEDIUM | CWE-693 | — |
 | `AGT-C1C` | unauthenticated-external-data-rebuilds-trust-mapping | MEDIUM | CWE-345, CWE-290 | — |
 | `AGT-C1D` | unstructured-llm-output-trusted-for-control-decision | MEDIUM | CWE-345 | — |
@@ -96,7 +96,6 @@
 | `ARC-A2B` | hidden-contract-via-informal-parsing | MEDIUM | CWE-1008, CWE-710 | — |
 | `ARC-A2C` | unpackaged-module-resolution-hack | MEDIUM | CWE-710 | — |
 | `ARC-A2D` | leaky-module-interface | LOW | CWE-1061 | — |
-| `ARC-A2E` | misleading-interface-naming | LOW | CWE-710 | — |
 
 **ARC-A3 · duplication**
 
@@ -110,7 +109,6 @@
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
 | `ARC-A4A` | adapter-implementation-inconsistency | MEDIUM | CWE-710 | — |
-| `ARC-A4B` | dead-registry-entry | MEDIUM | CWE-561 | — |
 | `ARC-A4C` | shadow-registry-without-enforced-parity | MEDIUM | CWE-710 | — |
 | `ARC-A4D` | silent-failure-on-unrecognized-extension | MEDIUM | CWE-390, CWE-392 | — |
 
@@ -128,7 +126,6 @@
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
 | `ARC-B1A` | missing-dependency-manifest-declarations | MEDIUM | — | — |
-| `ARC-B1B` | packaging-version-drift | MEDIUM | CWE-1059 | — |
 | `ARC-B1C` | stale-project-metadata-urls | MEDIUM | CWE-1059 | — |
 | `ARC-B1D` | incomplete-build-system-declaration | LOW | — | — |
 | `ARC-B1E` | self-contradictory-lint-configuration | LOW | CWE-710 | — |
@@ -191,7 +188,6 @@
 |---|---|---|---|---|
 | `ARC-D3A` | missing-referenced-file | HIGH | — | — |
 | `ARC-D3B` | documented-artifact-not-present-in-repo | MEDIUM | CWE-1059 | — |
-| `ARC-D3C` | stale-path-reference-in-governance-config | MEDIUM | CWE-1059 | — |
 
 ### ARC-E · configuration-architecture
 
@@ -219,7 +215,6 @@
 | `ARC-E3A` | orthogonal-config-axes-increase-complexity | MEDIUM | CWE-1120 | — |
 | `ARC-E3B` | asymmetric-domain-coverage-across-artifacts | LOW | — | — |
 | `ARC-E3C` | cross-host-config-parity-gap | LOW | — | — |
-| `ARC-E3D` | reference-data-catalog-incomplete | LOW | CWE-1059 | — |
 
 ### ARC-F · enforcement-and-security-boundary
 
@@ -242,7 +237,6 @@
 | `ARC-F2C` | security-control-assumes-undocumented-input-shape | HIGH | CWE-20 | — |
 | `ARC-F2D` | component-fails-open-on-malformed-input | MEDIUM | CWE-636 | — |
 | `ARC-F2E` | security-control-fails-open-on-misconfiguration | MEDIUM | CWE-636, CWE-280 | — |
-| `ARC-F2F` | self-assertable-trust-field-mirrors-forbidden-field | MEDIUM | CWE-807 | — |
 | `ARC-F2G` | overbroad-exception-handling-masks-errors | LOW | CWE-396 | — |
 
 ### ARC-G · documentation-and-spec-integrity
@@ -266,7 +260,6 @@
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `ARC-G3A` | orphaned-unused-fixture-file | LOW | CWE-561 | — |
 | `ARC-G3B` | tracked-file-violates-own-gitignore-rule | LOW | — | — |
 
 ## COD — correctness
@@ -278,7 +271,6 @@
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
 | `COD-A1A` | unclosed-file-handle-leak | MEDIUM | CWE-772 | — |
-| `COD-A1B` | check-then-use-toctou-gap | LOW | CWE-367 | — |
 
 **COD-A2 · bounds-and-indexing-safety**
 
@@ -295,7 +287,6 @@
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
 | `COD-B1A` | fail-open-on-missing-or-corrupt-config | HIGH | CWE-636 | — |
-| `COD-B1B` | incomplete-guard-coverage-across-input-variants | MEDIUM | — | — |
 | `COD-B1C` | overly-broad-permission-scope-in-shared-guard | MEDIUM | CWE-284 | — |
 
 **COD-B2 · silent-failure-and-diagnostics**
@@ -331,7 +322,7 @@
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
 | `COD-C3A` | required-output-field-missing-or-empty | HIGH | — | — |
-| `COD-C3B` | incomplete-lookup-catalog-silent-fallback-gap | MEDIUM | — | — |
+| `COD-C3B` | incomplete-lookup-catalog-silent-fallback-gap | MEDIUM | CWE-1059 | — |
 | `COD-C3C` | nonstandard-key-silently-dropped-downstream | LOW | — | — |
 
 ### COD-D · interface-contract-drift
@@ -349,7 +340,6 @@
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `COD-D2A` | dangling-reference-to-nonexistent-file | HIGH | — | — |
 | `COD-D2B` | documented-feature-or-flag-not-implemented | HIGH | — | — |
 | `COD-D2C` | self-contradicting-specification-documents | HIGH | — | — |
 | `COD-D2D` | implemented-capability-missing-from-docs | MEDIUM | — | — |
@@ -497,7 +487,6 @@
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `QAL-A1A` | misleading-identifier-name | LOW | — | — |
 | `QAL-A1B` | inconsistent-naming-convention | INFO | — | opportunity |
 | `QAL-A1C` | name-collision-with-domain-concept | INFO | — | — |
 
@@ -505,7 +494,6 @@
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `QAL-A2A` | hardcoded-machine-specific-literal | MEDIUM | — | — |
 | `QAL-A2B` | confusing-expression-precedence | LOW | CWE-1078 | — |
 | `QAL-A2C` | magic-number-or-fragile-hardcoded-index | LOW | — | opportunity |
 | `QAL-A2D` | comment-noise | INFO | — | opportunity |
@@ -545,8 +533,8 @@
 |---|---|---|---|---|
 | `QAL-C1A` | stale-external-url-reference | MEDIUM | — | — |
 | `QAL-C1B` | inconsistent-ordering-in-docs | LOW | — | — |
-| `QAL-C1C` | stale-file-path-reference | LOW | — | — |
-| `QAL-C1D` | stale-version-number | LOW | — | — |
+| `QAL-C1C` | stale-file-path-reference | LOW | CWE-1059 | — |
+| `QAL-C1D` | stale-version-number | LOW | CWE-1059 | — |
 
 **QAL-C2 · docs-code-drift**
 
@@ -569,13 +557,6 @@
 | `QAL-D1B` | duplicated-constant-definition | MEDIUM | CWE-1041 | — |
 | `QAL-D1C` | duplicated-helper-function | MEDIUM | CWE-1041 | opportunity |
 
-**QAL-D2 · duplicated-test-boilerplate**
-
-| Code | Issue | Severity | CWE | Notes |
-|---|---|---|---|---|
-| `QAL-D2A` | duplicated-sys-path-boilerplate | LOW | CWE-1041 | — |
-| `QAL-D2B` | duplicated-fixture-root-boilerplate | INFO | CWE-1041 | — |
-
 ### QAL-E · dead-code
 
 **QAL-E1 · dead-configuration**
@@ -589,7 +570,6 @@
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `QAL-E2A` | orphaned-duplicate-file | MEDIUM | CWE-561, CWE-1041 | — |
 | `QAL-E2B` | retired-component-still-registered | MEDIUM | CWE-561 | — |
 | `QAL-E2C` | orphaned-asset-rules | INFO | — | — |
 
@@ -614,13 +594,11 @@
 |---|---|---|---|---|
 | `QAL-F2A` | logic-embedded-in-non-standard-location | LOW | — | — |
 | `QAL-F2B` | main-guard-or-block-misplaced-mid-file | LOW | CWE-1078 | — |
-| `QAL-F2C` | oversized-unfocused-module | LOW | — | — |
 
 **QAL-F3 · convention-divergence**
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `QAL-F3A` | divergent-mocking-idiom-across-test-suite | MEDIUM | CWE-1099 | — |
 | `QAL-F3B` | inconsistent-noqa-annotation-usage | LOW | — | auto: ruff:RUF100 |
 | `QAL-F3C` | inconsistent-per-host-field-naming | INFO | CWE-1099 | — |
 | `QAL-F3D` | partial-type-hint-adoption | INFO | — | opportunity |
@@ -766,8 +744,7 @@
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `SEC-C4A` | insufficient-log-detail-for-security-events | LOW | CWE-778, CWE-223 | — |
-| `SEC-C4B` | missing-audit-logging-for-sensitive-action | LOW | CWE-778 | — |
+| `SEC-C4B` | missing-audit-logging-for-sensitive-action | LOW | CWE-778, CWE-223 | — |
 
 ### SEC-D · untrusted-path-and-resource-resolution
 
@@ -834,7 +811,6 @@
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `SEC-G1A` | scanner-severity-silently-misreported | MEDIUM | CWE-1059 | — |
 | `SEC-G1B` | tool-citation-cwe-mismatch | LOW | — | — |
 
 **SEC-G2 · scan-coverage-integrity**
@@ -849,7 +825,6 @@
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `SEC-G3A` | stale-security-ownership-rules | MEDIUM | — | — |
 | `SEC-G3B` | insufficient-negative-test-coverage-for-security-guard | LOW | CWE-1120 | — |
 | `SEC-G3C` | security-invariant-enforced-only-via-assert | LOW | CWE-617 | — |
 | `SEC-G3D` | missing-vulnerability-disclosure-policy | INFO | — | — |
@@ -970,7 +945,7 @@
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `TST-C2A` | monolithic-test-module | MEDIUM | — | — |
+| `TST-C2A` | monolithic-test-module | MEDIUM | CWE-710 | — |
 | `TST-C2B` | duplicated-test-helper-across-cases | LOW | — | — |
 
 **TST-C3 · naming-and-intent-mismatch**
@@ -979,15 +954,15 @@
 |---|---|---|---|---|
 | `TST-C3A` | unrepresentative-test-input | MEDIUM | — | — |
 | `TST-C3B` | misleading-test-name | LOW | — | — |
-| `TST-C3C` | misnamed-helper-inverted-semantics | LOW | — | — |
-| `TST-C3D` | misnamed-test-artifact | LOW | — | — |
+| `TST-C3C` | misnamed-helper-inverted-semantics | LOW | CWE-710 | — |
+| `TST-C3D` | misnamed-test-artifact | LOW | CWE-561, CWE-1041 | — |
 
 **TST-C4 · test-double-fidelity**
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
 | `TST-C4A` | incomplete-test-double-masks-behavior | MEDIUM | — | — |
-| `TST-C4B` | inconsistent-mocking-pattern | LOW | — | — |
+| `TST-C4B` | inconsistent-mocking-pattern | MEDIUM | CWE-710, CWE-1099 | — |
 | `TST-C4C` | mock-asserts-internal-behavior-not-output | LOW | — | — |
 | `TST-C4D` | undocumented-test-double-contract | LOW | — | — |
 
@@ -1014,7 +989,7 @@
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `TST-D2A` | cwd-relative-fixture-path | MEDIUM | — | — |
+| `TST-D2A` | cwd-relative-fixture-path | MEDIUM | CWE-710 | — |
 | `TST-D2B` | hardcoded-shared-tmp-path | MEDIUM | — | — |
 
 ### TST-E · fixtures-test-data
@@ -1024,7 +999,7 @@
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
 | `TST-E1A` | unvalidated-fixture-existence-assumption | HIGH | — | — |
-| `TST-E1B` | orphaned-unused-fixture | LOW | — | — |
+| `TST-E1B` | orphaned-unused-fixture | LOW | CWE-561 | — |
 
 **TST-E2 · fixture-fidelity-and-drift**
 
@@ -1062,18 +1037,15 @@
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
-| `TST-G1A` | test-suite-sys-path-import-hack | HIGH | CWE-710 | — |
+| `TST-G1A` | test-suite-sys-path-import-hack | HIGH | CWE-710, CWE-1041 | — |
 | `TST-G1B` | test-fixture-scaffolding-duplicated-across-files | MEDIUM | CWE-1041 | — |
 | `TST-G1C` | unit-and-integration-tests-not-separated | MEDIUM | CWE-710 | — |
-| `TST-G1D` | unrelated-test-classes-grouped-in-single-file | LOW | CWE-710 | — |
 
 **TST-G2 · hygiene-and-consistency**
 
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
 | `TST-G2A` | inconsistent-import-convention-in-test-methods | MEDIUM | CWE-710 | — |
-| `TST-G2B` | inconsistent-path-resolution-convention-in-tests | MEDIUM | CWE-710 | — |
-| `TST-G2C` | inconsistent-subprocess-mocking-strategy | MEDIUM | CWE-710 | — |
 | `TST-G2D` | hardcoded-test-constant-duplicated | LOW | CWE-1041 | — |
 | `TST-G2E` | inconsistent-assertion-style-in-test-suite | LOW | CWE-710 | — |
 | `TST-G2F` | missing-test-module-documentation | LOW | CWE-1059 | — |
@@ -1084,7 +1056,6 @@
 |---|---|---|---|---|
 | `TST-G3A` | exit-code-remap-path-never-exercised-by-tests | MEDIUM | — | — |
 | `TST-G3B` | long-running-subprocess-test-has-no-timeout | MEDIUM | CWE-400 | — |
-| `TST-G3C` | structural-mistake-silently-excludes-tests-from-run | MEDIUM | — | — |
 | `TST-G3D` | test-fixture-not-validated-against-authoritative-source | MEDIUM | — | — |
 | `TST-G3E` | security-critical-path-only-unit-tested-never-e2e | LOW | — | — |
 | `TST-G3F` | weak-test-assertion-doesnt-verify-real-behavior | LOW | — | — |
