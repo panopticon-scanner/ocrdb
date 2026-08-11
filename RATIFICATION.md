@@ -230,13 +230,13 @@ Currently homeless — each needs a target ruling (likely COD or QAL per the min
 
 **Big rock #10 (added): corpus-blind territories.** Appendix C's gap clusters need three structural placements ruled — concurrency (proposed `COD-G`), resilience (proposed `ARC-I`), observability (proposed `QAL-I`) — plus per-entry adoption of the crosswalk-backed gap candidates.
 
-## Appendix C — external gap analysis (Gemini, 2026-08-10), triaged
+## Appendix C — external gap analysis (independent LLM review, 2026-08-10), triaged
 
-An independent Gemini review proposed 33 additions. **Its codes are unusable** — it worked from CHARTER/SCHEMA alone and every proposed code collides with an assigned draft slot (its `SEC-C1A crypto-weak-hash-algorithm` vs. our `SEC-C1A container-runs-as-root`, etc.). Content triaged name-level against all 320 entries:
+An independent external LLM review proposed 33 additions. **Its codes are unusable** — it worked from CHARTER/SCHEMA alone and every proposed code collides with an assigned draft slot (its `SEC-C1A crypto-weak-hash-algorithm` vs. our `SEC-C1A container-runs-as-root`, etc.). Content triaged name-level against all 320 entries:
 
 ### Already covered (14 — adopt nothing; convergence evidence)
 
-| Gemini proposal | Draft entry |
+| External proposal | Draft entry |
 |---|---|
 | crypto-hardcoded-secret | SEC-B3C (severity note: they say CRITICAL, draft HIGH) |
 | auth-missing-rate-limit | SEC-C2B (exact, CWE-307) |
@@ -253,9 +253,9 @@ An independent Gemini review proposed 33 additions. **Its codes are unusable** �
 | assert-broad-equality | TST-B1B (exact) |
 | doc-drift / nested-conditionals / god-class / misleading-identifier | QAL-C2 / QAL-H1B / ARC-A1A+QAL-F2B / QAL-A1B |
 
-### Gap candidates (13 — adopt at ratification, provenance `[prior-art, gemini-gap-review]`, Gate B note each)
+### Gap candidates (13 — adopt at ratification, provenance `[prior-art, gap-review]`, Gate B note each)
 
-All from territories a stdlib-Python self-scan corpus is structurally blind to. Severities to be graded fresh at ratification (Gemini's run hot).
+All from territories a stdlib-Python self-scan corpus is structurally blind to. Severities to be graded fresh at ratification (the external review's severities run hot).
 
 | Candidate | Proposed placement | Crosswalk stub |
 |---|---|---|
@@ -285,7 +285,7 @@ Adopting all candidates ≈ 15 prior-art entries of ~333 (≈4.5%) — ceiling i
 
 ## Appendix D — deep gap analysis & expansion (external review, 2026-08-10), verified
 
-Source (full entry lists live there): `reviews/2026-08-10-ocrdb-0.1-gap-analysis-and-expansion.md`. Verification status: the R1 duplicate inventory checked entry-by-entry against the draft — **all real** (elevated to big rock #0). The two AGT corpus incidents confirmed verbatim in panopticon DEVELOPMENT.md 2.3.0 ("a panel confabulated an issue-filing it never did; another copied a live DSN into its findings JSON"). `QAL-B1A` recurrence 20 confirmed. The unmapped `database` panel confirmed (panopticon has six panels; the 5.0 consumer mapping covers four).
+Source (full entry lists retained in the project's private working-docs): the 2026-08-10 deep gap analysis. Verification status: the R1 duplicate inventory checked entry-by-entry against the draft — **all real** (elevated to big rock #0). The two AGT corpus incidents confirmed verbatim in panopticon DEVELOPMENT.md 2.3.0 ("a panel confabulated an issue-filing it never did; another copied a live DSN into its findings JSON"). `QAL-B1A` recurrence 20 confirmed. The unmapped `database` panel confirmed (panopticon has six panels; the 5.0 consumer mapping covers four).
 
 **Adopted as session running order (P0 → P1 → P2):**
 
@@ -295,9 +295,9 @@ Source (full entry lists live there): `reviews/2026-08-10-ocrdb-0.1-gap-analysis
 - **R3 `automated_by` schema field**: optional list mapping an entry to the linter rule that catches it mechanically (`automated_by: [ruff:E401]`). Candidates already in the draft: QAL-B1A (n=20 — twenty reviewer-model reports of a free lint), B1B, B1C, B2B, F3C, TST-C5B. Consumer twin (5.0): when the tool scan ran, panels SKIP `automated_by` entries; report discloses the suppression class. R4 grammar capacity: checked, no action — all expansions below fit.
 
 ### P1 — in the 0.1 tag (per-entry adoption at the session)
-- **SEC-I web-session-and-browser-boundary** (the credibility hole: CSRF, session mgmt, CORS, open-redirect, clickjacking, JWT/OAuth, ReDoS, unbounded-request-size) [prior-art: ASVS/OWASP; baskin dogfood claims corpus CSRF].
+- **SEC-I web-session-and-browser-boundary** (the credibility hole: CSRF, session mgmt, CORS, open-redirect, clickjacking, JWT/OAuth, ReDoS, unbounded-request-size) [prior-art: ASVS/OWASP; internal-app dogfood claims corpus CSRF].
 - **SEC-B4 privacy-and-data-protection** (pii-in-logs, excessive-collection, retention) — supersedes Appendix C's B2-fold placement for pii-logged.
-- **COD-G concurrency-and-asynchrony** — third independent convergence (Gemini Appendix C + this review); single-homes the three thread-safety entries per big rock #0.
+- **COD-G concurrency-and-asynchrony** — third independent convergence (Appendix C + this review); single-homes the three thread-safety entries per big rock #0.
 - **COD-H data-representation-and-time** (datetime/DST/epoch, float-money, integer overflow, bytes/str, encoding, unit confusion) — the most language-agnostic review catches; corpus-blind territory.
 - **QAL-G restructure**: G1 redundant-computation (keep) + G2 algorithmic-complexity + G3 io-and-round-trips + G4 memory-and-allocation; `QAL-G1D` n-plus-one **moves to DAT-C**.
 - **TST flakiness fills**: unseeded-randomness, wall-clock-dependent (matches Appendix C's time-flakiness), test-order-coupling, universal-invariant-only-example-tested.

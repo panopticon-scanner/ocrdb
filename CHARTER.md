@@ -43,7 +43,7 @@ Lean core, forward-compatible enrichment — optional fields attach per-entry wi
 Two kinds of consumers cite OCRDb codes:
 
 - **Review pipelines** (e.g. panopticon) — grade findings against catalog slices, override typical severity per-instance under their own disclosed discipline, and map their internal panels/lenses onto OCRDb domains via a consumer-side mapping file. Nothing in OCRDb knows any consumer exists.
-- **Agentic review & simplification skills** (/simplify-class tools, Copilot review, CodeRabbit, reviewer subagents) — an emitting class in their own right, and a curation corpus source. Rules for this class:
+- **Agentic review & simplification skills** (code-simplification skills, agentic PR-review tools, reviewer subagents) — an emitting class in their own right, and a curation corpus source. Rules for this class:
   1. **Quality-only skills MUST NOT emit `SEC` or `COD` codes**, even when a quality finding brushes against a correctness or security concern. A simplification that is correctness-entangled is declined and deferred to a review pipeline's domain codes — the skill's self-fencing is the boundary.
   2. Findings from this class default to `character: opportunity` (see `SCHEMA.md`) unless the skill is explicitly running in a defect-hunting mode.
   3. Skills should be able to self-tag a finding **considered-and-declined** (with the reason), so a deliberately-not-applied change is not re-surfaced as new on every subsequent run.
