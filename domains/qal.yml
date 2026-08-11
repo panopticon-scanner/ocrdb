@@ -251,6 +251,12 @@ entries:
     examples:
     - '[project.urls] all point to a stale GitHub org inconsistent with the actual `git remote origin`'
     - Hardcoded issue-repo org differs between two sibling scripts (psyberone/panopticon vs panopticon-scanner/panopticon)
+    criteria: >-
+      Qualifies when a URL or reference in documentation or code is STALE — it
+      points to an outdated org, host, or target — as a single per-instance
+      staleness defect. Does NOT apply to packaging-manifest URLs (project
+      identity), which are ARC-B1C, nor to the same identifier hardcoded across
+      multiple modules so copies diverge, which is ARC-E1C (scatter).
   QAL-C1B:
     name: inconsistent-ordering-in-docs
     typical_severity: LOW
@@ -298,6 +304,13 @@ entries:
       in the codebase is 2-8 letters
     - A CVE ID format placeholder implies a fixed 6-digit sequence number, imprecise relative to the real CVE ID
       grammar
+    criteria: >-
+      Qualifies when a schema, example, or placeholder is more precise or strict
+      than the real convention but the over-specification is INERT — no valid
+      output is actually rejected and nothing breaks (precision hygiene). If a live
+      constraint rejects real producer output, that is COD-D1B (correctness); if
+      the stricter copy is dead and unimported, QAL-E1B; if the format is defined
+      inconsistently across artifacts, ARC-D1D.
   QAL-C2B:
     name: self-contradictory-documentation
     typical_severity: MEDIUM
@@ -320,6 +333,12 @@ entries:
     - README Quick Start examples use a --mode/--target CLI syntax that no longer matches the documented flags
     - SKILL.md frontmatter's `arguments` list is stale relative to the much larger, differently-named flag surface
       documented in the body
+    criteria: >-
+      Qualifies when CLI or flag documentation is STALE relative to an
+      implementation that DOES exist — the flags are real but the docs lag,
+      misname, or under-cover them (doc hygiene, LOW). If a documented feature is
+      entirely unimplemented so a following user breaks, that is COD-D2B; if the
+      whole interface contract is structurally unreliable, ARC-D2A.
   QAL-C2D:
     name: docstring-inaccurate-error-contract
     typical_severity: LOW
@@ -366,6 +385,12 @@ entries:
     - The retry/backoff-on-rate-limit loop for `gh issue create` is triplicated verbatim across three scripts
     - run_tools()'s legacy-SARIF and Phase-1-adapter dispatch blocks duplicate ~20 lines of subprocess invoke/error-handling
       logic
+    criteria: >-
+      Qualifies per-instance when the same block of business logic is duplicated
+      and should be consolidated within the existing structure — the finding is
+      the copies themselves (a maintainability / DRY smell). When the hazard is
+      the STRUCTURAL absence of a shared module or owner that a proper fix must
+      create, that is ARC-A3A.
     character: opportunity
   QAL-D1B:
     name: duplicated-constant-definition
@@ -380,6 +405,12 @@ entries:
     - RATE_HINTS is defined identically or near-identically in three separate scripts instead of one shared source
     - The six canonical panel names are hand-duplicated, with differing order, across three modules instead of imported
       from one place
+    criteria: >-
+      Qualifies per-instance when the same constant is defined in two or more
+      places and should be unified — the finding is the duplicate definitions
+      themselves. When the hazard is the STRUCTURAL lack of a canonical owner that
+      a proper fix must establish (an ownership / aliasing change), that is
+      ARC-A5A. A dead, unimported stricter duplicate is instead QAL-E1B.
   QAL-D1C:
     name: duplicated-helper-function
     typical_severity: MEDIUM
@@ -423,6 +454,12 @@ entries:
     examples:
     - base.py declares ID_RE, an unused, stricter duplicate of the canonical finding-ID regex actually used in synthesize.py;
       nothing imports or calls it
+    criteria: >-
+      Qualifies when a duplicated validator, regex, or constant is DEAD — an
+      unused, un-imported stricter copy of a canonical rule that has drifted from
+      it (dead code plus duplication). If the drifted duplicate is live and rejects
+      real output, elevate to COD-D1B; if it is live-but-cosmetic over-precision,
+      QAL-C2A; if two live copies simply diverge as a duplication smell, QAL-D1B.
   QAL-E2B:
     name: retired-component-still-registered
     typical_severity: MEDIUM
@@ -507,6 +544,13 @@ entries:
     examples:
     - '`if __name__ == "__main__": unittest.main()` is placed mid-file, before a second TestCase class is even defined'
     - Main block misplaced in the middle of a file rather than at the end
+    criteria: >-
+      Qualifies ONLY when a misplaced `__main__` guard (or top-level block) is
+      purely cosmetic — every definition after it still collects and executes
+      identically, so there is no reachability or discovery impact (layout
+      hygiene, LOW). If production code after the guard becomes unreachable, that
+      is COD-E2A; if test classes after it are silently dropped from discovery,
+      TST-C1A.
   QAL-F3B:
     name: inconsistent-noqa-annotation-usage
     typical_severity: LOW

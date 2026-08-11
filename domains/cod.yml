@@ -104,6 +104,13 @@ entries:
     examples:
     - Missing and corrupted write-allowlist.json are treated identically and both fail open (return 0)
     - Allowlist lookup uses a bare relative path and fails OPEN if it cannot be resolved
+    criteria: >-
+      Qualifies when config-LOADING code chooses a permissive default on a missing
+      or corrupt config artifact (treats absent and corrupt alike, or resolves a
+      bad path and returns allow) — a correctness fail-direction defect in the
+      loader itself. The specific write-guard / security-control fail-open incident
+      single-homes in ARC-F2E; a general component that skips malformed runtime
+      input is ARC-F2D.
   COD-B1C:
     name: overly-broad-permission-scope-in-shared-guard
     typical_severity: MEDIUM
@@ -283,6 +290,12 @@ entries:
     examples:
     - confirmation_status field carries a value outside its own schema enum
     - summary.gate enum is [PASS, FAIL, OFF] but SKILL.md references INCONCLUSIVE as a valid gate value in six places
+    criteria: >-
+      Qualifies at the FIELD level when a value exists (or is referenced as valid)
+      that lies outside that field's own declared enum — an enum-completeness or
+      value-validity violation for one specific field. A specific documented-required
+      field omitted from the schema is COD-D1D; a wholesale, multi-field
+      contract-vs-schema divergence is ARC-D1B.
   COD-D1B:
     name: schema-pattern-stricter-than-producer-output
     typical_severity: HIGH
@@ -293,6 +306,14 @@ entries:
     examples:
     - report-schema.json's finding-id pattern (2-4 letters) is stricter than what agents/synthesize.py actually
       emit
+    criteria: >-
+      Qualifies when a LIVE schema, pattern, or validator is stricter than what
+      the producer legitimately emits, so real output is actively REJECTED (an
+      invalid instance is produced at runtime) — a correctness harm. If the
+      over-precision is inert and nothing is actually rejected, it is QAL-C2A; if
+      the stricter artifact is a dead, unimported duplicate, QAL-E1B; if the
+      defect is the id/format being specified inconsistently across two or more
+      artifacts with no single authority, ARC-D1D.
   COD-D1C:
     name: inconsistent-record-shape-across-array
     typical_severity: MEDIUM
@@ -313,6 +334,11 @@ entries:
     examples:
     - report-schema.json's required list omits provenance/citations despite docs mandating 'MUST include provenance/citations'
     - Schema is missing an integrity object for fields that are actually emitted
+    criteria: >-
+      Qualifies at the FIELD level when the schema's required list OMITS a field
+      the documentation mandates as mandatory — a required-field gap for specific
+      fields. A field carrying a value outside its enum is COD-D1A; a wholesale
+      contract-vs-schema divergence spanning many fields or behaviors is ARC-D1B.
   COD-D2B:
     name: documented-feature-or-flag-not-implemented
     typical_severity: HIGH
@@ -325,6 +351,13 @@ entries:
     - SKILL.md documents an -e/--explore mode with no corresponding implementation in orchestrator.py
     - HTML artifact is only auto-derived when --out is passed explicitly, contradicting the documented default synthesize
       invocation
+    criteria: >-
+      Qualifies when documentation describes a feature, flag, or mode that is NOT
+      IMPLEMENTED at all, so a user following the docs invokes something that does
+      not exist and the run breaks — behavioral, HIGH. If the flag exists but its
+      documentation is merely stale, renamed, or under-covered, that is QAL-C2C
+      (doc hygiene); if the whole CLI interface contract has drifted structurally,
+      ARC-D2A.
   COD-D2C:
     name: self-contradicting-specification-documents
     typical_severity: HIGH
@@ -413,6 +446,12 @@ entries:
     - 'TestRunTool class is defined after the if __name__ == ''__main__'': unittest.main() block, so its tests never
       run'
     - Misplaced __main__ guard sits between class definitions, silently skipping everything after it
+    criteria: >-
+      Qualifies when a guard, return, or exit placed before later definitions
+      makes PRODUCTION code unreachable — the skipped code would run in normal
+      operation but now never executes (a reachability defect). If the silently
+      skipped definitions are test cases (a test-discovery gap), that is TST-C1A;
+      if nothing after the guard is actually skipped (pure misplacement), QAL-F2B.
   COD-E2B:
     name: path-resolved-against-wrong-base-directory
     typical_severity: MEDIUM

@@ -222,6 +222,12 @@ entries:
     examples:
     - Silent skip on missing fixture directory masks fixture rot with no alerting mechanism
     - Fixture-presence check silently drops baked fixtures instead of surfacing a check failure, degrading CI signal
+    criteria: >-
+      Qualifies when a test's fixture-presence check exists but SILENTLY SKIPS (or
+      drops fixtures) on absence, so fixture rot passes unnoticed with no alert —
+      the failure mode is silence. When there is no existence check at all and a
+      missing fixture instead surfaces as a confusing low-level I/O error rather
+      than a clear test failure, that is TST-E1A.
   TST-B1A:
     name: regression-test-verifies-wrong-property
     typical_severity: MEDIUM
@@ -348,6 +354,12 @@ entries:
     examples:
     - 'TestRunTool is defined after the `if __name__ == "__main__": unittest.main()` guard'
     - test_base.py places the __main__ guard mid-file, silently dropping TestRunTool from script-mode discovery
+    criteria: >-
+      Qualifies when TEST classes or functions defined after a misplaced
+      `__main__` guard are silently excluded from discovery, so they never run and
+      coverage is lost without signal. If the unreachable code is production code,
+      that is COD-E2A; if the guard is merely misplaced with nothing after it
+      actually skipped, QAL-F2B.
   TST-C1B:
     name: undiscoverable-test-function
     typical_severity: LOW
@@ -574,6 +586,12 @@ entries:
     examples:
     - Tests depend on fixture files without existence validation; load_report() failures surface as confusing I/O
       errors rather than clear test failures
+    criteria: >-
+      Qualifies when tests assume fixtures exist WITHOUT validating them, so a
+      missing fixture surfaces as a confusing low-level I/O error instead of a
+      clear test failure — the failure mode is loud but misleading. When a presence
+      check exists and instead silently skips (masking fixture rot with no alert),
+      that is TST-A4C.
   TST-E1B:
     name: orphaned-unused-fixture
     typical_severity: LOW

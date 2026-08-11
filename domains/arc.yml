@@ -154,6 +154,13 @@ entries:
     - Finding-construction boilerplate copy-pasted across nine tool adapters instead of one shared builder in base.py
     - html_report's compare-mode fingerprint reimplements (and regresses) synthesize's already-fixed finding-identity
       logic
+    criteria: >-
+      Qualifies when duplicated business logic reveals a STRUCTURAL gap — there is
+      no shared module or owner where the logic belongs, so a proper fix must
+      introduce a canonical home that multiple call sites depend on (an ownership
+      or boundary change). When the finding is simply that a block of logic is
+      copy-pasted and should be consolidated within the existing structure
+      (per-instance), that is QAL-D1A.
   ARC-A3B:
     name: duplicated-configuration-or-mapping-table
     typical_severity: LOW
@@ -220,6 +227,12 @@ entries:
     - SEV_ORDER and PANELS redefined locally in synthesize.py and html_report.py instead of owned by evidence.py
       and aliased
     - GROUP_RE/_OUTFILE_RE regex panel-alternation lists hand-duplicated instead of derived from PANELS
+    criteria: >-
+      Qualifies when a constant or structure is duplicated because no CANONICAL
+      OWNER exists — a proper fix establishes a single authoritative definition
+      that other sites import or alias from (a structural ownership change). When
+      the finding is simply that a constant is defined in more than one place and
+      the copies should be unified (per-instance), that is QAL-D1B.
   ARC-A5B:
     name: redundant-derived-structure
     typical_severity: LOW
@@ -252,6 +265,13 @@ entries:
     - CWE-1059
     examples:
     - pyproject.toml Homepage/Repository/Issues URLs point to a GitHub org the repo itself no longer uses
+    criteria: >-
+      Qualifies when URLs in the PROJECT / PACKAGING MANIFEST (pyproject
+      [project.urls] Homepage/Repository/Issues, package metadata) are stale —
+      they point to an org or location the project no longer uses, misstating the
+      project's published identity. A stale URL in ordinary docs or code is
+      QAL-C1A; the same identifier hardcoded across several modules so copies
+      diverge is ARC-E1C.
   ARC-B1D:
     name: incomplete-build-system-declaration
     typical_severity: LOW
@@ -416,6 +436,12 @@ entries:
     examples:
     - report-schema.json is materially out of sync with the documented report contract (INCONCLUSIVE status, coverage_certified,
       and other fields SKILL.md/panel-review.md/lens-sweep.md describe but the schema doesn't match)
+    criteria: >-
+      Qualifies when the schema and the documented contract are WHOLESALE out of
+      sync — multiple fields or behaviors diverge across the two specs at once, so
+      the contract as a whole is unreliable (a systemic doc-vs-schema divergence).
+      A single field carrying a value outside its enum is COD-D1A; a single
+      documented-required field missing from the schema's required list is COD-D1D.
   ARC-D1C:
     name: fingerprint-identity-instability
     typical_severity: MEDIUM
@@ -443,6 +469,14 @@ entries:
       actually produces
     - base.py's ID_RE constant is dead and has drifted from the actual authoritative finding-id validator
     - Finding-ID regex diverges between agent prompt templates and the report schema
+    criteria: >-
+      Qualifies when the SAME id or format is specified inconsistently across two
+      or more artifacts (schema pattern vs producer vs prompt template, or a
+      drifted authoritative validator) so the contract has no single format
+      authority — a structural cross-artifact mismatch, independent of any one
+      rejected instance. A live schema that actively rejects real output is
+      COD-D1B; inert over-precision that rejects nothing is QAL-C2A; a dead,
+      unimported stricter duplicate is QAL-E1B.
   ARC-D1E:
     name: redundant-independent-derivation-of-shared-fact
     typical_severity: MEDIUM
@@ -477,6 +511,13 @@ entries:
     - README Quick start examples show a --mode/--target invocation syntax that does not exist anywhere in the actual
       CLI
     - Frontmatter arguments list covers only 4 of roughly 13 documented CLI flags
+    criteria: >-
+      Qualifies when the CLI's declared interface contract as a whole has drifted
+      from the implementation — the invocation syntax or the arguments manifest is
+      structurally unreliable as a spec (systemic interface drift), not one stray
+      line. A single documented flag that is entirely UNIMPLEMENTED is COD-D2B (a
+      following user's run breaks); a specific stale or renamed flag description on
+      an otherwise-implemented CLI is QAL-C2C (doc hygiene).
   ARC-D2B:
     name: inconsistent-handling-of-equivalent-edge-case-inputs
     typical_severity: MEDIUM
@@ -599,6 +640,12 @@ entries:
     - The GitHub repo slug is hardcoded independently in file_fixmes.py's DOC_URL and file_issues.py's REPORT_URL
       and has already diverged between them
     - Hardcoded resource file paths scattered across modules instead of a single configuration point
+    criteria: >-
+      Qualifies when the same identifier (repo slug, org, resource path) is
+      hardcoded INDEPENDENTLY in two or more modules with no single source of
+      truth, so the copies can and do diverge — the scatter is the hazard, whether
+      or not any copy is currently stale. A single out-of-date URL is staleness:
+      QAL-C1A for doc/code references, ARC-B1C for packaging-manifest URLs.
   ARC-E2A:
     name: durable-state-in-ephemeral-scratch-location
     typical_severity: MEDIUM
@@ -773,6 +820,13 @@ entries:
     - The write-guard hook hardcodes tool_input['file_path'] for Write/Edit/NotebookEdit alike, silently mis-evaluating
       NotebookEdit's differently-shaped payload
     - allowlist_from_plan depends on undocumented plan['out_file'] structure with no schema backing it
+    criteria: >-
+      Qualifies when a security control DOES run on an invocation but assumes an
+      undocumented input SHAPE and so mis-evaluates it (e.g. hardcoding
+      tool_input['file_path'] for a NotebookEdit payload that is shaped
+      differently) — the control mis-parses what it sees. A control that fails to
+      cover a whole class of invocations at all (e.g. Bash never reaching the
+      write-guard) is AGT-B1A.
   ARC-F2D:
     name: component-fails-open-on-malformed-input
     typical_severity: MEDIUM
@@ -786,6 +840,14 @@ entries:
     - group_runner.py and ingest_tools.py tolerate non-dict plan entries and malformed input by silently skipping
       them instead of rejecting
     - write_guard_hook.py's main() returns 0 (allow) if JSON parsing fails or the allowlist file is missing
+    criteria: >-
+      Qualifies when a general, non-enforcement component silently SKIPS or
+      tolerates malformed or unexpected-shape runtime INPUT instead of rejecting
+      it — the harm is weakened processing or silent data loss, not an opened
+      security gate. When the failing thing is a security/enforcement control that
+      degrades to permit, that is ARC-F2E (the single home for the write-guard
+      fail-open incident); the config-load fail-open choice viewed as a
+      correctness defect is COD-B1A.
   ARC-F2E:
     name: security-control-fails-open-on-misconfiguration
     typical_severity: MEDIUM
@@ -800,6 +862,14 @@ entries:
     - Write-guard fails silently open (no deny, no warning) when the allowlist file is missing, malformed, or looked
     - Tool-policy enforcement silently degrades to prompt-only ("advisory") when a host agent isn't registered,
       whic
+    criteria: >-
+      Qualifies — and is the single home for the write-guard fail-open incident —
+      when a SECURITY / ENFORCEMENT control (write-guard, tool-policy) degrades to
+      permit, allow, or advisory because its own config or context is missing,
+      malformed, or unregistered: the gate opens. A general, non-enforcement
+      component that skips malformed input is ARC-F2D; the config-loading code's
+      fail-open choice viewed as a correctness defect is COD-B1A; a detection /
+      scan tool that silently loses coverage is SEC-G2B.
   ARC-F2G:
     name: overbroad-exception-handling-masks-errors
     typical_severity: LOW

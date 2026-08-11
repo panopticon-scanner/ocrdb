@@ -61,6 +61,15 @@ entries:
     - CWE-284
     examples:
     - Write-guard covers only Write/Edit/NotebookEdit tool_name calls; Bash (the exact vector the hook's own project
+    criteria: >-
+      Qualifies when a mediation/enforcement mechanism EXISTS but fails to cover a
+      class of invocations — a coverage gap in the control itself (e.g. a
+      write-guard that gates Write/Edit but not Bash). Axis: an
+      existing-but-incomplete control is always B1A; where NO control mediates the
+      action, route by what is absent — missing human approval on a destructive
+      action is B1B, absent scope bounds on a write-capable tool is B1C, and an
+      over-broad grant of tools beyond the task is B1D. A control that runs but
+      mis-parses an undocumented input shape is instead ARC-F2C.
   AGT-B1B:
     name: missing-approval-gate-for-destructive-action
     typical_severity: HIGH
@@ -70,6 +79,12 @@ entries:
     - deep-gap-review
     cwe:
     - CWE-862
+    criteria: >-
+      Qualifies when a destructive or irreversible action executes with NO human
+      approval checkpoint at all, regardless of scoping — the gate is absent, not
+      merely incomplete. If a mediating control exists but has a coverage gap, that
+      is AGT-B1A; if the defect is a write tool lacking scope bounds, AGT-B1C; if
+      it is too many tools granted, AGT-B1D.
   AGT-B1C:
     name: unscoped-write-authority
     typical_severity: HIGH
@@ -79,6 +94,12 @@ entries:
     - deep-gap-review
     cwe:
     - CWE-284
+    criteria: >-
+      Qualifies when a granted write-capable tool can act OUTSIDE its intended
+      scope (path/namespace/repo/tenant) — scope is absent, not merely broad. If
+      instead the grant includes more tools than the task needs (breadth), that is
+      AGT-B1D; if a mediating control exists but misses a class of invocations,
+      AGT-B1A; if a destructive action has no approval gate at all, AGT-B1B.
   AGT-B1D:
     name: overbroad-tool-grant
     typical_severity: MEDIUM
@@ -88,6 +109,12 @@ entries:
     - deep-gap-review
     cwe:
     - CWE-269
+    criteria: >-
+      Qualifies when the granted tool SET exceeds what the declared task requires
+      (breadth of grant), even if each tool is individually scoped. If a single
+      write tool lacks scope bounds (can act outside its intended path/tenant),
+      that is AGT-B1C; if a destructive action has no approval checkpoint, AGT-B1B;
+      if an existing mediation control has a coverage gap, AGT-B1A.
   AGT-C1A:
     name: self-asserted-trust-metadata-spoofing
     typical_severity: HIGH

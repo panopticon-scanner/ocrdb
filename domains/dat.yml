@@ -58,6 +58,13 @@ entries:
     provenance:
     - prior-art
     - deep-gap-review
+    criteria: >-
+      Qualifies when APPLYING the migration destroys existing production data that
+      was not preserved or backfilled — data loss at deploy time. Precedence: when
+      apply-time data loss and irreversibility coincide, code B1A (data loss
+      outranks rollback impossibility). A migration with no working reverse path
+      but no apply-time data loss is DAT-B1C; one that is unsafe to re-run is
+      DAT-B1D.
   DAT-B1B:
     name: table-lock-heavy-migration
     typical_severity: HIGH
@@ -72,6 +79,12 @@ entries:
     provenance:
     - prior-art
     - deep-gap-review
+    criteria: >-
+      Qualifies when the migration has no working reverse path — down() absent, a
+      no-op, or untested — regardless of whether apply-time data loss occurs. If
+      applying it also destroys un-backfilled production data, code DAT-B1A instead
+      (data loss outranks irreversibility); if the defect is that re-running fails
+      or double-applies, that is DAT-B1D.
   DAT-B1D:
     name: non-idempotent-migration
     typical_severity: MEDIUM
@@ -79,6 +92,12 @@ entries:
     provenance:
     - prior-art
     - deep-gap-review
+    criteria: >-
+      Qualifies when re-running the migration against an already-applied state
+      fails or double-applies (re-run / idempotency safety, e.g. CREATE TABLE
+      without IF NOT EXISTS) — often fully reversible and non-destructive, hence
+      distinct. Apply-time data destruction is DAT-B1A; an absent or broken
+      rollback path is DAT-B1C.
   DAT-C1A:
     name: missing-index-for-hot-query
     typical_severity: MEDIUM
