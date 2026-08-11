@@ -12,7 +12,7 @@ OCRDb is an open, hierarchical, severity-graded database of **code-review findin
 
 **The gap it fills (prior-art survey, 2026-08-10):** No existing source provides a unified, open, cross-domain, hierarchical, graded review-finding taxonomy. CWE is security-first (quality demoted to "indirect security impact" views); ISO/IEC 5055 covers only machine-countable CWE subsets; SonarSource's taxonomy is the closest modern analog but tool-bound and source-available-licensed (as is Semgrep's registry — both moved *away* from open licensing); OWASP's Code Review Guide was archived April 2025; IEEE 1044 is Inactive-Reserved; Google/Microsoft review guides classify nothing. Empirically, ~75% of real review findings are "evolvability" (Mäntylä & Lassenius, IEEE TSE 2009) — precisely the territory existing databases ignore.
 
-**License:** CC BY-SA 4.0 (attribution + share-alike; deliberately counters the source-available enclosure pattern). Alternative considered: CC0 (maximum uptake, no share-alike guard) — **open flag for the owner's final call before 1.0**.
+**License (decided 2026-08-10):** the taxonomy content is **CC BY-SA 4.0** — attribution + share-alike, deliberately chosen over CC0 so OCRDb and its derivatives stay open, countering the source-available enclosure pattern that closed comparable taxonomies. The `tools/` are MIT. See `LICENSE`. The verbatim CC legal code is embedded there at the 1.0 public release.
 
 ## Structure & grammar
 

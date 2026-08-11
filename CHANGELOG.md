@@ -18,4 +18,4 @@ The seeding round: 320 mined draft entries walked in an owner ratification sessi
 - **`character: defect|opportunity`** field adopted (absent = defect; dead-code = defect). **`automated_by`** field adopted (linter-rule mapping → consumer skip-rule). **`see_also`** cross-reference field adopted.
 - **Severity calibration:** `missing-referenced-file` and `hardcoded-absolute-path-in-source` re-graded CRITICAL → HIGH (single-incident inflation, not universal-CRITICAL).
 
-**Open (owner's call before 1.0):** license — CC BY-SA 4.0 (current) vs CC0. Post-ratification: re-run Gate A domain-unpinned now that single-homing is resolved (measures cross-domain assignment stability the pinned eval couldn't).
+**License (decided 2026-08-10):** CC BY-SA 4.0 (content) + MIT (tools) — see LICENSE. Post-ratification: re-run Gate A domain-unpinned now that single-homing is resolved (measures cross-domain assignment stability the pinned eval couldn't).

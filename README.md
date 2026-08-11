@@ -24,3 +24,7 @@ Both are generated from `domains/` by `tools/build_catalog.py` (run at each rele
 - `tools/` — `validate.py`, `build_bundle.py`, `build_catalog.py` (Python 3 stdlib + PyYAML)
 
 First consumer: [panopticon](https://github.com/panopticon-scanner/panopticon) (5.0).
+
+## License
+
+Taxonomy content: **CC BY-SA 4.0** (share-alike). Tooling (`tools/`): MIT. See [`LICENSE`](LICENSE).
