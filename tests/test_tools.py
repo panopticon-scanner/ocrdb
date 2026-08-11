@@ -22,7 +22,7 @@ class TestValidateRealDraft(unittest.TestCase):
     def test_draft_has_no_schema_errors(self):
         errors, warnings, codes = validate.validate_schema(_real_docs())
         self.assertEqual(errors, [])
-        self.assertEqual(len(codes), 381)
+        self.assertEqual(len(codes), 357)
 
     def test_single_homing_ratified_no_cross_domain_duplicates(self):
         # Ratified 0.1: single-homing (big rock #0) resolved every cross-domain
@@ -38,8 +38,8 @@ class TestValidateSyntheticErrors(unittest.TestCase):
             "domain": "SEC", "name": "security",
             "areas": {"A": {"name": "a", "categories": {"1": "c"}}},
             "entries": {"SEC-A1A": {
-                "name": "ok-entry", "typical_severity": "LOW",
-                "status": "active", "provenance": ["corpus-4x"]}}}}
+                "name": "ok-entry", "default_severity": "LOW",
+                "status": "active", "provenance": ["corpus"]}}}}
 
     def _errs(self, docs):
         return validate.validate_schema(docs)[0]
@@ -69,10 +69,10 @@ class TestValidateSyntheticErrors(unittest.TestCase):
     def test_enum_and_provenance_and_deprecation(self):
         d = self._base_doc()
         e = d["x.yml"]["entries"]["SEC-A1A"]
-        e.update(typical_severity="SEVERE", status="retired", provenance=[],
+        e.update(default_severity="SEVERE", status="retired", provenance=[],
                  name="Bad Name")
         errs = self._errs(d)
-        for frag in ("typical_severity", "status", "provenance", "kebab-case"):
+        for frag in ("default_severity", "status", "provenance", "kebab-case"):
             self.assertTrue(any(frag in x for x in errs), (frag, errs))
 
     def test_deprecated_requires_existing_superseded_by(self):
@@ -90,6 +90,35 @@ class TestValidateSyntheticErrors(unittest.TestCase):
             d["x.yml"]["entries"]["SEC-A1A"])  # same name, same domain
         errs = self._errs(d)
         self.assertTrue(any("used by" in e for e in errs), errs)
+
+    def test_see_also_target_must_exist(self):
+        d = self._base_doc()
+        d["x.yml"]["entries"]["SEC-A1A"]["see_also"] = ["SEC-Z9Z"]
+        self.assertTrue(any("see_also" in e and "does not exist" in e
+                            for e in self._errs(d)), self._errs(d))
+
+    def test_duplicate_domain_file_is_error(self):
+        d = self._base_doc()
+        d["y.yml"] = dict(d["x.yml"])  # second file, same domain SEC
+        self.assertTrue(any("declared by" in e for e in self._errs(d)),
+                        self._errs(d))
+
+    def test_provenance_vocabulary(self):
+        d = self._base_doc()
+        d["x.yml"]["entries"]["SEC-A1A"]["provenance"] = ["corpus"]
+        self.assertEqual(self._errs(d), [])
+        d["x.yml"]["entries"]["SEC-A1A"]["provenance"] = ["coderabbit"]
+        self.assertTrue(any("provenance" in e and "vocabulary" in e
+                            for e in self._errs(d)), self._errs(d))
+
+    def test_automated_by_shape(self):
+        d = self._base_doc()
+        e = d["x.yml"]["entries"]["SEC-A1A"]
+        e["automated_by"] = ["ruff:B006", "eslint:@typescript-eslint/no-explicit-any"]
+        self.assertEqual(self._errs(d), [])
+        for bad in ("ruff B006", ":B006", "ruff:", 123):
+            e["automated_by"] = [bad]
+            self.assertTrue(any("automated_by" in x for x in self._errs(d)), bad)
 
 
 class TestStabilityContract(unittest.TestCase):
@@ -138,7 +167,7 @@ class TestBundleBuild(unittest.TestCase):
                     self.assertEqual(f1.read(), f2.read(), fn)
             bundle = json.load(open(os.path.join(out1, "ocrdb-0.0.0-test.json")))
             n = sum(len(d["entries"]) for d in bundle["domains"].values())
-            self.assertEqual(n, 381)
+            self.assertEqual(n, 357)
             self.assertEqual(bundle["license"], "CC BY-SA 4.0")
 
     def test_sarif_taxa_match_entries_and_levels(self):
@@ -146,9 +175,9 @@ class TestBundleBuild(unittest.TestCase):
         bundle = build_bundle.build_bundle(docs, "0.0.0-test")
         sarif = build_bundle.build_sarif(bundle)
         taxa = sarif["runs"][0]["taxonomies"][0]["taxa"]
-        self.assertEqual(len(taxa), 381)
+        self.assertEqual(len(taxa), 357)
         by_id = {t["id"]: t for t in taxa}
-        # SEC-A3A is CRITICAL -> error; QAL-B2B is LOW -> note
+        # SEC-A3A is CRITICAL -> error; QAL-B2A is LOW -> note
         self.assertEqual(by_id["SEC-A3A"]["defaultConfiguration"]["level"], "error")
         self.assertEqual(by_id["QAL-B2A"]["defaultConfiguration"]["level"], "note")
 
@@ -177,7 +206,7 @@ class TestBundleBuild(unittest.TestCase):
             os.makedirs(dom_dir)
             with open(os.path.join(dom_dir, "bad.yml"), "w") as fh:
                 fh.write("domain: SEC\nname: security\nareas: {}\n"
-                         "entries:\n  SEC-A1A: {name: x, typical_severity: NOPE,"
+                         "entries:\n  SEC-A1A: {name: x, default_severity: NOPE,"
                          " status: active, provenance: [c]}\n")
             with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
                 rc = build_bundle.main(["--version", "0.0.0-test",
@@ -194,7 +223,7 @@ class TestValidateCli(unittest.TestCase):
              "--domains-dir", os.path.join(ROOT, "domains")],
             capture_output=True, text=True)
         self.assertEqual(proc.returncode, 0, proc.stderr)
-        self.assertIn("381 entries", proc.stdout)
+        self.assertIn("357 entries", proc.stdout)
 
 
 class TestCatalog(unittest.TestCase):
@@ -218,7 +247,7 @@ class TestCatalog(unittest.TestCase):
             html = open(os.path.join(a, "ocrdb-0.0.0-test.html"), encoding="utf-8").read()
             codes = [c for dom in json.load(open(bundle))["domains"].values()
                      for c in dom["entries"]]
-            self.assertEqual(len(codes), 381)
+            self.assertEqual(len(codes), 357)
             for c in codes:
                 self.assertIn(c, md, c)
                 self.assertIn(c, html, c)

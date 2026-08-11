@@ -25,70 +25,98 @@ areas:
 entries:
   DAT-A1A:
     name: inappropriate-type-for-domain
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   DAT-A1B:
     name: missing-constraint-for-invariant
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   DAT-A1C:
     name: missing-foreign-key-relationship
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   DAT-A1D:
     name: nullable-column-ambiguous-semantics
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   DAT-B1A:
     name: destructive-migration-without-backfill
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
+    criteria: >-
+      Qualifies when APPLYING the migration destroys existing production data that
+      was not preserved or backfilled — data loss at deploy time. Precedence: when
+      apply-time data loss and irreversibility coincide, code B1A (data loss
+      outranks rollback impossibility). A migration with no working reverse path
+      but no apply-time data loss is DAT-B1C; one that is unsafe to re-run is
+      DAT-B1D.
+    see_also:
+    - DAT-B1C
+    - DAT-B1D
   DAT-B1B:
     name: table-lock-heavy-migration
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   DAT-B1C:
     name: irreversible-migration-no-rollback
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
+    criteria: >-
+      Qualifies when the migration has no working reverse path — down() absent, a
+      no-op, or untested — regardless of whether apply-time data loss occurs. If
+      applying it also destroys un-backfilled production data, code DAT-B1A instead
+      (data loss outranks irreversibility); if the defect is that re-running fails
+      or double-applies, that is DAT-B1D.
+    see_also:
+    - DAT-B1A
+    - DAT-B1D
   DAT-B1D:
     name: non-idempotent-migration
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
+    criteria: >-
+      Qualifies when re-running the migration against an already-applied state
+      fails or double-applies (re-run / idempotency safety, e.g. CREATE TABLE
+      without IF NOT EXISTS) — often fully reversible and non-destructive, hence
+      distinct. Apply-time data destruction is DAT-B1A; an absent or broken
+      rollback path is DAT-B1C.
+    see_also:
+    - DAT-B1A
+    - DAT-B1C
   DAT-C1A:
     name: missing-index-for-hot-query
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   DAT-C1B:
     name: n-plus-one-query
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -96,68 +124,68 @@ entries:
     notes: moved from QAL-G1D at ratification
   DAT-C1C:
     name: unbounded-result-set
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-770
   DAT-C1D:
     name: select-star-in-production-path
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   DAT-D1A:
     name: isolation-level-mismatch
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   DAT-D1B:
     name: missing-transaction-boundary
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   DAT-D1C:
     name: read-modify-write-race
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-362
   DAT-D1D:
     name: long-running-transaction
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   DAT-E1A:
     name: code-schema-drift-without-migration
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   DAT-E1B:
     name: orphaned-rows-on-delete
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   DAT-E1C:
     name: soft-delete-inconsistency
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review

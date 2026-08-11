@@ -30,9 +30,9 @@ SEC                 → A (authentication) → 2 (hijack)  → D (named issue)
 - Domains (ratified 0.1): `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic-trust, `DAT` data-and-persistence. Domains are a starting set, not a cap.
 - **Incubating (declared, not yet seeded):** `OPS` production-readiness (retry/backoff/circuit-breaker, graceful shutdown, health checks, idempotent handlers), `A11Y` accessibility (WCAG crosswalk), `I18N` internationalization. Each waits on a mining run over an appropriately-shaped repo — no codes are burned on a skeleton, but the declaration signals the taxonomy is not backend-Python-only.
 
-**Single-homing (ratified):** each hazard lives in exactly one domain. Other domains may cross-reference it (`see_also:`) but never re-enter the same hazard under a second code — a duplicate home would guarantee a reconcile split for every code-as-identity consumer. Adversary-exploitable classes home in `SEC`; concurrency in `COD-G`; resource leaks in `COD` (a leak *in test code* is a distinct `TST` finding); agentic-trust in `AGT`.
+**Single-homing (ratified):** each hazard lives in exactly one domain. Other domains may cross-reference it (`see_also:`) but never re-enter the same hazard under a second code — a duplicate home would guarantee a reconcile split for every code-as-identity consumer. Adversary-exploitable classes home in `SEC`; concurrency in `COD-F`; resource leaks in `COD` (a leak *in test code* is a distinct `TST` finding); agentic-trust in `AGT`.
 
-**Stability contract (per CWE discipline):** codes are immutable once released — never reused, never renamed. Corrections happen by `status: deprecated` (with `superseded_by`) plus new codes. Releases are semver'd with changelogs; consumers pin a release.
+**Stability contract (per CWE discipline):** codes are immutable from the 1.0 release — never reused, renamed, or re-lettered thereafter. Before 1.0 the catalog is incubating and codes may change (per the status line above); 0.x releases are held stable as a courtesy, not a contract. Corrections after 1.0 happen by `status: deprecated` (with `superseded_by`) plus new codes. Releases are semver'd with changelogs; consumers pin a release.
 
 ## Entry schema
 

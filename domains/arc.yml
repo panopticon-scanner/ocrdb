@@ -46,10 +46,10 @@ areas:
 entries:
   ARC-A1A:
     name: fragmented-logic-no-single-owner
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-710
@@ -59,10 +59,10 @@ entries:
     - Template management scattered across multiple functions with no single owner
   ARC-A1B:
     name: mixed-responsibility-module
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 11
     cwe:
     - CWE-1120
@@ -73,10 +73,10 @@ entries:
       and reporting concerns with no internal boundary
   ARC-A1C:
     name: monolithic-function-mixed-concerns
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-1120
@@ -86,10 +86,10 @@ entries:
     - Complex directory-walking logic combines discovery, filtering, and pattern matching in one routine
   ARC-A2A:
     name: circular-or-load-order-coupling
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     cwe:
     - CWE-1047
@@ -99,10 +99,10 @@ entries:
     - Direct ADAPTERS registry import creates tight coupling between synthesize and domain modules
   ARC-A2B:
     name: hidden-contract-via-informal-parsing
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     cwe:
     - CWE-1008
@@ -114,10 +114,10 @@ entries:
     - Panel names require manual synchronization in a regex pattern maintained separately from the panel registry
   ARC-A2C:
     name: unpackaged-module-resolution-hack
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     cwe:
     - CWE-710
@@ -125,12 +125,14 @@ entries:
     - sys.path.insert(0, ...) in dispatch.py to import sibling modules instead of a proper package layout
     - Ad hoc sys.path bootstrap duplicated verbatim across three entry-point scripts
     - Inconsistent sys.path manipulation and import-fallback patterns across the codebase undermine installability
+    see_also:
+    - TST-G1A
   ARC-A2D:
     name: leaky-module-interface
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 6
     cwe:
     - CWE-1061
@@ -140,23 +142,12 @@ entries:
     - Module aliasing functions from another module without an explicit interface contract
     - Tool-specific noise-filtering policy (bandit B101 suppression) embedded directly in a shared, tool-agnostic
       helper
-  ARC-A2E:
-    name: misleading-interface-naming
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - _depth_gte's name is inverted relative to what it actually computes, inviting a future off-by-logic regression
   ARC-A3A:
     name: duplicated-business-logic-without-shared-module
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 7
     cwe:
     - CWE-1041
@@ -165,12 +156,21 @@ entries:
     - Finding-construction boilerplate copy-pasted across nine tool adapters instead of one shared builder in base.py
     - html_report's compare-mode fingerprint reimplements (and regresses) synthesize's already-fixed finding-identity
       logic
+    criteria: >-
+      Qualifies when duplicated business logic reveals a STRUCTURAL gap — there is
+      no shared module or owner where the logic belongs, so a proper fix must
+      introduce a canonical home that multiple call sites depend on (an ownership
+      or boundary change). When the finding is simply that a block of logic is
+      copy-pasted and should be consolidated within the existing structure
+      (per-instance), that is QAL-D1A.
+    see_also:
+    - QAL-D1A
   ARC-A3B:
     name: duplicated-configuration-or-mapping-table
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     cwe:
     - CWE-1041
@@ -180,10 +180,10 @@ entries:
     - Model policy hardcoded and duplicated across dispatch.py and model_resolver.py
   ARC-A4A:
     name: adapter-implementation-inconsistency
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 10
     cwe:
     - CWE-710
@@ -194,36 +194,26 @@ entries:
       same file set
     - spotbugs.py is the only adapter parsing tool output with un-hardened stdlib XML instead of JSON/SARIF like
       its siblings
-  ARC-A4B:
-    name: dead-registry-entry
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-561
-    examples:
-    - ADAPTERS still registers a retired 'eslint' adapter that is guaranteed to raise NotImplementedError if ever
-      selected
   ARC-A4C:
     name: shadow-registry-without-enforced-parity
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-710
     examples:
     - PROBES is a hand-maintained shadow of the ADAPTERS registry with no enforced parity; live adapters have shipped
       without a matching probe entry
+    see_also:
+    - QAL-E2B
   ARC-A4D:
     name: silent-failure-on-unrecognized-extension
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-390
@@ -233,76 +223,81 @@ entries:
     - Generic host model resolution returns None instead of a diagnosable error when a host/role has no mapping
   ARC-A5A:
     name: non-canonical-constant-duplication
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - pr945
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - SEV_ORDER and PANELS redefined locally in synthesize.py and html_report.py instead of owned by evidence.py
       and aliased
     - GROUP_RE/_OUTFILE_RE regex panel-alternation lists hand-duplicated instead of derived from PANELS
+    - RATE_HINTS is defined identically or near-identically in three separate scripts instead of one shared source
+    criteria: >-
+      Qualifies when a constant or structure is duplicated because no CANONICAL
+      OWNER exists — a proper fix establishes a single authoritative definition
+      that other sites import or alias from (a structural ownership change). When
+      the finding is simply that a constant is defined in more than one place and
+      the copies should be unified (per-instance), that is QAL-D1B.
+    see_also:
+    - QAL-D1B
   ARC-A5B:
     name: redundant-derived-structure
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - pr945
-    - skills-class
+    - tool-observed
     character: opportunity
     examples:
     - dispatch.py's AGENT_NAME dict was a byte-for-byte parallel derivation of ROLE_FILES; replaced with agent_name(role)
       function
   ARC-B1A:
     name: missing-dependency-manifest-declarations
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - pyyaml, jsonschema, and pytest are imported and used throughout the project but never declared as dependencies
       in pyproject.toml
-  ARC-B1B:
-    name: packaging-version-drift
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 5
-    cwe:
-    - CWE-1059
-    examples:
-    - pyproject.toml declares version 3.0.0 while SKILL.md metadata and DEVELOPMENT.md both state the current version
-      is 4.2.0 - two major versions behind
   ARC-B1C:
     name: stale-project-metadata-urls
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1059
     examples:
     - pyproject.toml Homepage/Repository/Issues URLs point to a GitHub org the repo itself no longer uses
+    criteria: >-
+      Qualifies when URLs in the PROJECT / PACKAGING MANIFEST (pyproject
+      [project.urls] Homepage/Repository/Issues, package metadata) are stale —
+      they point to an org or location the project no longer uses, misstating the
+      project's published identity. A stale URL in ordinary docs or code is
+      QAL-C1A; the same identifier hardcoded across several modules so copies
+      diverge is ARC-E1C.
+    see_also:
+    - ARC-E1C
+    - QAL-C1A
   ARC-B1D:
     name: incomplete-build-system-declaration
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - pyproject.toml declares rich PyPI-style [project] metadata but has no [build-system] table, so the package
       is not actually pip-installable
   ARC-B1E:
     name: self-contradictory-lint-configuration
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-710
@@ -310,19 +305,19 @@ entries:
     - ruff line-length=100 is declared but the rule that enforces it (E501) is explicitly listed in the ignore set
   ARC-B1F:
     name: nonstandard-install-mechanism-bypasses-package-manager
-    typical_severity: INFO
+    default_severity: INFO
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - README documents symlink-based installation into agent skill directories instead of a pip package install
   ARC-B3A:
     name: divergent-execution-path-across-environments
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     examples:
     - ci.yml tests Python 3.11-3.13 but the Dockerfile base image only uses 3.12, so tested versions never match
@@ -333,19 +328,19 @@ entries:
       others lack
   ARC-B3B:
     name: monolithic-multi-toolchain-image
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - panopticon-tools Dockerfile installs 8+ language toolchains plus 10+ security scanners into one image
   ARC-B3C:
     name: circular-build-dependency
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1047
@@ -353,10 +348,10 @@ entries:
     - Dockerfile.fixtures builds FROM panopticon-tools:latest, so a failed tools build silently breaks fixture validation
   ARC-C1A:
     name: ci-gate-bypasses-domain-verdict-model
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-693
@@ -365,38 +360,38 @@ entries:
       tool severity directly, bypassing the project's own evidence/confirmation model entirely
   ARC-C1B:
     name: ci-trigger-path-filter-incomplete
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - 'docker-publish.yml''s trigger paths: filter doesn''t cover everything the Dockerfile COPYs into the published
       image, so some changes ship unbuilt'
   ARC-C1C:
     name: untested-integration-path-in-ci
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Phase-1 tool-adapter integration tests never execute with real tooling in any CI workflow
   ARC-C1D:
     name: ci-lint-gate-scope-gap
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Top-level ops scripts that call the GitHub API are excluded from the CI lint job's file globs
   ARC-C1E:
     name: inconsistent-workflow-permissions-scoping
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-732
@@ -404,10 +399,10 @@ entries:
     - 'ci.yml is the only in-scope workflow with no explicit least-privilege permissions: block, unlike codeql.yml/security.yml/docker-publish.yml'
   ARC-C2A:
     name: silent-fallback-masks-pipeline-failure
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-390
@@ -416,10 +411,10 @@ entries:
       masking incomplete publishes
   ARC-C2B:
     name: swallowed-ci-step-failure
-    typical_severity: INFO
+    default_severity: INFO
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-392
@@ -428,10 +423,10 @@ entries:
       is silently accepted'
   ARC-D1A:
     name: lossy-round-trip-between-producer-and-recovery-path
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-436
@@ -440,10 +435,10 @@ entries:
       the same scrub, so recovered keys silently fail to match findings with absolute-path locations
   ARC-D1B:
     name: report-contract-out-of-sync-with-schema
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-1059
@@ -451,12 +446,21 @@ entries:
     examples:
     - report-schema.json is materially out of sync with the documented report contract (INCONCLUSIVE status, coverage_certified,
       and other fields SKILL.md/panel-review.md/lens-sweep.md describe but the schema doesn't match)
+    criteria: >-
+      Qualifies when the schema and the documented contract are WHOLESALE out of
+      sync — multiple fields or behaviors diverge across the two specs at once, so
+      the contract as a whole is unreliable (a systemic doc-vs-schema divergence).
+      A single field carrying a value outside its enum is COD-D1A; a single
+      documented-required field missing from the schema's required list is COD-D1D.
+    see_also:
+    - COD-D1A
+    - COD-D1D
   ARC-D1C:
     name: fingerprint-identity-instability
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-436
@@ -466,24 +470,34 @@ entries:
       finding
   ARC-D1D:
     name: id-format-schema-mismatch
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 7
     cwe:
     - CWE-436
     examples:
-    - report-schema.json's finding-id pattern (^[A-Z]{2,4}-[0-9]{3,}$) is stricter than the id format synthesize.py
-      actually produces
-    - base.py's ID_RE constant is dead and has drifted from the actual authoritative finding-id validator
     - Finding-ID regex diverges between agent prompt templates and the report schema
+    criteria: >-
+      Qualifies when the SAME id or format is specified inconsistently across two
+      or more specification artifacts (schema pattern vs prompt template, or a
+      drifted authoritative validator) so the contract has no single format
+      authority — three or more artifacts disagree with no single authority, not a
+      single schema-vs-producer rejection, and independent of any one rejected
+      instance. A live schema that actively rejects real output is
+      COD-D1B; inert over-precision that rejects nothing is QAL-C2A; a dead,
+      unimported stricter duplicate is QAL-E1B.
+    see_also:
+    - COD-D1B
+    - QAL-C2A
+    - QAL-E1B
   ARC-D1E:
     name: redundant-independent-derivation-of-shared-fact
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-1041
@@ -491,33 +505,41 @@ entries:
     - Fan-out coverage is derived from multiple independent sources that could disagree with no reconciliation step
   ARC-D1F:
     name: unversioned-inter-phase-data-contract
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Pipeline phase coordination (scout -> dispatch -> synthesize) relies on JSON artifact contracts with no version
       field
   ARC-D2A:
     name: cli-interface-contract-drift
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-1059
     examples:
-    - README Quick start examples show a --mode/--target invocation syntax that does not exist anywhere in the actual
-      CLI
     - Frontmatter arguments list covers only 4 of roughly 13 documented CLI flags
+    criteria: >-
+      Qualifies when the CLI's declared interface contract as a whole has drifted
+      from the implementation — the invocation syntax or the arguments manifest is
+      structurally unreliable as a spec (systemic interface drift), not one stray
+      line. A single documented flag that is entirely UNIMPLEMENTED is COD-D2B (a
+      following user's run breaks); a specific stale or renamed flag description on
+      an otherwise-implemented CLI is QAL-C2C (doc hygiene).
+    see_also:
+    - COD-D2B
+    - QAL-C2C
   ARC-D2B:
     name: inconsistent-handling-of-equivalent-edge-case-inputs
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-436
@@ -526,10 +548,10 @@ entries:
       missing versus present-but-empty, with no documented rationale for the distinction
   ARC-D2C:
     name: missing-coordination-contract-between-agents
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-662
@@ -540,20 +562,20 @@ entries:
       tell which one applies
   ARC-D2D:
     name: orphaned-schema-field-never-populated
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - The scout prompt never populates several ScopeProfile fields, orphaning the facet feature the schema was built
       to support
   ARC-D2E:
     name: required-field-never-emitted-by-producer
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-436
@@ -562,10 +584,10 @@ entries:
       agents to write it
   ARC-D2F:
     name: undefined-or-ambiguous-spec-terminology
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 5
     cwe:
     - CWE-1059
@@ -576,20 +598,20 @@ entries:
       security_mode=redteam
   ARC-D3A:
     name: missing-referenced-file
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - skill/reference/codex-runner-instructions.md is referenced by scope assignment but does not exist in the repository
     - skill/reference/findings-envelope-schema.json is referenced but does not exist
   ARC-D3B:
     name: documented-artifact-not-present-in-repo
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-1059
@@ -597,36 +619,26 @@ entries:
     - README's Repository layout table lists a docs/ directory that does not exist in this checkout
     - Documented security-disclosure process tells reporters to file a private advisory, but no SECURITY.md exists
       anywhere in the repo
-  ARC-D3C:
-    name: stale-path-reference-in-governance-config
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-1059
-    examples:
-    - CODEOWNERS assigns owners to /scripts/, /scripts/tools/, and /reference/, none of which exist at the repo
-      root - the rules are permanently dead
   ARC-E1A:
     name: hardcoded-absolute-path-in-source
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-547
     examples:
     - REPO_ROOT is a hardcoded absolute filesystem path baked into production code, breaking on any other machine
       or checkout location
+    see_also:
+    - TST-E2C
   ARC-E1B:
     name: hardcoded-environment-specific-artifact-path
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-547
@@ -635,10 +647,10 @@ entries:
       preventing reuse for any other run
   ARC-E1C:
     name: hardcoded-identifier-scattered-across-modules
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-547
@@ -646,52 +658,61 @@ entries:
     - The GitHub repo slug is hardcoded independently in file_fixmes.py's DOC_URL and file_issues.py's REPORT_URL
       and has already diverged between them
     - Hardcoded resource file paths scattered across modules instead of a single configuration point
+    criteria: >-
+      Qualifies when the same identifier (repo slug, org, resource path) is
+      hardcoded INDEPENDENTLY in two or more modules with no single source of
+      truth, so the copies can and do diverge — the scatter is the hazard, whether
+      or not any copy is currently stale. A single out-of-date URL is staleness:
+      QAL-C1A for doc/code references, ARC-B1C for packaging-manifest URLs.
+    see_also:
+    - ARC-B1C
+    - QAL-C1A
   ARC-E2A:
     name: durable-state-in-ephemeral-scratch-location
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - triage-ledger.jsonl and filed-issues.json - durable audit ledgers - live inside the fully gitignored, run-scratch
       .panopticon/ directory alongside disposable state
   ARC-E2B:
     name: global-scope-write-conflicts-with-project-scoped-model
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - Generated host-native agent registration writes to a global, non-project-scoped directory, in tension with
       the project's otherwise project-scoped configuration model
   ARC-E2C:
     name: implicit-runtime-contract-unenforced
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - SKILL.md documents that the pipeline MUST run from the repo root where .panopticon/ lives, but nothing in
       code checks or enforces this precondition at runtime
   ARC-E2D:
     name: implicit-config-discovery-action-at-a-distance
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - main() silently auto-discovers .panopticon/groups.json when no --groups argument is given, with no log line
       indicating the fallback fired
   ARC-E3A:
     name: orthogonal-config-axes-increase-complexity
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1120
@@ -700,43 +721,31 @@ entries:
       axes whose cross-product is never enumerated or tested
   ARC-E3B:
     name: asymmetric-domain-coverage-across-artifacts
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - There is no architecture-panel equivalent of security-checklists.md, so the architecture lens has less supporting
       reference material than the security lens
   ARC-E3C:
     name: cross-host-config-parity-gap
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - model-profiles.yml's openrouter host profile has no corresponding hardcoded fallback in model_resolver.py,
       unlike kimi and claude
     - Tool policy mode has no cross-host validation, so hosts can silently diverge in enforcement behavior
-  ARC-E3D:
-    name: reference-data-catalog-incomplete
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-1059
-    examples:
-    - The cwe_owasp mapping omits 8 of the 34 CWEs listed in the main catalog, silently dropping OWASP derivation
-      for those findings
   ARC-F1A:
     name: enforcement-relies-on-stale-flag-not-live-verification
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-367
@@ -748,10 +757,10 @@ entries:
       guard it was meant to backstop
   ARC-F1B:
     name: audit-accounting-excludes-in-scope-actors
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-778
@@ -760,10 +769,10 @@ entries:
       exposure to the same policy
   ARC-F1C:
     name: inconsistent-authorization-gate-across-sibling-scripts
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-862
@@ -772,10 +781,10 @@ entries:
       rely on ambient gh defaults with no equivalent check
   ARC-F1D:
     name: partial-batch-operation-lacks-failure-recovery-path
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-755
@@ -784,10 +793,10 @@ entries:
       function
   ARC-F1E:
     name: policy-or-verdict-not-enforced-by-code
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-693
@@ -797,10 +806,10 @@ entries:
     - The 'same flags is a requirement, not a convenience' contract in SKILL.md has no programmatic check
   ARC-F2A:
     name: compensating-control-has-scope-blind-spot
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-693
@@ -809,10 +818,10 @@ entries:
       a compromised unenforced reviewer would use to poison downstream synthesis
   ARC-F2B:
     name: enforcement-hook-cannot-scope-to-individual-actor
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-284
@@ -821,10 +830,10 @@ entries:
       per-agent tightening as a documented architectural limitation
   ARC-F2C:
     name: security-control-assumes-undocumented-input-shape
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-20
@@ -832,51 +841,70 @@ entries:
     - The write-guard hook hardcodes tool_input['file_path'] for Write/Edit/NotebookEdit alike, silently mis-evaluating
       NotebookEdit's differently-shaped payload
     - allowlist_from_plan depends on undocumented plan['out_file'] structure with no schema backing it
+    criteria: >-
+      Qualifies when a security control DOES run on an invocation but assumes an
+      undocumented input SHAPE and so mis-evaluates it (e.g. hardcoding
+      tool_input['file_path'] for a NotebookEdit payload that is shaped
+      differently) — the control mis-parses what it sees. A control that fails to
+      cover a whole class of invocations at all (e.g. Bash never reaching the
+      write-guard) is AGT-B1A.
+    see_also:
+    - AGT-B1A
   ARC-F2D:
     name: component-fails-open-on-malformed-input
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-636
     examples:
     - group_runner.py and ingest_tools.py tolerate non-dict plan entries and malformed input by silently skipping
       them instead of rejecting
-    - write_guard_hook.py's main() returns 0 (allow) if JSON parsing fails or the allowlist file is missing
+    criteria: >-
+      Qualifies when a general, non-enforcement component silently SKIPS or
+      tolerates malformed or unexpected-shape runtime INPUT instead of rejecting
+      it — the harm is weakened processing or silent data loss, not an opened
+      security gate. When the failing thing is a security/enforcement control that
+      degrades to permit, that is ARC-F2E (the single home for the write-guard
+      fail-open incident); the config-load fail-open choice viewed as a
+      correctness defect is COD-B1A.
+    see_also:
+    - ARC-F2E
+    - COD-B1A
+    - SEC-G2B
   ARC-F2E:
     name: security-control-fails-open-on-misconfiguration
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-636
     - CWE-280
     examples:
-    - Write-guard fails silently open (no deny, no warning) when the allowlist file is missing, malformed, or looked
-    - Tool-policy enforcement silently degrades to prompt-only ("advisory") when a host agent isn't registered,
-      whic
-  ARC-F2F:
-    name: self-assertable-trust-field-mirrors-forbidden-field
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-807
-    examples:
-    - corroborated/corroborated_by are self-assertable by agents even though the semantically-equivalent source/reinforced
-      fields are explicitly stripped as forbidden, allowing spoofed cross-panel corroboration
+    - Write-guard fails silently open (no deny, no warning) when the allowlist file is missing or malformed
+    - Tool-policy enforcement silently degrades to prompt-only ("advisory") when a host agent isn't registered
+    criteria: >-
+      Qualifies — and is the single home for the write-guard fail-open incident —
+      when a SECURITY / ENFORCEMENT control (write-guard, tool-policy) degrades to
+      permit, allow, or advisory because its own config or context is missing,
+      malformed, or unregistered: the gate opens. A general, non-enforcement
+      component that skips malformed input is ARC-F2D; the config-loading code's
+      fail-open choice viewed as a correctness defect is COD-B1A; a detection /
+      scan tool that silently loses coverage is SEC-G2B.
+    see_also:
+    - ARC-F2D
+    - COD-B1A
+    - SEC-G2B
   ARC-F2G:
     name: overbroad-exception-handling-masks-errors
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-396
@@ -885,10 +913,10 @@ entries:
       and accidental errors alike
   ARC-G1A:
     name: contributor-instructions-diverge-from-ci
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-1059
@@ -897,10 +925,10 @@ entries:
       runs
   ARC-G1B:
     name: divergent-duplicate-source-of-truth
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-1059
@@ -910,10 +938,10 @@ entries:
     - Documented 'monthly' panopticon-tools rebuild cadence contradicts the actual daily/weekly CI schedule
   ARC-G1C:
     name: reference-documentation-incomplete
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1059
@@ -923,10 +951,10 @@ entries:
       it to be bumped together
   ARC-G2A:
     name: superseded-doc-without-deprecation-marker
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-1059
@@ -935,10 +963,10 @@ entries:
       or status marker distinguishing current from historical
   ARC-G2B:
     name: design-doc-drifts-from-delivered-scope
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-1059
@@ -947,24 +975,12 @@ entries:
       work
     - A planned Phase-5 integration reuses the static-scan fixture pattern for a corpus that fundamentally differs
       from static-scan fixtures
-  ARC-G3A:
-    name: orphaned-unused-fixture-file
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-561
-    examples:
-    - tests/fixtures/semgrep.sarif is a committed, realistic SARIF sample that is not loaded by any test in the
-      repository
   ARC-G3B:
     name: tracked-file-violates-own-gitignore-rule
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - skill/.DS_Store is tracked in git despite .gitignore's own 'OS / editor noise' rule listing .DS_Store

@@ -44,10 +44,10 @@ areas:
 entries:
   COD-A1A:
     name: unclosed-file-handle-leak
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 11
     cwe:
     - CWE-772
@@ -55,24 +55,12 @@ entries:
     - File opened without a context manager; handle never explicitly closed, relying on GC
     - json.load(open(...)) pattern never closes the underlying file handle
     - File resource leak in apply subcommand
-  COD-A1B:
-    name: check-then-use-toctou-gap
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-367
-    examples:
-    - decide() validates a write target via os.path.islink()/os.path.realpath(), but the actual write happens later
-      in a separate tool-call step, leaving a window for the target to change
   COD-A2A:
     name: unbounded-buffer-write
-    typical_severity: CRITICAL
+    default_severity: CRITICAL
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-787
@@ -81,10 +69,10 @@ entries:
     - Unsafe code writes user_input.len() bytes into a fixed 8-byte buffer with no bounds check
   COD-A2B:
     name: off-by-one-argument-index-error
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-193
@@ -93,10 +81,10 @@ entries:
       argument as its own parameter
   COD-A2C:
     name: unchecked-index-or-empty-sequence-access
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-129
@@ -106,32 +94,29 @@ entries:
     - pip-audit adapter indexes fix_versions[0] with a default that never fires when the list is present-but-empty
   COD-B1A:
     name: fail-open-on-missing-or-corrupt-config
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-636
-    examples:
-    - Missing and corrupted write-allowlist.json are treated identically and both fail open (return 0)
-    - Allowlist lookup uses a bare relative path and fails OPEN if it cannot be resolved
-  COD-B1B:
-    name: incomplete-guard-coverage-across-input-variants
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - Write-guard hook is meant to gate Write|Edit|NotebookEdit but reads tool_input['file_path'] unconditionally,
-      which doesn't resolve the real target for NotebookEdit
+    criteria: >-
+      Qualifies when config-LOADING code chooses a permissive default on a missing
+      or corrupt config artifact (treats absent and corrupt alike, or resolves a
+      bad path and returns allow) — a correctness fail-direction defect in the
+      loader itself. The specific write-guard / security-control fail-open incident
+      single-homes in ARC-F2E; a general component that skips malformed runtime
+      input is ARC-F2D.
+    see_also:
+    - ARC-F2D
+    - ARC-F2E
   COD-B1C:
     name: overly-broad-permission-scope-in-shared-guard
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-284
@@ -140,10 +125,10 @@ entries:
       can overwrite a sibling reviewer's findings file
   COD-B2A:
     name: unguarded-null-crashes-downstream
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-476
@@ -152,19 +137,19 @@ entries:
       of handling it
   COD-B2B:
     name: error-message-misattributes-root-cause
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - --changes mode's error message blames 'not a git repository' when the real failure is a merge-base lookup
   COD-B2C:
     name: missing-error-handling-around-auxiliary-load
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-755
@@ -173,51 +158,54 @@ entries:
       from the primary path
   COD-B2D:
     name: result-not-revalidated-after-transform
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - write_report()'s oversize split does one unbounded halving pass and never re-validates the result against
       the original size constraint
   COD-B2E:
     name: silent-truncation-without-warning
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - recover_linkage_from_github caps at --limit 1000 with no detection or warning that results were truncated
   COD-C1A:
     name: analyzer-confidence-conflated-with-severity
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - Brakeman has no real severity field; adapter derives both confidence and severity from the same High/Medium/Weak
       vocabulary via a map missing a 'low' entry
     - SpotBugs BugInstance.priority (its confidence) is mapped onto our severity field, while our confidence field
       is hardcoded
+    - osv-scanner adapter silently downgrades known vulnerabilities to INFO severity
+    - Shared severity normalizer silently defaults unmapped/un-rated severity strings to INFO across every dependency
   COD-C1B:
     name: severity-hardcoded-ignoring-tool-value
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - roslyn_secguard's parse() hardcodes severity to 'HIGH' for every SecurityCodeScan finding instead of reading
       the SARIF 'level' field
+    - pip-audit adapter hardcodes severity to MEDIUM for essentially all findings, masking the true severity
   COD-C2A:
     name: incorrect-source-file-selection-heuristic
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-706
@@ -226,10 +214,10 @@ entries:
       dev/test requirements file over the primary requirements.txt
   COD-C2B:
     name: instance-state-not-propagated-through-lifecycle
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - PipAuditAdapter records the manifest into self._manifest_path in invoke(), but parse() runs in a separate
@@ -237,10 +225,10 @@ entries:
     - PipAuditAdapter maintains mutable instance state, deviating from the stateless adapter pattern
   COD-C2C:
     name: regex-rejects-valid-input-variant
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     examples:
     - LABEL_RE.fullmatch() only matches a single backtick-quoted label, silently failing on multi-label lines
@@ -248,10 +236,10 @@ entries:
       though either may be absent'
   COD-C2D:
     name: unnormalized-identifier-causes-lookup-mismatch
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-706
@@ -259,10 +247,10 @@ entries:
     - diff_map.classify() does not normalize a ./-prefixed location.file before matching it against the hunk map
   COD-C3A:
     name: required-output-field-missing-or-empty
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 7
     examples:
     - Findings F-DUP-1/F-DUP-2 lack the required location.line_start field
@@ -270,112 +258,145 @@ entries:
     - sarif_to_findings() can emit an empty location object when a SARIF result has no locations
   COD-C3B:
     name: incomplete-lookup-catalog-silent-fallback-gap
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
-    recurrence: 2
+    - corpus
+    recurrence: 3
+    cwe:
+    - CWE-1059
     examples:
     - CWE-to-OWASP mapping in the reference catalog is incomplete
     - cwe-catalog.json is missing CWE-16, CWE-778, CWE-693 needed by citations.py's category-derived CWE fallback
+    - The cwe_owasp mapping omits 8 of the 34 CWEs listed in the main catalog, silently dropping OWASP derivation
+      for those findings
   COD-C3C:
     name: nonstandard-key-silently-dropped-downstream
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - cargo-audit adapter's non-standard 'rustsec' citation key is dropped by the downstream citation pipeline with
       no error
   COD-D1A:
     name: schema-enum-incomplete-vs-actual-values
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - confirmation_status field carries a value outside its own schema enum
     - summary.gate enum is [PASS, FAIL, OFF] but SKILL.md references INCONCLUSIVE as a valid gate value in six places
+    criteria: >-
+      Qualifies at the FIELD level when a value exists (or is referenced as valid)
+      that lies outside that field's own declared enum — an enum-completeness or
+      value-validity violation for one specific field. A specific documented-required
+      field omitted from the schema is COD-D1D; a wholesale, multi-field
+      contract-vs-schema divergence is ARC-D1B.
+    see_also:
+    - ARC-D1B
+    - COD-D1D
   COD-D1B:
     name: schema-pattern-stricter-than-producer-output
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     examples:
     - report-schema.json's finding-id pattern (2-4 letters) is stricter than what agents/synthesize.py actually
       emit
+    criteria: >-
+      Qualifies when a LIVE schema, pattern, or validator is stricter than what
+      the producer legitimately emits, so real output is actively REJECTED (an
+      invalid instance is produced at runtime) — a correctness harm. If the
+      over-precision is inert and nothing is actually rejected, it is QAL-C2A; if
+      the stricter artifact is a dead, unimported duplicate, QAL-E1B; if the
+      defect is the id/format being specified inconsistently across two or more
+      artifacts with no single authority, ARC-D1D.
+    see_also:
+    - ARC-D1D
+    - QAL-C2A
+    - QAL-E1B
   COD-D1C:
     name: inconsistent-record-shape-across-array
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - Finding object schema is inconsistent across the findings array
     - Provenance object field structure varies across findings
   COD-D1D:
     name: schema-omits-documented-required-fields
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     examples:
     - report-schema.json's required list omits provenance/citations despite docs mandating 'MUST include provenance/citations'
     - Schema is missing an integrity object for fields that are actually emitted
-  COD-D2A:
-    name: dangling-reference-to-nonexistent-file
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - Two files listed in the assignment scope (codex-runner-instructions.md, findings-envelope-*.md) do not exist
-      in the repository
+    criteria: >-
+      Qualifies at the FIELD level when the schema's required list OMITS a field
+      the documentation mandates as mandatory — a required-field gap for specific
+      fields. A field carrying a value outside its enum is COD-D1A; a wholesale
+      contract-vs-schema divergence spanning many fields or behaviors is ARC-D1B.
+    see_also:
+    - ARC-D1B
+    - COD-D1A
   COD-D2B:
     name: documented-feature-or-flag-not-implemented
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     examples:
     - README Quick Start documents a --mode flag that doesn't exist in the CLI
     - SKILL.md documents an -e/--explore mode with no corresponding implementation in orchestrator.py
     - HTML artifact is only auto-derived when --out is passed explicitly, contradicting the documented default synthesize
       invocation
+    criteria: >-
+      Qualifies when documentation describes a feature, flag, or mode that is NOT
+      IMPLEMENTED at all, so a user following the docs invokes something that does
+      not exist and the run breaks — behavioral, HIGH. If the flag exists but its
+      documentation is merely stale, renamed, or under-covered, that is QAL-C2C
+      (doc hygiene); if the whole CLI interface contract has drifted structurally,
+      ARC-D2A.
+    see_also:
+    - ARC-D2A
+    - QAL-C2C
   COD-D2C:
     name: self-contradicting-specification-documents
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - A spec's Advisor Confirmation Flow prescribes a severity-downgrade behavior that the same-day epistemics-core
       spec explicitly supersedes/contradicts
   COD-D2D:
     name: implemented-capability-missing-from-docs
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     examples:
     - '''openrouter'' host profile has no corresponding documentation in SKILL.md''s Host dispatch section'
     - Step 5's --host hint omits 'codex', the newest first-class host
   COD-D3A:
     name: external-api-invoked-with-wrong-parameter-shape
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     cwe:
     - CWE-628
@@ -384,10 +405,10 @@ entries:
       file
   COD-D3B:
     name: adapter-violates-declared-protocol-interface
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-573
@@ -397,10 +418,10 @@ entries:
       elsewhere
   COD-D3C:
     name: inconsistent-field-type-across-boundary
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 3
     cwe:
     - CWE-704
@@ -409,216 +430,227 @@ entries:
     - location.line_start is emitted as a string instead of an integer
   COD-E1A:
     name: dedup-logic-drops-entry-sharing-coarse-key
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - build_diff silently drops a run3 finding that shares a coarse key with an already-exact-matched run2 fingerprint
   COD-E1B:
     name: loop-exits-before-exhausting-valid-entries
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 1
     examples:
     - NODE_PATH loop breaks after the first global_node, leaving incomplete directory coverage
   COD-E2A:
     name: unreachable-code-due-to-guard-placed-before-definition
-    typical_severity: CRITICAL
+    default_severity: CRITICAL
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 4
     cwe:
     - CWE-670
-    examples:
-    - 'TestRunTool class is defined after the if __name__ == ''__main__'': unittest.main() block, so its tests never
-      run'
-    - Misplaced __main__ guard sits between class definitions, silently skipping everything after it
+    criteria: >-
+      Qualifies when a guard, return, or exit placed before later definitions
+      makes PRODUCTION code unreachable — the skipped code would run in normal
+      operation but now never executes (a reachability defect). If the silently
+      skipped definitions are test cases (a test-discovery gap), that is TST-C1A;
+      if nothing after the guard is actually skipped (pure misplacement), QAL-F2B.
+    see_also:
+    - QAL-F2B
+    - TST-C1A
   COD-E2B:
     name: path-resolved-against-wrong-base-directory
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
-    - corpus-4x
+    - corpus
     recurrence: 2
     cwe:
     - CWE-706
     examples:
-    - Hardcoded relative path assumes the test-execution directory as its base
     - Security-checklists reference is relative to the skill directory, but the reviewing agent's cwd is the target
       repo
+    see_also:
+    - TST-D2A
   COD-F1A:
     name: atomicity-violation-compound-operation
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-362
   COD-F1B:
     name: check-then-act-race
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
+    - corpus
+    recurrence: 2
     cwe:
     - CWE-367
+    examples:
+    - decide() validates a write target via os.path.islink()/os.path.realpath(), but the actual write happens later
+      in a separate tool-call step, leaving a window for the target to change
   COD-F1C:
     name: shared-mutable-state-without-synchronization
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     - corpus
     cwe:
     - CWE-362
     notes: 'single-homes COD/ARC/SEC thread-safety duplicates (big rock #0)'
   COD-F2A:
     name: deadlock-lock-ordering
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-833
   COD-F2B:
     name: blocking-call-in-async-context
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-F3A:
     name: stale-cache-read-without-invalidation
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-F3B:
     name: thread-unsafe-lazy-initialization
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-543
   COD-F3C:
     name: unawaited-async-result
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-F3D:
     name: unsafe-signal-handler
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-479
   COD-G1A:
     name: dst-unsafe-time-arithmetic
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G1B:
     name: epoch-unit-confusion-ms-vs-s
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G1C:
     name: naive-aware-datetime-mixing
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G1D:
     name: wall-clock-used-for-elapsed-time
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G2A:
     name: monetary-value-in-float
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-681
   COD-G2B:
     name: integer-overflow-or-truncation
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-190
   COD-G2C:
     name: precision-loss-in-numeric-conversion
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-681
   COD-G2D:
     name: float-equality-comparison
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G3A:
     name: bytes-string-conflation
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G3B:
     name: default-encoding-assumption
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-176
   COD-G3C:
     name: unit-confusion-in-quantity
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
   COD-G3D:
     name: unicode-normalization-mismatch
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - prior-art
-    - deep-gap-review
+    - gap-review
     cwe:
     - CWE-176

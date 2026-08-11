@@ -73,7 +73,7 @@ def build_markdown(bundle):
                     if e.get("status") == "deprecated":
                         tags.append("deprecated→" + str(e.get("superseded_by", "")))
                     note = "; ".join(tags) or "—"
-                    L.append(f"| `{c}` | {e['name']} | {e['typical_severity']} | {cwe} | {note} |")
+                    L.append(f"| `{c}` | {e['name']} | {e['default_severity']} | {cwe} | {note} |")
                 L.append("")
     return "\n".join(L) + "\n"
 
@@ -88,7 +88,7 @@ def _catalog_data(bundle):
             recs.append({
                 "code": code, "domain": dcode, "domainName": dom["name"],
                 "area": f"{dcode}-{area}", "areaName": areas.get(area, {}).get("name", ""),
-                "name": e["name"], "sev": e["typical_severity"],
+                "name": e["name"], "sev": e["default_severity"],
                 "cwe": e.get("cwe") or [], "character": e.get("character", "defect"),
                 "automated_by": e.get("automated_by") or [],
                 "status": e.get("status", "active"),

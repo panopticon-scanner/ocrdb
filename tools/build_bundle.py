@@ -52,7 +52,7 @@ def build_sarif(bundle):
                 "name": e["name"],
                 "shortDescription": {"text": e["name"].replace("-", " ")},
                 "defaultConfiguration": {
-                    "level": SARIF_LEVEL[e["typical_severity"]]},
+                    "level": SARIF_LEVEL[e["default_severity"]]},
             }
             if e.get("definition"):
                 taxon["fullDescription"] = {"text": e["definition"]}
@@ -93,7 +93,7 @@ def build_menus(bundle):
                 for code, e in dom["entries"].items():
                     if code.startswith(f"{dom_code}-{ak}{ck}") \
                             and e.get("status") == "active":
-                        lines.append(f"{code} {e['name']} ({e['typical_severity']})")
+                        lines.append(f"{code} {e['name']} ({e['default_severity']})")
         lines.append("")
     return "\n".join(lines) + "\n"
 
