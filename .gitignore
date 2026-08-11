@@ -5,3 +5,8 @@ __pycache__/
 .DS_Store
 scratch/
 .superpowers/
+
+# planning docs live in the private ocrdb-docs companion, symlinked back
+# (local-only; no trailing slash so the rule matches the symlink itself)
+docs/plans
+docs/specs
