@@ -39,7 +39,7 @@ class TestValidateSyntheticErrors(unittest.TestCase):
             "areas": {"A": {"name": "a", "categories": {"1": "c"}}},
             "entries": {"SEC-A1A": {
                 "name": "ok-entry", "typical_severity": "LOW",
-                "status": "active", "provenance": ["corpus-4x"]}}}}
+                "status": "active", "provenance": ["corpus"]}}}}
 
     def _errs(self, docs):
         return validate.validate_schema(docs)[0]
@@ -102,6 +102,14 @@ class TestValidateSyntheticErrors(unittest.TestCase):
         d["y.yml"] = dict(d["x.yml"])  # second file, same domain SEC
         self.assertTrue(any("declared by" in e for e in self._errs(d)),
                         self._errs(d))
+
+    def test_provenance_vocabulary(self):
+        d = self._base_doc()
+        d["x.yml"]["entries"]["SEC-A1A"]["provenance"] = ["corpus"]
+        self.assertEqual(self._errs(d), [])
+        d["x.yml"]["entries"]["SEC-A1A"]["provenance"] = ["coderabbit"]
+        self.assertTrue(any("provenance" in e and "vocabulary" in e
+                            for e in self._errs(d)), self._errs(d))
 
     def test_automated_by_shape(self):
         d = self._base_doc()

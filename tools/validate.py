@@ -34,6 +34,8 @@ NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 SEVERITIES = {"INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"}
 STATUSES = {"active", "deprecated"}
 CHARACTERS = {"defect", "opportunity"}
+PROVENANCE_VOCAB = {"corpus", "tool-observed", "gap-review", "prior-art",
+                    "owasp-align", "asvs-align", "openssf-align", "cwe-align"}
 
 
 def load_domains(domains_dir):
@@ -88,6 +90,9 @@ def validate_schema(docs):
             prov = e.get("provenance")
             if not isinstance(prov, list) or not prov:
                 errors.append(f"{ctx}: provenance must be a non-empty list")
+            for p in prov if isinstance(prov, list) else []:
+                if p not in PROVENANCE_VOCAB:
+                    errors.append(f"{ctx}: provenance {p!r} not in vocabulary")
             if e.get("status") == "deprecated" and not e.get("superseded_by"):
                 errors.append(f"{ctx}: deprecated without superseded_by")
             if e.get("status") != "deprecated" and e.get("superseded_by"):
