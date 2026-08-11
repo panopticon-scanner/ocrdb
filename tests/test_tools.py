@@ -1,0 +1,201 @@
+import copy
+import io
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import unittest
+from contextlib import redirect_stderr, redirect_stdout
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import build_bundle  # noqa: E402
+import validate  # noqa: E402
+
+
+def _real_docs():
+    return validate.load_domains(os.path.join(ROOT, "domains"))
+
+
+class TestValidateRealDraft(unittest.TestCase):
+    def test_draft_has_no_schema_errors(self):
+        errors, warnings, codes = validate.validate_schema(_real_docs())
+        self.assertEqual(errors, [])
+        self.assertEqual(len(codes), 320)
+
+    def test_big_rock_zero_duplicates_surface_as_warnings(self):
+        # The known cross-domain duplicate (COD-E1D = SEC-A3A, identical name)
+        # must be WARNED, not silently passed and not hard-failed pre-ruling.
+        _, warnings, _ = validate.validate_schema(_real_docs())
+        self.assertTrue(any("sql-injection-via-string-concatenation" in w
+                            for w in warnings), warnings)
+
+
+class TestValidateSyntheticErrors(unittest.TestCase):
+    def _base_doc(self):
+        return {"x.yml": {
+            "domain": "SEC", "name": "security",
+            "areas": {"A": {"name": "a", "categories": {"1": "c"}}},
+            "entries": {"SEC-A1A": {
+                "name": "ok-entry", "typical_severity": "LOW",
+                "status": "active", "provenance": ["corpus-4x"]}}}}
+
+    def _errs(self, docs):
+        return validate.validate_schema(docs)[0]
+
+    def test_clean_base(self):
+        self.assertEqual(self._errs(self._base_doc()), [])
+
+    def test_bad_grammar_and_wrong_domain(self):
+        d = self._base_doc()
+        d["x.yml"]["entries"]["SEC-11A"] = d["x.yml"]["entries"]["SEC-A1A"]
+        d["x.yml"]["entries"]["COD-A1A"] = dict(
+            d["x.yml"]["entries"]["SEC-A1A"], name="other-entry")
+        errs = self._errs(d)
+        self.assertTrue(any("grammar" in e for e in errs), errs)
+        self.assertTrue(any("!= file domain" in e for e in errs), errs)
+
+    def test_unknown_area_and_category(self):
+        d = self._base_doc()
+        d["x.yml"]["entries"]["SEC-B1A"] = dict(
+            d["x.yml"]["entries"]["SEC-A1A"], name="b-entry")
+        d["x.yml"]["entries"]["SEC-A2A"] = dict(
+            d["x.yml"]["entries"]["SEC-A1A"], name="a2-entry")
+        errs = self._errs(d)
+        self.assertTrue(any("area B not in areas header" in e for e in errs), errs)
+        self.assertTrue(any("category 2 not under area A" in e for e in errs), errs)
+
+    def test_enum_and_provenance_and_deprecation(self):
+        d = self._base_doc()
+        e = d["x.yml"]["entries"]["SEC-A1A"]
+        e.update(typical_severity="SEVERE", status="retired", provenance=[],
+                 name="Bad Name")
+        errs = self._errs(d)
+        for frag in ("typical_severity", "status", "provenance", "kebab-case"):
+            self.assertTrue(any(frag in x for x in errs), (frag, errs))
+
+    def test_deprecated_requires_existing_superseded_by(self):
+        d = self._base_doc()
+        d["x.yml"]["entries"]["SEC-A1A"].update(status="deprecated")
+        errs = self._errs(d)
+        self.assertTrue(any("without superseded_by" in e for e in errs), errs)
+        d["x.yml"]["entries"]["SEC-A1A"].update(superseded_by="SEC-A9Z")
+        errs = self._errs(d)
+        self.assertTrue(any("does not exist" in e for e in errs), errs)
+
+    def test_same_domain_duplicate_name_is_error(self):
+        d = self._base_doc()
+        d["x.yml"]["entries"]["SEC-A1B"] = dict(
+            d["x.yml"]["entries"]["SEC-A1A"])  # same name, same domain
+        errs = self._errs(d)
+        self.assertTrue(any("used by" in e for e in errs), errs)
+
+
+class TestStabilityContract(unittest.TestCase):
+    def _baseline(self, tmp, entries):
+        path = os.path.join(tmp, "base.json")
+        with open(path, "w") as fh:
+            json.dump({"domains": {"SEC": {"entries": entries}}}, fh)
+        return path
+
+    def test_gone_and_renamed_codes_fail(self):
+        cur = {"SEC-A1A": {"name": "kept-entry"},
+               "SEC-A1B": {"name": "renamed-now"}}
+        with tempfile.TemporaryDirectory() as tmp:
+            base = self._baseline(tmp, {
+                "SEC-A1A": {"name": "kept-entry"},
+                "SEC-A1B": {"name": "original-name"},
+                "SEC-A1C": {"name": "vanished-entry"}})
+            errs = validate.validate_stability(cur, base)
+        self.assertEqual(len(errs), 2)
+        self.assertTrue(any("GONE" in e for e in errs), errs)
+        self.assertTrue(any("renamed" in e for e in errs), errs)
+
+    def test_deprecation_is_sanctioned(self):
+        cur = {"SEC-A1A": {"name": "kept-entry", "status": "deprecated",
+                           "superseded_by": "SEC-A1B"},
+               "SEC-A1B": {"name": "new-entry"}}
+        with tempfile.TemporaryDirectory() as tmp:
+            base = self._baseline(tmp, {"SEC-A1A": {"name": "kept-entry"}})
+            self.assertEqual(validate.validate_stability(cur, base), [])
+
+
+class TestBundleBuild(unittest.TestCase):
+    def test_build_is_deterministic_and_complete(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out1, out2 = os.path.join(tmp, "b1"), os.path.join(tmp, "b2")
+            for out in (out1, out2):
+                with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                    rc = build_bundle.main(["--version", "0.0.0-test",
+                                            "--domains-dir",
+                                            os.path.join(ROOT, "domains"),
+                                            "--out", out])
+                self.assertEqual(rc, 0)
+            for fn in os.listdir(out1):
+                with open(os.path.join(out1, fn), "rb") as f1, \
+                        open(os.path.join(out2, fn), "rb") as f2:
+                    self.assertEqual(f1.read(), f2.read(), fn)
+            bundle = json.load(open(os.path.join(out1, "ocrdb-0.0.0-test.json")))
+            n = sum(len(d["entries"]) for d in bundle["domains"].values())
+            self.assertEqual(n, 320)
+            self.assertEqual(bundle["license"], "CC BY-SA 4.0")
+
+    def test_sarif_taxa_match_entries_and_levels(self):
+        docs = _real_docs()
+        bundle = build_bundle.build_bundle(docs, "0.0.0-test")
+        sarif = build_bundle.build_sarif(bundle)
+        taxa = sarif["runs"][0]["taxonomies"][0]["taxa"]
+        self.assertEqual(len(taxa), 320)
+        by_id = {t["id"]: t for t in taxa}
+        # SEC-A3A is CRITICAL -> error; QAL-B2B is LOW -> note
+        self.assertEqual(by_id["SEC-A3A"]["defaultConfiguration"]["level"], "error")
+        self.assertEqual(by_id["QAL-B2B"]["defaultConfiguration"]["level"], "note")
+
+    def test_menus_gate_c_form(self):
+        bundle = build_bundle.build_bundle(_real_docs(), "0.0.0-test")
+        menus = build_bundle.build_menus(bundle)
+        self.assertIn("# MENU SEC (security)", menus)
+        self.assertIn("SEC-A3A sql-injection-via-string-concatenation (CRITICAL)",
+                      menus)
+        # criteria/definition text never leaks into menus (Gate C)
+        self.assertNotIn("qualifies when", menus)
+
+    def test_menus_exclude_deprecated(self):
+        docs = copy.deepcopy(_real_docs())
+        for doc in docs.values():
+            if doc["domain"] == "SEC":
+                doc["entries"]["SEC-A3A"].update(status="deprecated",
+                                                 superseded_by="SEC-A1B")
+        bundle = build_bundle.build_bundle(docs, "0.0.0-test")
+        menus = build_bundle.build_menus(bundle)
+        self.assertNotIn("SEC-A3A ", menus)
+
+    def test_build_aborts_on_schema_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dom_dir = os.path.join(tmp, "domains")
+            os.makedirs(dom_dir)
+            with open(os.path.join(dom_dir, "bad.yml"), "w") as fh:
+                fh.write("domain: SEC\nname: security\nareas: {}\n"
+                         "entries:\n  SEC-A1A: {name: x, typical_severity: NOPE,"
+                         " status: active, provenance: [c]}\n")
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                rc = build_bundle.main(["--version", "0.0.0-test",
+                                        "--domains-dir", dom_dir,
+                                        "--out", os.path.join(tmp, "out")])
+            self.assertEqual(rc, 1)
+            self.assertFalse(os.path.exists(os.path.join(tmp, "out")))
+
+
+class TestValidateCli(unittest.TestCase):
+    def test_cli_passes_on_real_draft(self):
+        proc = subprocess.run(
+            [sys.executable, os.path.join(ROOT, "tools", "validate.py"),
+             "--domains-dir", os.path.join(ROOT, "domains")],
+            capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("320 entries", proc.stdout)
+
+
+if __name__ == "__main__":
+    unittest.main()
