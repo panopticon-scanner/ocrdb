@@ -6,11 +6,12 @@ Usage:
 
 Exit codes: 0 = clean (warnings allowed), 1 = schema/stability errors.
 
-Schema checks are hard errors. Cross-domain duplicate names are WARNINGS
-until the single-homing rule (RATIFICATION big rock #0) is ratified —
-this validator mechanizes that inventory rather than blocking on it.
+Schema checks are hard errors. Single-homing (RATIFICATION big rock #0)
+is enforced by construction — the catalog is a clean rewrite with no
+cross-domain duplicate names. Cross-domain duplicate names remain a
+WARNING here as a mechanical backstop, not a gate on that rule.
 
-The stability contract (SCHEMA.md) activates at the 0.1 release tag:
+The stability contract (SCHEMA.md) activates at the 1.0 release:
 with --baseline pointing at the previous release bundle, a code that
 disappears or changes `name` is a hard error; `status: deprecated` with
 `superseded_by` is the only sanctioned correction path.
@@ -28,6 +29,7 @@ except ImportError:  # build tooling fails loudly — no degraded builds
 
 CODE_RE = re.compile(r"^([A-Z]{3})-([A-Z])([1-9])([A-Z])$")
 CWE_RE = re.compile(r"^CWE-\d+$")
+AUTOMATED_BY_RE = re.compile(r"^[a-z0-9_-]+:[A-Za-z0-9._@/+-]+$")
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 SEVERITIES = {"INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"}
 STATUSES = {"active", "deprecated"}
@@ -47,11 +49,16 @@ def validate_schema(docs):
     errors, warnings = [], []
     all_codes = {}
     names_by_domain = {}
+    domains_seen = {}
     for fn, doc in docs.items():
         if not isinstance(doc, dict) or "domain" not in doc:
             errors.append(f"{fn}: missing top-level 'domain'")
             continue
         dom = doc["domain"]
+        if dom in domains_seen:
+            errors.append(f"{fn}: domain {dom} already declared by "
+                          f"{domains_seen[dom]}")
+        domains_seen[dom] = fn
         areas = doc.get("areas") or {}
         entries = doc.get("entries") or {}
         if not doc.get("name"):
@@ -90,6 +97,15 @@ def validate_schema(docs):
             for w in e.get("cwe") or []:
                 if not (isinstance(w, str) and CWE_RE.match(w)):
                     errors.append(f"{ctx}: cwe {w!r} must be a 'CWE-<n>' string")
+            ab = e.get("automated_by")
+            if ab is not None:
+                if not isinstance(ab, list):
+                    errors.append(f"{ctx}: automated_by must be a list")
+                else:
+                    for r in ab:
+                        if not (isinstance(r, str) and AUTOMATED_BY_RE.match(r)):
+                            errors.append(f"{ctx}: automated_by {r!r} must be "
+                                          f"'tool:rule-id'")
             if "recurrence" in e and (not isinstance(e["recurrence"], int)
                                       or e["recurrence"] < 1):
                 errors.append(f"{ctx}: recurrence must be a positive int")
@@ -100,8 +116,12 @@ def validate_schema(docs):
         tgt = e.get("superseded_by")
         if tgt and tgt not in all_codes:
             errors.append(f"{code}: superseded_by {tgt} does not exist")
+        for ref in e.get("see_also") or []:
+            if ref not in all_codes:
+                errors.append(f"{code}: see_also {ref} does not exist")
     # duplicate names: hard error within a domain, warning across domains
-    # (the cross-domain inventory is RATIFICATION big rock #0, pre-ruling)
+    # (single-homing is enforced by construction post-clean-rewrite; the
+    #  cross-domain warning is a mechanical backstop — see module docstring)
     cross = {}
     for dom, names in names_by_domain.items():
         for name, codes in names.items():

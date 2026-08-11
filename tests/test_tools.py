@@ -91,6 +91,27 @@ class TestValidateSyntheticErrors(unittest.TestCase):
         errs = self._errs(d)
         self.assertTrue(any("used by" in e for e in errs), errs)
 
+    def test_see_also_target_must_exist(self):
+        d = self._base_doc()
+        d["x.yml"]["entries"]["SEC-A1A"]["see_also"] = ["SEC-Z9Z"]
+        self.assertTrue(any("see_also" in e and "does not exist" in e
+                            for e in self._errs(d)), self._errs(d))
+
+    def test_duplicate_domain_file_is_error(self):
+        d = self._base_doc()
+        d["y.yml"] = dict(d["x.yml"])  # second file, same domain SEC
+        self.assertTrue(any("declared by" in e for e in self._errs(d)),
+                        self._errs(d))
+
+    def test_automated_by_shape(self):
+        d = self._base_doc()
+        e = d["x.yml"]["entries"]["SEC-A1A"]
+        e["automated_by"] = ["ruff:B006", "eslint:@typescript-eslint/no-explicit-any"]
+        self.assertEqual(self._errs(d), [])
+        for bad in ("ruff B006", ":B006", "ruff:", 123):
+            e["automated_by"] = [bad]
+            self.assertTrue(any("automated_by" in x for x in self._errs(d)), bad)
+
 
 class TestStabilityContract(unittest.TestCase):
     def _baseline(self, tmp, entries):
