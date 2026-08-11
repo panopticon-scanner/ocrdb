@@ -1,0 +1,103 @@
+# Gate A findings — assign one code each (domain-unpinned)
+100 findings. For EACH, output the single best OCRDb code.
+
+- GA-001: Synthetic dependency in Cargo.lock fixture may not reflect realistic resolution behavior (serde depending on a package that isn't a real dependency)
+- GA-002: Panel names require manual synchronization in a regex pattern maintained separately from the panel registry
+- GA-003: Path traversal via unsanitized file path
+- GA-004: is_applicable() false-path untested in bundler-audit and cargo-audit adapter tests
+- GA-005: BrakemanAdapter._normalize_confidence only has test coverage for one of its four branches
+- GA-006: Known vulnerable dependency: serde_yaml 0.8.25 with RUSTSEC-2024-0327
+- GA-007: load_ledger() and record() are nearly identical, copy-pasted across file_fixmes.py and file_issues.py
+- GA-008: json.load(open(...)) pattern never closes the underlying file handle
+- GA-009: SpotBugsAdapter.is_applicable test coverage is asymmetric compared to every sibling adapter
+- GA-010: main.rs's ~20 planted source-level CWE patterns have no adapter/tool able to detect them
+- GA-011: group_runner.py imports scripts.evidence without ensuring the parent directory is on sys.path, relying implicitly on the caller's setup
+- GA-012: Late imports: module imports inside test function
+- GA-013: spotbugs.py is the only adapter parsing tool output with un-hardened stdlib XML instead of JSON/SARIF like its siblings
+- GA-014: eslint _strip_prefix vs sarif_utils._norm_uri: two normalization functions look mergeable but intersect an open correctness finding, so unification was explicitly deferred out of a quality-only PR
+- GA-015: Dockerfile.fixtures pipes dotnet-install.sh into bash without version pin or verification
+- GA-016: gh-retry-with-backoff and ledger-persistence logic reimplemented independently in three separate scripts
+- GA-017: dispatch-plan*.json glob duplicated verbatim across two functions with a documented history of drifting apart
+- GA-018: README Quick Start examples use a --mode/--target CLI syntax that no longer matches the documented flags
+- GA-019: model_resolver.role_config: zero callers
+- GA-020: Unescaped attribute-context interpolation of finding.evidence.citation_quality enables stored HTML/script injection
+- GA-021: recover-linkage rebuilds the fingerprint-to-issue trust mapping from unauthenticated issue body text
+- GA-022: group_runner.py's _OUTFILE_RE regex is the only specification of the group/panel filename grammar shared between producer and consumer modules
+- GA-023: Consider possible security implications associated with the subprocess module.
+- GA-024: String Concatenation in Command Argument Construction
+- GA-025: Main block misplaced in the middle of a file rather than at the end
+- GA-026: generic-api-key has detected secret for file /src/.env.
+- GA-027: File/class name references a non-existent 'cs' scope and duplicates test_rust_integration.py
+- GA-028: cargo-audit's dict-shaped CVSS severity branch has no test coverage
+- GA-029: Self-asserted `corroborated`/`corroborated_by` fields let an untrusted reviewer finding forge verification status
+- GA-030: Shell command injection via unescaped fixture paths
+- GA-031: User-controlled URL dispatch pattern without allow-listing (latent SSRF precursor)
+- GA-032: Evidence status precedence hierarchy (verdict > corroboration > tool_source, reinforced handling) is implicit and scattered across multiple functions instead of centralized
+- GA-033: Tool finding verdict handling is not architecturally enforced anywhere in the pipeline
+- GA-034: CWE-to-OWASP mapping in the reference catalog is incomplete
+- GA-035: Scout's default-lens cheat sheet omits the redteam panel that the same document instructs it to schedule under security_mode=redteam
+- GA-036: Fingerprint-based queue ID format lacks a formal specification and has undocumented collision-suffix behavior
+- GA-037: sys.path.insert(0, ...) in dispatch.py to import sibling modules instead of a proper package layout
+- GA-038: Single 2,669-line test module conflates dozens of unrelated concerns (~46 independent TestCase classes) for synthesize.py
+- GA-039: SKILL.md documents an -e/--explore mode with no corresponding implementation in orchestrator.py
+- GA-040: lodash 4.17.20: GHSA-35jh-r3h4-6jhm
+- GA-041: Tests enforce architectural conventions by regex-scanning SKILL.md's prose instead of checking actual code structure
+- GA-042: HTML artifact is only auto-derived when --out is passed explicitly, contradicting the documented default synthesize invocation
+- GA-043: Filename orchestrator.py collides with the unrelated 'orchestrator' concept used throughout the pipeline docs/agent naming
+- GA-044: Unverified curl-pipe-to-shell installers execute remote code during panopticon-tools image build
+- GA-045: `scripts.evidence` imported twice under two different aliases (`evidence` and `ev`) in the same file, used inconsistently across classes
+- GA-046: Role-to-filename mappings defined in two places (ROLE_FILES and AGENT_NAME) with no single source of truth
+- GA-047: pyproject.toml declares rich PyPI-style [project] metadata but has no [build-system] table, so the package is not actually pip-installable
+- GA-048: env::args().nth(1).unwrap() used to fetch the second CLI arg, but the function actually receives the first argument as its own parameter
+- GA-049: The write-guard hook hardcodes tool_input['file_path'] for Write/Edit/NotebookEdit alike, silently mis-evaluating NotebookEdit's differently-shaped payload
+- GA-050: Sparse dispatch integration test coverage
+- GA-051: report-schema.json requires findings[].confidence but neither lens-sweep.md nor panel-review.md ever instructs agents to write it
+- GA-052: sarif_to_findings() can emit an empty location object when a SARIF result has no locations
+- GA-053: Repo-controlled file names and messages flow into finding `title`/`location.file`/`description` without control
+- GA-054: Ad hoc sys.path bootstrap duplicated verbatim across three entry-point scripts
+- GA-055: Command injection via unsanitized user input to shell
+- GA-056: SpotBugs report XML parsed with `xml.etree.ElementTree` instead of a hardened parser
+- GA-057: Minimal asset validation coverage: test_assets.py only checks for string presence, not structure or completeness
+- GA-058: Package: lodash Installed Version: 4.17.20 Vulnerability CVE-2021-23337 Severity: HIGH Fixed Version: 4.17.21
+- GA-059: `import contextlib, io, os, sys, json, tempfile, unittest` violates PEP 8's one-import-per-line guidance
+- GA-060: is_applicable() only tested for the pom.xml true path
+- GA-061: Tool policy mode has no cross-host validation, so hosts can silently diverge in enforcement behavior
+- GA-062: Third-party GitHub Actions pinned to mutable tags in a workflow holding write-scoped tokens
+- GA-063: load_findings() mixes four different stderr diagnostic-prefix conventions in a dozen lines
+- GA-064: Hardcoded resource file paths scattered across modules instead of a single configuration point
+- GA-065: Test uses direct module state patching instead of context managers: saves original references then restores via try/finally
+- GA-066: 10+ test methods locally re-import io/contextlib/tempfile that are already imported at module scope
+- GA-067: --emit-kimi-swarm gates on the persisted plan's stale enforced flag instead of live-verifying current registration state
+- GA-068: Module aliasing functions from another module without an explicit interface contract
+- GA-069: No validation that tests actually executed: a returncode of 0 could mean tests passed OR pytest -k matched nothing
+- GA-070: No-CWE-mapping branch (citations key omitted) is never tested
+- GA-071: Starting a process with a partial executable path
+- GA-072: pip-audit adapter indexes fix_versions[0] with a default that never fires when the list is present-but-empty
+- GA-073: README Quick Start documents a --mode flag that doesn't exist in the CLI
+- GA-074: subprocess call - check for execution of untrusted input.
+- GA-075: `import fnmatch` and `from scripts.tools import ADAPTERS` done inside a function body instead of module top-level, unlike the rest of the file
+- GA-076: pip-audit's _find_requirement globs requirements*.txt and takes the first sorted match, silently picking a dev/test requirements file over the primary requirements.txt
+- GA-077: BrakemanAdapter parse() lacks empty findings test
+- GA-078: GitHub Actions pinned to mutable version tags, not immutable commit SHAs
+- GA-079: tests/fixtures/semgrep.sarif is an orphaned fixture with no consuming test
+- GA-080: Limited path traversal edge case testing
+- GA-081: model-profiles.yml's openrouter host profile has no corresponding hardcoded fallback in model_resolver.py, unlike kimi and claude
+- GA-082: save_recovered_ledger() lacks direct test coverage
+- GA-083: main() silently auto-discovers .panopticon/groups.json when no --groups argument is given, with no log line indicating the fallback fired
+- GA-084: File resource leak in apply subcommand
+- GA-085: Missing exception handling tests for JSON parsing in adapter parsers
+- GA-086: requests 2.25.1: GHSA-9hjg-9r4m-mvj7
+- GA-087: cargo_audit.parse's default-severity branch is reached by the module's own fixture but never asserted
+- GA-088: removing a helpful abstraction that improves organization
+- GA-089: Self-asserted _group field can misattribute a finding to the wrong review group
+- GA-090: No systemic test guards against a future adapter-prefix collision in the ADAPTERS registry
+- GA-091: "eslint" stays registered in ADAPTERS as a LegacySarifAdapter after being explicitly retired in the module's own comments
+- GA-092: acquire_pr()'s docstring promises a loud RuntimeError on any failure, but a missing gh/git binary actually raises a different, undocumented exception
+- GA-093: Missing authorization check allows any caller to retrieve admin-only data
+- GA-094: Unclosed file handle in test assertion: json.load(open(actions_path)) without context manager
+- GA-095: Byte-exact prose snapshots can be satisfied by editing the fixture instead of fixing the regression
+- GA-096: Brittle Path Substitution Pattern in Tool Command Construction
+- GA-097: file_issues.py scrubs absolute paths when posting to GitHub, but the ledger-recovery fallback doesn't apply the same scrub, so recovered keys silently fail to match findings with absolute-path locations
+- GA-098: 'openrouter' host profile has no corresponding documentation in SKILL.md's Host dispatch section
+- GA-099: Known vulnerable dependency: regex 1.4.0 with RUSTSEC-2022-0013
+- GA-100: brakeman.py: is_applicable()'s .gemspec fallback path is unreachable by the existing tests

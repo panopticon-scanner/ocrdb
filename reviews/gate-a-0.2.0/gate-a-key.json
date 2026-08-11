@@ -1,0 +1,502 @@
+{
+  "GA-001": {
+    "true_code": "TST-E2D",
+    "domain": "TST",
+    "recurrence": 2
+  },
+  "GA-002": {
+    "true_code": "ARC-A2B",
+    "domain": "ARC",
+    "recurrence": 6
+  },
+  "GA-003": {
+    "true_code": "SEC-D1A",
+    "domain": "SEC",
+    "recurrence": 7
+  },
+  "GA-004": {
+    "true_code": "TST-A2F",
+    "domain": "TST",
+    "recurrence": 10
+  },
+  "GA-005": {
+    "true_code": "TST-A2E",
+    "domain": "TST",
+    "recurrence": 9
+  },
+  "GA-006": {
+    "true_code": "SEC-E1B",
+    "domain": "SEC",
+    "recurrence": 47
+  },
+  "GA-007": {
+    "true_code": "QAL-D1C",
+    "domain": "QAL",
+    "recurrence": 10
+  },
+  "GA-008": {
+    "true_code": "COD-A1A",
+    "domain": "COD",
+    "recurrence": 11
+  },
+  "GA-009": {
+    "true_code": "TST-A2F",
+    "domain": "TST",
+    "recurrence": 10
+  },
+  "GA-010": {
+    "true_code": "TST-A3B",
+    "domain": "TST",
+    "recurrence": 6
+  },
+  "GA-011": {
+    "true_code": "QAL-F1A",
+    "domain": "QAL",
+    "recurrence": 12
+  },
+  "GA-012": {
+    "true_code": "TST-C5C",
+    "domain": "TST",
+    "recurrence": 4
+  },
+  "GA-013": {
+    "true_code": "ARC-A4A",
+    "domain": "ARC",
+    "recurrence": 10
+  },
+  "GA-014": {
+    "true_code": "QAL-H2B",
+    "domain": "QAL",
+    "recurrence": 1
+  },
+  "GA-015": {
+    "true_code": "SEC-E3C",
+    "domain": "SEC",
+    "recurrence": 8
+  },
+  "GA-016": {
+    "true_code": "ARC-A3A",
+    "domain": "ARC",
+    "recurrence": 7
+  },
+  "GA-017": {
+    "true_code": "ARC-A3B",
+    "domain": "ARC",
+    "recurrence": 5
+  },
+  "GA-018": {
+    "true_code": "QAL-C2C",
+    "domain": "QAL",
+    "recurrence": 6
+  },
+  "GA-019": {
+    "true_code": "QAL-E3A",
+    "domain": "QAL",
+    "recurrence": 1
+  },
+  "GA-020": {
+    "true_code": "SEC-B1C",
+    "domain": "SEC",
+    "recurrence": 8
+  },
+  "GA-021": {
+    "true_code": "AGT-C1C",
+    "domain": "AGT",
+    "recurrence": 3
+  },
+  "GA-022": {
+    "true_code": "ARC-A2B",
+    "domain": "ARC",
+    "recurrence": 6
+  },
+  "GA-023": {
+    "true_code": "SEC-A1B",
+    "domain": "SEC",
+    "recurrence": 96
+  },
+  "GA-024": {
+    "true_code": "SEC-A1B",
+    "domain": "SEC",
+    "recurrence": 96
+  },
+  "GA-025": {
+    "true_code": "QAL-F2B",
+    "domain": "QAL",
+    "recurrence": 3
+  },
+  "GA-026": {
+    "true_code": "SEC-B3C",
+    "domain": "SEC",
+    "recurrence": 6
+  },
+  "GA-027": {
+    "true_code": "TST-C3D",
+    "domain": "TST",
+    "recurrence": 3
+  },
+  "GA-028": {
+    "true_code": "TST-A1B",
+    "domain": "TST",
+    "recurrence": 73
+  },
+  "GA-029": {
+    "true_code": "AGT-C1A",
+    "domain": "AGT",
+    "recurrence": 9
+  },
+  "GA-030": {
+    "true_code": "SEC-A1A",
+    "domain": "SEC",
+    "recurrence": 17
+  },
+  "GA-031": {
+    "true_code": "SEC-D2B",
+    "domain": "SEC",
+    "recurrence": 2
+  },
+  "GA-032": {
+    "true_code": "ARC-A1A",
+    "domain": "ARC",
+    "recurrence": 3
+  },
+  "GA-033": {
+    "true_code": "ARC-F1E",
+    "domain": "ARC",
+    "recurrence": 3
+  },
+  "GA-034": {
+    "true_code": "COD-C3B",
+    "domain": "COD",
+    "recurrence": 3
+  },
+  "GA-035": {
+    "true_code": "ARC-D2F",
+    "domain": "ARC",
+    "recurrence": 5
+  },
+  "GA-036": {
+    "true_code": "ARC-D1C",
+    "domain": "ARC",
+    "recurrence": 4
+  },
+  "GA-037": {
+    "true_code": "ARC-A2C",
+    "domain": "ARC",
+    "recurrence": 6
+  },
+  "GA-038": {
+    "true_code": "TST-C2A",
+    "domain": "TST",
+    "recurrence": 2
+  },
+  "GA-039": {
+    "true_code": "COD-D2B",
+    "domain": "COD",
+    "recurrence": 4
+  },
+  "GA-040": {
+    "true_code": "SEC-E1B",
+    "domain": "SEC",
+    "recurrence": 47
+  },
+  "GA-041": {
+    "true_code": "TST-G3F",
+    "domain": "TST",
+    "recurrence": 5
+  },
+  "GA-042": {
+    "true_code": "COD-D2B",
+    "domain": "COD",
+    "recurrence": 4
+  },
+  "GA-043": {
+    "true_code": "QAL-A1C",
+    "domain": "QAL",
+    "recurrence": 2
+  },
+  "GA-044": {
+    "true_code": "SEC-E3C",
+    "domain": "SEC",
+    "recurrence": 8
+  },
+  "GA-045": {
+    "true_code": "QAL-B1C",
+    "domain": "QAL",
+    "recurrence": 11
+  },
+  "GA-046": {
+    "true_code": "ARC-A3B",
+    "domain": "ARC",
+    "recurrence": 5
+  },
+  "GA-047": {
+    "true_code": "ARC-B1D",
+    "domain": "ARC",
+    "recurrence": 3
+  },
+  "GA-048": {
+    "true_code": "COD-A2B",
+    "domain": "COD",
+    "recurrence": 2
+  },
+  "GA-049": {
+    "true_code": "ARC-F2C",
+    "domain": "ARC",
+    "recurrence": 4
+  },
+  "GA-050": {
+    "true_code": "TST-A3C",
+    "domain": "TST",
+    "recurrence": 19
+  },
+  "GA-051": {
+    "true_code": "ARC-D2E",
+    "domain": "ARC",
+    "recurrence": 3
+  },
+  "GA-052": {
+    "true_code": "COD-C3A",
+    "domain": "COD",
+    "recurrence": 7
+  },
+  "GA-053": {
+    "true_code": "SEC-B1C",
+    "domain": "SEC",
+    "recurrence": 8
+  },
+  "GA-054": {
+    "true_code": "ARC-A2C",
+    "domain": "ARC",
+    "recurrence": 6
+  },
+  "GA-055": {
+    "true_code": "SEC-A1A",
+    "domain": "SEC",
+    "recurrence": 17
+  },
+  "GA-056": {
+    "true_code": "SEC-A4B",
+    "domain": "SEC",
+    "recurrence": 6
+  },
+  "GA-057": {
+    "true_code": "TST-B1C",
+    "domain": "TST",
+    "recurrence": 10
+  },
+  "GA-058": {
+    "true_code": "SEC-E1B",
+    "domain": "SEC",
+    "recurrence": 47
+  },
+  "GA-059": {
+    "true_code": "QAL-B1A",
+    "domain": "QAL",
+    "recurrence": 20
+  },
+  "GA-060": {
+    "true_code": "TST-A2F",
+    "domain": "TST",
+    "recurrence": 10
+  },
+  "GA-061": {
+    "true_code": "ARC-E3C",
+    "domain": "ARC",
+    "recurrence": 3
+  },
+  "GA-062": {
+    "true_code": "SEC-E2B",
+    "domain": "SEC",
+    "recurrence": 25
+  },
+  "GA-063": {
+    "true_code": "QAL-B3A",
+    "domain": "QAL",
+    "recurrence": 5
+  },
+  "GA-064": {
+    "true_code": "ARC-E1C",
+    "domain": "ARC",
+    "recurrence": 3
+  },
+  "GA-065": {
+    "true_code": "TST-D1A",
+    "domain": "TST",
+    "recurrence": 5
+  },
+  "GA-066": {
+    "true_code": "QAL-B1C",
+    "domain": "QAL",
+    "recurrence": 11
+  },
+  "GA-067": {
+    "true_code": "ARC-F1A",
+    "domain": "ARC",
+    "recurrence": 3
+  },
+  "GA-068": {
+    "true_code": "ARC-A2D",
+    "domain": "ARC",
+    "recurrence": 6
+  },
+  "GA-069": {
+    "true_code": "TST-F2B",
+    "domain": "TST",
+    "recurrence": 3
+  },
+  "GA-070": {
+    "true_code": "TST-A2D",
+    "domain": "TST",
+    "recurrence": 26
+  },
+  "GA-071": {
+    "true_code": "SEC-A1B",
+    "domain": "SEC",
+    "recurrence": 96
+  },
+  "GA-072": {
+    "true_code": "COD-A2C",
+    "domain": "COD",
+    "recurrence": 3
+  },
+  "GA-073": {
+    "true_code": "COD-D2B",
+    "domain": "COD",
+    "recurrence": 4
+  },
+  "GA-074": {
+    "true_code": "SEC-A1B",
+    "domain": "SEC",
+    "recurrence": 96
+  },
+  "GA-075": {
+    "true_code": "QAL-B1B",
+    "domain": "QAL",
+    "recurrence": 8
+  },
+  "GA-076": {
+    "true_code": "COD-C2A",
+    "domain": "COD",
+    "recurrence": 2
+  },
+  "GA-077": {
+    "true_code": "TST-A2D",
+    "domain": "TST",
+    "recurrence": 26
+  },
+  "GA-078": {
+    "true_code": "SEC-E2B",
+    "domain": "SEC",
+    "recurrence": 25
+  },
+  "GA-079": {
+    "true_code": "TST-E1B",
+    "domain": "TST",
+    "recurrence": 6
+  },
+  "GA-080": {
+    "true_code": "TST-A3C",
+    "domain": "TST",
+    "recurrence": 19
+  },
+  "GA-081": {
+    "true_code": "ARC-E3C",
+    "domain": "ARC",
+    "recurrence": 3
+  },
+  "GA-082": {
+    "true_code": "TST-A1C",
+    "domain": "TST",
+    "recurrence": 12
+  },
+  "GA-083": {
+    "true_code": "ARC-E2D",
+    "domain": "ARC",
+    "recurrence": 2
+  },
+  "GA-084": {
+    "true_code": "COD-A1A",
+    "domain": "COD",
+    "recurrence": 11
+  },
+  "GA-085": {
+    "true_code": "TST-A2B",
+    "domain": "TST",
+    "recurrence": 13
+  },
+  "GA-086": {
+    "true_code": "SEC-E1B",
+    "domain": "SEC",
+    "recurrence": 47
+  },
+  "GA-087": {
+    "true_code": "TST-A2C",
+    "domain": "TST",
+    "recurrence": 6
+  },
+  "GA-088": {
+    "true_code": "QAL-H2A",
+    "domain": "QAL",
+    "recurrence": 1
+  },
+  "GA-089": {
+    "true_code": "AGT-C1A",
+    "domain": "AGT",
+    "recurrence": 9
+  },
+  "GA-090": {
+    "true_code": "TST-A2A",
+    "domain": "TST",
+    "recurrence": 3
+  },
+  "GA-091": {
+    "true_code": "QAL-E2B",
+    "domain": "QAL",
+    "recurrence": 4
+  },
+  "GA-092": {
+    "true_code": "QAL-C2D",
+    "domain": "QAL",
+    "recurrence": 1
+  },
+  "GA-093": {
+    "true_code": "SEC-C1C",
+    "domain": "SEC",
+    "recurrence": 2
+  },
+  "GA-094": {
+    "true_code": "TST-D1B",
+    "domain": "TST",
+    "recurrence": 13
+  },
+  "GA-095": {
+    "true_code": "TST-B3B",
+    "domain": "TST",
+    "recurrence": 4
+  },
+  "GA-096": {
+    "true_code": "SEC-A1B",
+    "domain": "SEC",
+    "recurrence": 96
+  },
+  "GA-097": {
+    "true_code": "ARC-D1A",
+    "domain": "ARC",
+    "recurrence": 4
+  },
+  "GA-098": {
+    "true_code": "COD-D2D",
+    "domain": "COD",
+    "recurrence": 2
+  },
+  "GA-099": {
+    "true_code": "SEC-E1B",
+    "domain": "SEC",
+    "recurrence": 47
+  },
+  "GA-100": {
+    "true_code": "TST-A2C",
+    "domain": "TST",
+    "recurrence": 6
+  }
+}
