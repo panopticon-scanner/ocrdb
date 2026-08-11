@@ -2600,7 +2600,7 @@
         },
         "QAL-A2B": {
           "cwe": [
-            1078
+            "CWE-1078"
           ],
           "examples": [
             "`\"**Found by:** %s%s\" % (src, \"  \\u00b7  model: %s\" % prov[\"model\"] if prov.get(\"model\") else \"\")` reads, at a glance, as if the ternary applies to the wrong operand",
@@ -2649,7 +2649,7 @@
             "ruff:E401"
           ],
           "cwe": [
-            1078
+            "CWE-1078"
           ],
           "examples": [
             "`import contextlib, io, os, sys, json, tempfile, unittest` violates PEP 8's one-import-per-line guidance",
@@ -2668,7 +2668,7 @@
             "ruff:E402"
           ],
           "cwe": [
-            1078
+            "CWE-1078"
           ],
           "examples": [
             "`import fnmatch` and `from scripts.tools import ADAPTERS` done inside a function body instead of module top-level, unlike the rest of the file",
@@ -2687,7 +2687,7 @@
             "ruff:F811"
           ],
           "cwe": [
-            1041
+            "CWE-1041"
           ],
           "examples": [
             "`scripts.evidence` imported twice under two different aliases (`evidence` and `ev`) in the same file, used inconsistently across classes",
@@ -2706,7 +2706,7 @@
             "ruff:E501"
           ],
           "cwe": [
-            1078
+            "CWE-1078"
           ],
           "examples": [
             "A nested ternary conditional expression spans ~107 characters, exceeding PEP 8's line-length guideline",
@@ -2722,7 +2722,7 @@
         },
         "QAL-B2B": {
           "cwe": [
-            1078
+            "CWE-1078"
           ],
           "examples": [
             "Backslash line continuation used instead of implicit (parenthesized) continuation",
@@ -2738,7 +2738,7 @@
         },
         "QAL-B2C": {
           "cwe": [
-            1078
+            "CWE-1078"
           ],
           "examples": [
             "Missing blank line before a module-level function definition",
@@ -2754,7 +2754,7 @@
         },
         "QAL-B2D": {
           "cwe": [
-            1078
+            "CWE-1078"
           ],
           "examples": [
             "Dict literals throughout a test file consistently omit whitespace after ':' and ',', breaking from the file's dominant formatting style"
@@ -2769,7 +2769,7 @@
         },
         "QAL-B3A": {
           "cwe": [
-            1078
+            "CWE-1078"
           ],
           "examples": [
             "model_resolver.py's 'WARNING:' stderr prefix diverges from the package-wide '<module>: message' convention used by dispatch.py, ingest_tools.py, etc.",
@@ -2785,7 +2785,7 @@
         },
         "QAL-B3B": {
           "cwe": [
-            1078
+            "CWE-1078"
           ],
           "examples": [
             "run_adapters() mixes f-string and %-style diagnostic messages while every sibling function in the same file uses %-formatting",
@@ -2801,7 +2801,7 @@
         },
         "QAL-B3C": {
           "cwe": [
-            1078
+            "CWE-1078"
           ],
           "examples": [
             "String built with the + operator instead of an f-string, inconsistent with the file's dominant idiom"
@@ -2945,7 +2945,7 @@
         "QAL-D1A": {
           "character": "opportunity",
           "cwe": [
-            1041
+            "CWE-1041"
           ],
           "examples": [
             "The retry/backoff-on-rate-limit loop for `gh issue create` is triplicated verbatim across three scripts",
@@ -2964,7 +2964,7 @@
         },
         "QAL-D1B": {
           "cwe": [
-            1041
+            "CWE-1041"
           ],
           "examples": [
             "RATE_HINTS is defined identically or near-identically in three separate scripts instead of one shared source",
@@ -2981,7 +2981,7 @@
         "QAL-D1C": {
           "character": "opportunity",
           "cwe": [
-            1041
+            "CWE-1041"
           ],
           "examples": [
             "load_ledger() and record() are nearly identical, copy-pasted across file_fixmes.py and file_issues.py",
@@ -2999,7 +2999,7 @@
         },
         "QAL-D2A": {
           "cwe": [
-            1041
+            "CWE-1041"
           ],
           "examples": [
             "The identical sys.path.insert(...) skill-path boilerplate is duplicated verbatim across every one of 35 test files, with no shared conftest.py"
@@ -3014,7 +3014,7 @@
         },
         "QAL-D2B": {
           "cwe": [
-            1041
+            "CWE-1041"
           ],
           "examples": [
             "The identical three-line FIXTURE_ROOT env-var lookup block is copy-pasted across all three language-integration test files"
@@ -3029,7 +3029,7 @@
         },
         "QAL-E1A": {
           "cwe": [
-            561
+            "CWE-561"
           ],
           "examples": [
             "Ruff's `[tool.ruff.lint.pydocstyle] convention = \"google\"` is dead configuration because the \"D\" rule set that would consume it is never selected"
@@ -3045,8 +3045,8 @@
         },
         "QAL-E1B": {
           "cwe": [
-            561,
-            1041
+            "CWE-561",
+            "CWE-1041"
           ],
           "examples": [
             "base.py declares ID_RE, an unused, stricter duplicate of the canonical finding-ID regex actually used in synthesize.py; nothing imports or calls it"
@@ -3062,8 +3062,8 @@
         },
         "QAL-E2A": {
           "cwe": [
-            561,
-            1041
+            "CWE-561",
+            "CWE-1041"
           ],
           "examples": [
             "test_rust_cs_integration.py is a stray file whose name/class don't match its content and duplicate an existing, correctly-named integration test"
@@ -3078,7 +3078,7 @@
         },
         "QAL-E2B": {
           "cwe": [
-            561
+            "CWE-561"
           ],
           "examples": [
             "\"eslint\" stays registered in ADAPTERS as a LegacySarifAdapter after being explicitly retired in the module's own comments",
@@ -3136,7 +3136,7 @@
         },
         "QAL-F1B": {
           "cwe": [
-            1099
+            "CWE-1099"
           ],
           "examples": [
             "Adapter modules use inconsistent import patterns from one file to the next",
@@ -3164,7 +3164,7 @@
         },
         "QAL-F2B": {
           "cwe": [
-            1078
+            "CWE-1078"
           ],
           "examples": [
             "`if __name__ == \"__main__\": unittest.main()` is placed mid-file, before a second TestCase class is even defined",
@@ -3192,7 +3192,7 @@
         },
         "QAL-F3A": {
           "cwe": [
-            1099
+            "CWE-1099"
           ],
           "examples": [
             "A test locally does `from unittest import mock` and nests four levels of `with mock.patch(...)`, diverging from every sibling adapter test's mocking idiom",
@@ -3224,7 +3224,7 @@
         },
         "QAL-F3C": {
           "cwe": [
-            1099
+            "CWE-1099"
           ],
           "examples": [
             "model-profiles.yml uses a different field-naming convention for model/effort settings depending on which host section it's in"

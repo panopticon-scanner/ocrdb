@@ -197,5 +197,47 @@ class TestValidateCli(unittest.TestCase):
         self.assertIn("381 entries", proc.stdout)
 
 
+class TestCatalog(unittest.TestCase):
+    def _bundle(self, tmp):
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            build_bundle.main(["--version", "0.0.0-test",
+                               "--domains-dir", os.path.join(ROOT, "domains"),
+                               "--out", tmp])
+        return os.path.join(tmp, "ocrdb-0.0.0-test.json")
+
+    def test_catalog_views_are_complete_and_deterministic(self):
+        import build_catalog, json
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle = self._bundle(tmp)
+            a, b = os.path.join(tmp, "a"), os.path.join(tmp, "b")
+            os.makedirs(a); os.makedirs(b)
+            for d in (a, b):
+                with redirect_stdout(io.StringIO()):
+                    build_catalog.main(["--bundle", bundle, "--out", d, "--html-out", d])
+            md = open(os.path.join(a, "CATALOG.md"), encoding="utf-8").read()
+            html = open(os.path.join(a, "ocrdb-0.0.0-test.html"), encoding="utf-8").read()
+            codes = [c for dom in json.load(open(bundle))["domains"].values()
+                     for c in dom["entries"]]
+            self.assertEqual(len(codes), 381)
+            for c in codes:
+                self.assertIn(c, md, c)
+                self.assertIn(c, html, c)
+            # byte-identical re-run
+            self.assertEqual(open(os.path.join(a, "CATALOG.md"), "rb").read(),
+                             open(os.path.join(b, "CATALOG.md"), "rb").read())
+            self.assertEqual(open(os.path.join(a, "ocrdb-0.0.0-test.html"), "rb").read(),
+                             open(os.path.join(b, "ocrdb-0.0.0-test.html"), "rb").read())
+
+    def test_html_is_self_contained(self):
+        import build_catalog
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle = self._bundle(tmp)
+            with redirect_stdout(io.StringIO()):
+                build_catalog.main(["--bundle", bundle, "--out", tmp, "--html-out", tmp])
+            html = open(os.path.join(tmp, "ocrdb-0.0.0-test.html"), encoding="utf-8").read()
+            for external in ("http://", "https://", "src=", "cdn"):
+                self.assertNotIn(external, html.lower().replace("initial-scale", ""))
+
+
 if __name__ == "__main__":
     unittest.main()

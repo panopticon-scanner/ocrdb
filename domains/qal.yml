@@ -102,7 +102,7 @@ entries:
     - corpus-4x
     recurrence: 3
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - '`"**Found by:** %s%s" % (src, "  \u00b7  model: %s" % prov["model"] if prov.get("model") else "")` reads,
       at a glance, as if the ternary applies to the wrong operand'
@@ -140,7 +140,7 @@ entries:
     - corpus-4x
     recurrence: 20
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - '`import contextlib, io, os, sys, json, tempfile, unittest` violates PEP 8''s one-import-per-line guidance'
     - '`import sys, os` on a single line (PEP 8 E401), inconsistent with every sibling test file''s one-import-per-line
@@ -155,7 +155,7 @@ entries:
     - corpus-4x
     recurrence: 8
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - '`import fnmatch` and `from scripts.tools import ADAPTERS` done inside a function body instead of module top-level,
       unlike the rest of the file'
@@ -170,7 +170,7 @@ entries:
     - corpus-4x
     recurrence: 11
     cwe:
-    - 1041
+    - CWE-1041
     examples:
     - '`scripts.evidence` imported twice under two different aliases (`evidence` and `ev`) in the same file, used
       inconsistently across classes'
@@ -185,7 +185,7 @@ entries:
     - corpus-4x
     recurrence: 3
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - A nested ternary conditional expression spans ~107 characters, exceeding PEP 8's line-length guideline
     - Line exceeds an 88-character limit
@@ -199,7 +199,7 @@ entries:
     - corpus-4x
     recurrence: 2
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - Backslash line continuation used instead of implicit (parenthesized) continuation
     - Misaligned continuation line in a tuple return statement
@@ -211,7 +211,7 @@ entries:
     - corpus-4x
     recurrence: 2
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - Missing blank line before a module-level function definition
     - Missing PEP8 two-blank-line separation between top-level definitions
@@ -223,7 +223,7 @@ entries:
     - corpus-4x
     recurrence: 2
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - Dict literals throughout a test file consistently omit whitespace after ':' and ',', breaking from the file's
       dominant formatting style
@@ -235,7 +235,7 @@ entries:
     - corpus-4x
     recurrence: 5
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - 'model_resolver.py''s ''WARNING:'' stderr prefix diverges from the package-wide ''<module>: message'' convention
       used by dispatch.py, ingest_tools.py, etc.'
@@ -248,7 +248,7 @@ entries:
     - corpus-4x
     recurrence: 4
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - run_adapters() mixes f-string and %-style diagnostic messages while every sibling function in the same file
       uses %-formatting
@@ -261,7 +261,7 @@ entries:
     - corpus-4x
     recurrence: 1
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - String built with the + operator instead of an f-string, inconsistent with the file's dominant idiom
   QAL-C1A:
@@ -380,7 +380,7 @@ entries:
     - skills-class
     recurrence: 7
     cwe:
-    - 1041
+    - CWE-1041
     examples:
     - The retry/backoff-on-rate-limit loop for `gh issue create` is triplicated verbatim across three scripts
     - run_tools()'s legacy-SARIF and Phase-1-adapter dispatch blocks duplicate ~20 lines of subprocess invoke/error-handling
@@ -394,7 +394,7 @@ entries:
     - corpus-4x
     recurrence: 8
     cwe:
-    - 1041
+    - CWE-1041
     examples:
     - RATE_HINTS is defined identically or near-identically in three separate scripts instead of one shared source
     - The six canonical panel names are hand-duplicated, with differing order, across three modules instead of imported
@@ -409,7 +409,7 @@ entries:
     - skills-class
     recurrence: 10
     cwe:
-    - 1041
+    - CWE-1041
     examples:
     - load_ledger() and record() are nearly identical, copy-pasted across file_fixmes.py and file_issues.py
     - _severity_class and _panel_class implement the exact same strip/lowercase transform, differing only in a CSS-class
@@ -423,7 +423,7 @@ entries:
     - corpus-4x
     recurrence: 5
     cwe:
-    - 1041
+    - CWE-1041
     examples:
     - The identical sys.path.insert(...) skill-path boilerplate is duplicated verbatim across every one of 35 test
       files, with no shared conftest.py
@@ -435,7 +435,7 @@ entries:
     - corpus-4x
     recurrence: 4
     cwe:
-    - 1041
+    - CWE-1041
     examples:
     - The identical three-line FIXTURE_ROOT env-var lookup block is copy-pasted across all three language-integration
       test files
@@ -448,7 +448,7 @@ entries:
     - 1 correctness-tagged
     recurrence: 2
     cwe:
-    - 561
+    - CWE-561
     examples:
     - Ruff's `[tool.ruff.lint.pydocstyle] convention = "google"` is dead configuration because the "D" rule set
       that would consume it is never selected
@@ -461,8 +461,8 @@ entries:
     - incl. 1 test-coverage-tagged
     recurrence: 4
     cwe:
-    - 561
-    - 1041
+    - CWE-561
+    - CWE-1041
     examples:
     - base.py declares ID_RE, an unused, stricter duplicate of the canonical finding-ID regex actually used in synthesize.py;
       nothing imports or calls it
@@ -474,8 +474,8 @@ entries:
     - corpus-4x
     recurrence: 3
     cwe:
-    - 561
-    - 1041
+    - CWE-561
+    - CWE-1041
     examples:
     - test_rust_cs_integration.py is a stray file whose name/class don't match its content and duplicate an existing,
       correctly-named integration test
@@ -487,7 +487,7 @@ entries:
     - corpus-4x
     recurrence: 4
     cwe:
-    - 561
+    - CWE-561
     examples:
     - '"eslint" stays registered in ADAPTERS as a LegacySarifAdapter after being explicitly retired in the module''s
       own comments'
@@ -536,7 +536,7 @@ entries:
     - corpus-4x
     recurrence: 5
     cwe:
-    - 1099
+    - CWE-1099
     examples:
     - Adapter modules use inconsistent import patterns from one file to the next
     - unittest.mock.patch used without importing the mock submodule, an inconsistent stderr-capture idiom relative
@@ -559,7 +559,7 @@ entries:
     - corpus-4x
     recurrence: 3
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - '`if __name__ == "__main__": unittest.main()` is placed mid-file, before a second TestCase class is even defined'
     - Main block misplaced in the middle of a file rather than at the end
@@ -580,7 +580,7 @@ entries:
     - corpus-4x
     recurrence: 8
     cwe:
-    - 1099
+    - CWE-1099
     examples:
     - A test locally does `from unittest import mock` and nests four levels of `with mock.patch(...)`, diverging
       from every sibling adapter test's mocking idiom
@@ -608,7 +608,7 @@ entries:
     - corpus-4x
     recurrence: 1
     cwe:
-    - 1099
+    - CWE-1099
     examples:
     - model-profiles.yml uses a different field-naming convention for model/effort settings depending on which host
       section it's in
