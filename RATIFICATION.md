@@ -1,3 +1,11 @@
+# OCRDb 0.1 — Ratification Agenda  ·  RATIFIED 2026-08-10
+
+> **Status: RESOLVED.** This agenda was walked in the owner ratification session on 2026-08-10; every big rock and gap decision was ruled and applied to `domains/`. The 0.1.0 bundle is built and tagged. See `CHANGELOG.md` for the rulings as-applied. The text below is preserved as the historical agenda that fed the session.
+>
+> **Deferred:** license call (CC BY-SA vs CC0) before 1.0; a domain-**unpinned** Gate A re-run now that single-homing is resolved.
+
+---
+
 # OCRDb 0.1 — Ratification Agenda
 
 **Status:** Awaiting the owner's ratification session. Nothing in `domains/` is stable until this document's questions are ruled on and the 0.1 tag is cut.

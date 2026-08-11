@@ -1,6 +1,4 @@
-# OCRDb domain file - DRAFT 0.1 (pre-ratification)
-# Codes are NOT yet stable: ratification may rename/split/merge/re-letter.
-# The stability contract (SCHEMA.md) activates at the 0.1 release tag.
+# OCRDb domain file - 0.1 (RATIFIED; codes final at the 0.1 tag)
 domain: QAL
 name: quality-maintainability
 areas:
@@ -41,24 +39,18 @@ areas:
     name: efficiency
     categories:
       '1': redundant-computation
+      '2': memory-and-scale
   H:
     name: complexity-and-simplification
     categories:
       '1': complexity
       '2': simplification-judgment
+  I:
+    name: observability
+    categories:
+      '1': diagnostics
 entries:
   QAL-A1A:
-    name: name-collision-with-domain-concept
-    typical_severity: INFO
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - Filename orchestrator.py collides with the unrelated 'orchestrator' concept used throughout the pipeline docs/agent
-      naming
-    - Same collision flagged again independently in a later review pass on the same file
-  QAL-A1B:
     name: misleading-identifier-name
     typical_severity: LOW
     status: active
@@ -70,7 +62,7 @@ entries:
     - Helper _depth_gte computes lens_depth <= panel_depth -- its name promises the opposite comparison direction
       from what its body does (flagged independently 3 times across review passes)
     - Test named for a CWE-uppercasing transformation actually just verifies a static dict lookup
-  QAL-A1C:
+  QAL-A1B:
     name: inconsistent-naming-convention
     typical_severity: INFO
     status: active
@@ -81,7 +73,41 @@ entries:
     character: opportunity
     examples:
     - maintain consistent naming conventions across a module
+  QAL-A1C:
+    name: name-collision-with-domain-concept
+    typical_severity: INFO
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - Filename orchestrator.py collides with the unrelated 'orchestrator' concept used throughout the pipeline docs/agent
+      naming
+    - Same collision flagged again independently in a later review pass on the same file
   QAL-A2A:
+    name: hardcoded-machine-specific-literal
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - '`REPO_ROOT = "/Volumes/Mini Vault/untitled_folder/projects/panopticon/"` is a literal, single-developer local
+      filesystem path baked into committed source'
+  QAL-A2B:
+    name: confusing-expression-precedence
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    cwe:
+    - CWE-1078
+    examples:
+    - '`"**Found by:** %s%s" % (src, "  \u00b7  model: %s" % prov["model"] if prov.get("model") else "")` reads,
+      at a glance, as if the ternary applies to the wrong operand'
+    - Awkward line break in a conditional expression obscures which branch a continuation line belongs to
+  QAL-A2C:
     name: magic-number-or-fragile-hardcoded-index
     typical_severity: LOW
     status: active
@@ -96,29 +122,6 @@ entries:
     - render_summary() prepends banner lines via three independent lines.insert(<fixed index>, ...) calls with undocumented,
       fragile hardcoded indices
     character: opportunity
-  QAL-A2B:
-    name: confusing-expression-precedence
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - 1078
-    examples:
-    - '`"**Found by:** %s%s" % (src, "  \u00b7  model: %s" % prov["model"] if prov.get("model") else "")` reads,
-      at a glance, as if the ternary applies to the wrong operand'
-    - Awkward line break in a conditional expression obscures which branch a continuation line belongs to
-  QAL-A2C:
-    name: hardcoded-machine-specific-literal
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - '`REPO_ROOT = "/Volumes/Mini Vault/untitled_folder/projects/panopticon/"` is a literal, single-developer local
-      filesystem path baked into committed source'
   QAL-A2D:
     name: comment-noise
     typical_severity: INFO
@@ -137,25 +140,14 @@ entries:
     - corpus-4x
     recurrence: 20
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - '`import contextlib, io, os, sys, json, tempfile, unittest` violates PEP 8''s one-import-per-line guidance'
     - '`import sys, os` on a single line (PEP 8 E401), inconsistent with every sibling test file''s one-import-per-line
       style'
+    automated_by:
+    - ruff:E401
   QAL-B1B:
-    name: redundant-shadowing-import
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 11
-    cwe:
-    - 1041
-    examples:
-    - '`scripts.evidence` imported twice under two different aliases (`evidence` and `ev`) in the same file, used
-      inconsistently across classes'
-    - 10+ test methods locally re-import io/contextlib/tempfile that are already imported at module scope
-  QAL-B1C:
     name: mid-file-or-inline-import-placement
     typical_severity: LOW
     status: active
@@ -163,24 +155,29 @@ entries:
     - corpus-4x
     recurrence: 8
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - '`import fnmatch` and `from scripts.tools import ADAPTERS` done inside a function body instead of module top-level,
       unlike the rest of the file'
     - Import statements placed inside test methods rather than at module level
-  QAL-B2A:
-    name: inconsistent-literal-whitespace
-    typical_severity: INFO
+    automated_by:
+    - ruff:E402
+  QAL-B1C:
+    name: redundant-shadowing-import
+    typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
-    recurrence: 2
+    recurrence: 11
     cwe:
-    - 1078
+    - CWE-1041
     examples:
-    - Dict literals throughout a test file consistently omit whitespace after ':' and ',', breaking from the file's
-      dominant formatting style
-  QAL-B2B:
+    - '`scripts.evidence` imported twice under two different aliases (`evidence` and `ev`) in the same file, used
+      inconsistently across classes'
+    - 10+ test methods locally re-import io/contextlib/tempfile that are already imported at module scope
+    automated_by:
+    - ruff:F811
+  QAL-B2A:
     name: line-too-long
     typical_severity: LOW
     status: active
@@ -188,11 +185,13 @@ entries:
     - corpus-4x
     recurrence: 3
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - A nested ternary conditional expression spans ~107 characters, exceeding PEP 8's line-length guideline
     - Line exceeds an 88-character limit
-  QAL-B2C:
+    automated_by:
+    - ruff:E501
+  QAL-B2B:
     name: misaligned-or-awkward-continuation
     typical_severity: LOW
     status: active
@@ -200,11 +199,11 @@ entries:
     - corpus-4x
     recurrence: 2
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - Backslash line continuation used instead of implicit (parenthesized) continuation
     - Misaligned continuation line in a tuple return statement
-  QAL-B2D:
+  QAL-B2C:
     name: missing-blank-line-separation
     typical_severity: LOW
     status: active
@@ -212,24 +211,23 @@ entries:
     - corpus-4x
     recurrence: 2
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - Missing blank line before a module-level function definition
     - Missing PEP8 two-blank-line separation between top-level definitions
-  QAL-B3A:
-    name: mixed-fstring-percent-formatting
-    typical_severity: LOW
+  QAL-B2D:
+    name: inconsistent-literal-whitespace
+    typical_severity: INFO
     status: active
     provenance:
     - corpus-4x
-    recurrence: 4
+    recurrence: 2
     cwe:
-    - 1078
+    - CWE-1078
     examples:
-    - run_adapters() mixes f-string and %-style diagnostic messages while every sibling function in the same file
-      uses %-formatting
-    - Mixed f-string and %-formatting used for near-identical diagnostics in one file
-  QAL-B3B:
+    - Dict literals throughout a test file consistently omit whitespace after ':' and ',', breaking from the file's
+      dominant formatting style
+  QAL-B3A:
     name: inconsistent-diagnostic-prefix-convention
     typical_severity: LOW
     status: active
@@ -237,11 +235,24 @@ entries:
     - corpus-4x
     recurrence: 5
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - 'model_resolver.py''s ''WARNING:'' stderr prefix diverges from the package-wide ''<module>: message'' convention
       used by dispatch.py, ingest_tools.py, etc.'
     - load_findings() mixes four different stderr diagnostic-prefix conventions in a dozen lines
+  QAL-B3B:
+    name: mixed-fstring-percent-formatting
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    cwe:
+    - CWE-1078
+    examples:
+    - run_adapters() mixes f-string and %-style diagnostic messages while every sibling function in the same file
+      uses %-formatting
+    - Mixed f-string and %-formatting used for near-identical diagnostics in one file
   QAL-B3C:
     name: string-concatenation-instead-of-fstring
     typical_severity: LOW
@@ -250,20 +261,29 @@ entries:
     - corpus-4x
     recurrence: 1
     cwe:
-    - 1078
+    - CWE-1078
     examples:
     - String built with the + operator instead of an f-string, inconsistent with the file's dominant idiom
   QAL-C1A:
-    name: stale-version-number
+    name: stale-external-url-reference
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    examples:
+    - '[project.urls] all point to a stale GitHub org inconsistent with the actual `git remote origin`'
+    - Hardcoded issue-repo org differs between two sibling scripts (psyberone/panopticon vs panopticon-scanner/panopticon)
+  QAL-C1B:
+    name: inconsistent-ordering-in-docs
     typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
-    recurrence: 5
+    recurrence: 1
     examples:
-    - pyproject.toml [project].version reads 3.0.0 while the project's actual current version is 4.2.0
-    - CHANGELOG.md's only versioned entry doesn't match DEVELOPMENT.md's description of the same version
-  QAL-C1B:
+    - DEVELOPMENT.md's version History list is in neither ascending nor descending order
+  QAL-C1C:
     name: stale-file-path-reference
     typical_severity: LOW
     status: active
@@ -274,78 +294,17 @@ entries:
     - CODEOWNERS 'CI / security tooling' and 'Schemas and reference data' sections list paths that no longer exist
       post-restructure
     - 'A module docstring''s Usage: line names the wrong path for the script it documents'
-  QAL-C1C:
-    name: inconsistent-ordering-in-docs
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - DEVELOPMENT.md's version History list is in neither ascending nor descending order
   QAL-C1D:
-    name: stale-external-url-reference
-    typical_severity: MEDIUM
+    name: stale-version-number
+    typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
-    recurrence: 4
+    recurrence: 5
     examples:
-    - '[project.urls] all point to a stale GitHub org inconsistent with the actual `git remote origin`'
-    - Hardcoded issue-repo org differs between two sibling scripts (psyberone/panopticon vs panopticon-scanner/panopticon)
+    - pyproject.toml [project].version reads 3.0.0 while the project's actual current version is 4.2.0
+    - CHANGELOG.md's only versioned entry doesn't match DEVELOPMENT.md's description of the same version
   QAL-C2A:
-    name: cli-docs-out-of-sync-with-implementation
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 6
-    examples:
-    - README Quick Start examples use a --mode/--target CLI syntax that no longer matches the documented flags
-    - SKILL.md frontmatter's `arguments` list is stale relative to the much larger, differently-named flag surface
-      documented in the body
-  QAL-C2B:
-    name: undocumented-configuration-behavior
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - cwe_owasp mapping's intentional sparseness (8 of 34 catalog CWEs unmapped) is undocumented
-    - model-profiles.yml's claude host entries silently omit max_context_size/max_output_size present on the other
-      two hosts
-  QAL-C2C:
-    name: docstring-inaccurate-error-contract
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - acquire_pr()'s docstring promises a loud RuntimeError on any failure, but a missing gh/git binary actually
-      raises a different, undocumented exception
-  QAL-C2D:
-    name: typo-in-shipped-text
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - Shipped commit-message template contains the typo 'kim port' instead of 'kimi port'
-  QAL-C2E:
-    name: self-contradictory-documentation
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    - correctness-tagged
-    recurrence: 1
-    examples:
-    - SKILL.md's 'Notes' section makes a blanket self-write claim that directly contradicts the Codex and generic-host
-      sections of the same file
-  QAL-C2F:
     name: schema-or-example-stricter-than-reality
     typical_severity: MEDIUM
     status: active
@@ -358,36 +317,59 @@ entries:
       in the codebase is 2-8 letters
     - A CVE ID format placeholder implies a fixed 6-digit sequence number, imprecise relative to the real CVE ID
       grammar
+  QAL-C2B:
+    name: self-contradictory-documentation
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    - correctness-tagged
+    recurrence: 1
+    examples:
+    - SKILL.md's 'Notes' section makes a blanket self-write claim that directly contradicts the Codex and generic-host
+      sections of the same file
+  QAL-C2C:
+    name: cli-docs-out-of-sync-with-implementation
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 6
+    examples:
+    - README Quick Start examples use a --mode/--target CLI syntax that no longer matches the documented flags
+    - SKILL.md frontmatter's `arguments` list is stale relative to the much larger, differently-named flag surface
+      documented in the body
+  QAL-C2D:
+    name: docstring-inaccurate-error-contract
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - acquire_pr()'s docstring promises a loud RuntimeError on any failure, but a missing gh/git binary actually
+      raises a different, undocumented exception
+  QAL-C2E:
+    name: typo-in-shipped-text
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - Shipped commit-message template contains the typo 'kim port' instead of 'kimi port'
+  QAL-C2F:
+    name: undocumented-configuration-behavior
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - cwe_owasp mapping's intentional sparseness (8 of 34 catalog CWEs unmapped) is undocumented
+    - model-profiles.yml's claude host entries silently omit max_context_size/max_output_size present on the other
+      two hosts
   QAL-D1A:
-    name: duplicated-helper-function
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    - pr945
-    - skills-class
-    recurrence: 10
-    cwe:
-    - 1041
-    examples:
-    - load_ledger() and record() are nearly identical, copy-pasted across file_fixmes.py and file_issues.py
-    - _severity_class and _panel_class implement the exact same strip/lowercase transform, differing only in a CSS-class
-      prefix string
-    character: opportunity
-  QAL-D1B:
-    name: duplicated-constant-definition
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 8
-    cwe:
-    - 1041
-    examples:
-    - RATE_HINTS is defined identically or near-identically in three separate scripts instead of one shared source
-    - The six canonical panel names are hand-duplicated, with differing order, across three modules instead of imported
-      from one place
-  QAL-D1C:
     name: duplicated-business-logic-block
     typical_severity: MEDIUM
     status: active
@@ -398,25 +380,42 @@ entries:
     - skills-class
     recurrence: 7
     cwe:
-    - 1041
+    - CWE-1041
     examples:
     - The retry/backoff-on-rate-limit loop for `gh issue create` is triplicated verbatim across three scripts
     - run_tools()'s legacy-SARIF and Phase-1-adapter dispatch blocks duplicate ~20 lines of subprocess invoke/error-handling
       logic
     character: opportunity
-  QAL-D2A:
-    name: duplicated-fixture-root-boilerplate
-    typical_severity: INFO
+  QAL-D1B:
+    name: duplicated-constant-definition
+    typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
-    recurrence: 4
+    recurrence: 8
     cwe:
-    - 1041
+    - CWE-1041
     examples:
-    - The identical three-line FIXTURE_ROOT env-var lookup block is copy-pasted across all three language-integration
-      test files
-  QAL-D2B:
+    - RATE_HINTS is defined identically or near-identically in three separate scripts instead of one shared source
+    - The six canonical panel names are hand-duplicated, with differing order, across three modules instead of imported
+      from one place
+  QAL-D1C:
+    name: duplicated-helper-function
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    - pr945
+    - skills-class
+    recurrence: 10
+    cwe:
+    - CWE-1041
+    examples:
+    - load_ledger() and record() are nearly identical, copy-pasted across file_fixmes.py and file_issues.py
+    - _severity_class and _panel_class implement the exact same strip/lowercase transform, differing only in a CSS-class
+      prefix string
+    character: opportunity
+  QAL-D2A:
     name: duplicated-sys-path-boilerplate
     typical_severity: LOW
     status: active
@@ -424,10 +423,22 @@ entries:
     - corpus-4x
     recurrence: 5
     cwe:
-    - 1041
+    - CWE-1041
     examples:
     - The identical sys.path.insert(...) skill-path boilerplate is duplicated verbatim across every one of 35 test
       files, with no shared conftest.py
+  QAL-D2B:
+    name: duplicated-fixture-root-boilerplate
+    typical_severity: INFO
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    cwe:
+    - CWE-1041
+    examples:
+    - The identical three-line FIXTURE_ROOT env-var lookup block is copy-pasted across all three language-integration
+      test files
   QAL-E1A:
     name: dead-configuration-setting
     typical_severity: LOW
@@ -437,7 +448,7 @@ entries:
     - 1 correctness-tagged
     recurrence: 2
     cwe:
-    - 561
+    - CWE-561
     examples:
     - Ruff's `[tool.ruff.lint.pydocstyle] convention = "google"` is dead configuration because the "D" rule set
       that would consume it is never selected
@@ -450,26 +461,12 @@ entries:
     - incl. 1 test-coverage-tagged
     recurrence: 4
     cwe:
-    - 561
-    - 1041
+    - CWE-561
+    - CWE-1041
     examples:
     - base.py declares ID_RE, an unused, stricter duplicate of the canonical finding-ID regex actually used in synthesize.py;
       nothing imports or calls it
   QAL-E2A:
-    name: retired-component-still-registered
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 4
-    cwe:
-    - 561
-    examples:
-    - '"eslint" stays registered in ADAPTERS as a LegacySarifAdapter after being explicitly retired in the module''s
-      own comments'
-    - 'sarif_utils.PREFIX still maps "brakeman": "BR" though the only Brakeman findings actually come from the dedicated
-      BrakemanAdapter'
-  QAL-E2B:
     name: orphaned-duplicate-file
     typical_severity: MEDIUM
     status: active
@@ -477,11 +474,25 @@ entries:
     - corpus-4x
     recurrence: 3
     cwe:
-    - 561
-    - 1041
+    - CWE-561
+    - CWE-1041
     examples:
     - test_rust_cs_integration.py is a stray file whose name/class don't match its content and duplicate an existing,
       correctly-named integration test
+  QAL-E2B:
+    name: retired-component-still-registered
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    cwe:
+    - CWE-561
+    examples:
+    - '"eslint" stays registered in ADAPTERS as a LegacySarifAdapter after being explicitly retired in the module''s
+      own comments'
+    - 'sarif_utils.PREFIX still maps "brakeman": "BR" though the only Brakeman findings actually come from the dedicated
+      BrakemanAdapter'
   QAL-E2C:
     name: orphaned-asset-rules
     typical_severity: INFO
@@ -525,33 +536,12 @@ entries:
     - corpus-4x
     recurrence: 5
     cwe:
-    - 1099
+    - CWE-1099
     examples:
     - Adapter modules use inconsistent import patterns from one file to the next
     - unittest.mock.patch used without importing the mock submodule, an inconsistent stderr-capture idiom relative
       to sibling tests
   QAL-F2A:
-    name: main-guard-or-block-misplaced-mid-file
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - 1078
-    examples:
-    - '`if __name__ == "__main__": unittest.main()` is placed mid-file, before a second TestCase class is even defined'
-    - Main block misplaced in the middle of a file rather than at the end
-  QAL-F2B:
-    name: oversized-unfocused-module
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - test_synthesize.py is a single 1,736-line module covering roughly 27 unrelated test-suite concerns
-  QAL-F2C:
     name: logic-embedded-in-non-standard-location
     typical_severity: LOW
     status: active
@@ -561,7 +551,68 @@ entries:
     examples:
     - Gate logic is embedded as an inline Python heredoc inside the CI workflow YAML instead of living in a reusable,
       unit-tested script
+  QAL-F2B:
+    name: main-guard-or-block-misplaced-mid-file
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    cwe:
+    - CWE-1078
+    examples:
+    - '`if __name__ == "__main__": unittest.main()` is placed mid-file, before a second TestCase class is even defined'
+    - Main block misplaced in the middle of a file rather than at the end
+  QAL-F2C:
+    name: oversized-unfocused-module
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - test_synthesize.py is a single 1,736-line module covering roughly 27 unrelated test-suite concerns
   QAL-F3A:
+    name: divergent-mocking-idiom-across-test-suite
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 8
+    cwe:
+    - CWE-1099
+    examples:
+    - A test locally does `from unittest import mock` and nests four levels of `with mock.patch(...)`, diverging
+      from every sibling adapter test's mocking idiom
+    - TestPanelPriority uses bare `assert` statements instead of the suite's self.assertX idiom used everywhere
+      else
+  QAL-F3B:
+    name: inconsistent-noqa-annotation-usage
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 6
+    examples:
+    - Bare except Exception blocks in orchestrator.py omit the codebase's noqa:BLE001 tolerant-by-design convention
+      used elsewhere for the same pattern
+    - '# noqa suppressions on identical `class R:` test-double patterns are applied inconsistently within the same
+      file'
+    automated_by:
+    - ruff:RUF100
+  QAL-F3C:
+    name: inconsistent-per-host-field-naming
+    typical_severity: INFO
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    cwe:
+    - CWE-1099
+    examples:
+    - model-profiles.yml uses a different field-naming convention for model/effort settings depending on which host
+      section it's in
+  QAL-F3D:
     name: partial-type-hint-adoption
     typical_severity: INFO
     status: active
@@ -575,45 +626,17 @@ entries:
     - select_adapters() and run_adapters() carry full PEP 484 type annotations while most other functions in the
       same file have none, with no apparent rule for which get them
     character: opportunity
-  QAL-F3B:
-    name: inconsistent-per-host-field-naming
-    typical_severity: INFO
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - 1099
-    examples:
-    - model-profiles.yml uses a different field-naming convention for model/effort settings depending on which host
-      section it's in
-  QAL-F3C:
-    name: inconsistent-noqa-annotation-usage
+  QAL-G1A:
+    name: loop-invariant-not-hoisted
     typical_severity: LOW
     status: active
     provenance:
-    - corpus-4x
-    recurrence: 6
+    - pr945
+    - skills-class
+    character: opportunity
     examples:
-    - Bare except Exception blocks in orchestrator.py omit the codebase's noqa:BLE001 tolerant-by-design convention
-      used elsewhere for the same pattern
-    - '# noqa suppressions on identical `class R:` test-double patterns are applied inconsistently within the same
-      file'
-  QAL-F3D:
-    name: divergent-mocking-idiom-across-test-suite
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 8
-    cwe:
-    - 1099
-    examples:
-    - A test locally does `from unittest import mock` and nests four levels of `with mock.patch(...)`, diverging
-      from every sibling adapter test's mocking idiom
-    - TestPanelPriority uses bare `assert` statements instead of the suite's self.assertX idiom used everywhere
-      else
-  QAL-G1A:
+    - eligible_ids set recomputed inside synthesize's per-group loop despite being loop-invariant
+  QAL-G1B:
     name: missing-memoization
     typical_severity: LOW
     status: active
@@ -624,16 +647,6 @@ entries:
     examples:
     - dispatch.load_template re-read and re-parsed advisor.md once per verify-queue entry — 412 times in run-3
     - synthesize re-loading CWE catalog and verdicts per call site instead of threading loaded values
-  QAL-G1B:
-    name: loop-invariant-not-hoisted
-    typical_severity: LOW
-    status: active
-    provenance:
-    - pr945
-    - skills-class
-    character: opportunity
-    examples:
-    - eligible_ids set recomputed inside synthesize's per-group loop despite being loop-invariant
   QAL-G1C:
     name: repeated-filesystem-stat
     typical_severity: LOW
@@ -645,18 +658,15 @@ entries:
     examples:
     - orchestrator._within recomputed os.path.realpath(repo) per candidate file on large expansions; cached via
       _repo_realpath
-  QAL-G1D:
-    name: n-plus-one-lookup-opportunity
+  QAL-G2A:
+    name: unbounded-collection-load
     typical_severity: MEDIUM
     status: active
     provenance:
-    - coderabbit
-    - pr945
-    - skills-class
-    character: opportunity
-    examples:
-    - EPSS batch lookups flagged by reviewers but deferred as a larger restructure — per-item external API calls
-      instead of one batched call
+    - prior-art
+    cwe:
+    - CWE-400
+    character: defect
   QAL-H1A:
     name: overly-complex-function
     typical_severity: MEDIUM
@@ -679,18 +689,6 @@ entries:
     - nested ternary operators flagged for conversion to switch/if-else chains
     - reducing unnecessary complexity and nesting
   QAL-H2A:
-    name: needless-abstraction
-    typical_severity: LOW
-    status: active
-    provenance:
-    - code-simplifier-agent
-    - simplify-skill
-    - skills-class
-    character: opportunity
-    examples:
-    - eliminating redundant code and abstractions
-    - removing indirection that adds no value beyond direct derivation
-  QAL-H2B:
     name: harmful-oversimplification
     typical_severity: MEDIUM
     status: active
@@ -703,7 +701,7 @@ entries:
     - combining too many concerns into a single function to save lines
     - prioritizing fewer-lines over readability (dense one-liners, nested ternaries) making code harder to debug
       or extend
-  QAL-H2C:
+  QAL-H2B:
     name: correctness-entangled-duplication-deferred
     typical_severity: LOW
     status: active
@@ -716,3 +714,31 @@ entries:
       open correctness finding, so unification was explicitly deferred out of a quality-only PR'
     - 'reconcile.load_report / file_issues parts-merge unification deferred: duplicated confinement logic entangled
       with an open reconcile-fingerprint correctness finding'
+  QAL-H2C:
+    name: needless-abstraction
+    typical_severity: LOW
+    status: active
+    provenance:
+    - code-simplifier-agent
+    - simplify-skill
+    - skills-class
+    character: opportunity
+    examples:
+    - eliminating redundant code and abstractions
+    - removing indirection that adds no value beyond direct derivation
+  QAL-I1A:
+    name: missing-trace-context-propagation
+    typical_severity: LOW
+    status: active
+    provenance:
+    - prior-art
+    - gemini-gap-review
+  QAL-I1B:
+    name: vague-log-message-without-context
+    typical_severity: INFO
+    status: active
+    provenance:
+    - prior-art
+    - gemini-gap-review
+    cwe:
+    - CWE-778

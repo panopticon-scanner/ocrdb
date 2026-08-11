@@ -27,7 +27,10 @@ SEC                 → A (authentication) → 2 (hijack)  → D (named issue)
 - **Issues are named defect types**, not severity slots. Within a category, issue letters are assigned in typical-severity order at seeding time (mnemonic, not semantic — the letter's meaning never changes even if severities are re-graded later).
 - Each issue carries a **typical severity** (INFO/LOW/MEDIUM/HIGH/CRITICAL). Consumers may override per-instance under their own disciplines.
 - **Versioned citation form** (per ASVS convention): `ocrdb-v0.1-SEC-A2D` when citing outside a pinned context.
-- Seed domains (subject to the seeding audit): `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability. Domains are a starting set, not a cap.
+- Domains (ratified 0.1): `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic-trust, `DAT` data-and-persistence. Domains are a starting set, not a cap.
+- **Incubating (declared, not yet seeded):** `OPS` production-readiness (retry/backoff/circuit-breaker, graceful shutdown, health checks, idempotent handlers), `A11Y` accessibility (WCAG crosswalk), `I18N` internationalization. Each waits on a mining run over an appropriately-shaped repo — no codes are burned on a skeleton, but the declaration signals the taxonomy is not backend-Python-only.
+
+**Single-homing (ratified):** each hazard lives in exactly one domain. Other domains may cross-reference it (`see_also:`) but never re-enter the same hazard under a second code — a duplicate home would guarantee a reconcile split for every code-as-identity consumer. Adversary-exploitable classes home in `SEC`; concurrency in `COD-G`; resource leaks in `COD` (a leak *in test code* is a distinct `TST` finding); agentic-trust in `AGT`.
 
 **Stability contract (per CWE discipline):** codes are immutable once released — never reused, never renamed. Corrections happen by `status: deprecated` (with `superseded_by`) plus new codes. Releases are semver'd with changelogs; consumers pin a release.
 

@@ -1,0 +1,163 @@
+# OCRDb domain file - 0.1 (RATIFIED; codes final at the 0.1 tag)
+domain: DAT
+name: data-and-persistence
+areas:
+  A:
+    name: schema-design
+    categories:
+      '1': integrity-and-modeling
+  B:
+    name: migrations
+    categories:
+      '1': safety-and-reversibility
+  C:
+    name: query-patterns
+    categories:
+      '1': efficiency-and-scale
+  D:
+    name: transactions-and-concurrency
+    categories:
+      '1': isolation-and-atomicity
+  E:
+    name: data-lifecycle
+    categories:
+      '1': retention-and-drift
+entries:
+  DAT-A1A:
+    name: inappropriate-type-for-domain
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-A1B:
+    name: missing-constraint-for-invariant
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-A1C:
+    name: missing-foreign-key-relationship
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-A1D:
+    name: nullable-column-ambiguous-semantics
+    typical_severity: LOW
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-B1A:
+    name: destructive-migration-without-backfill
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-B1B:
+    name: table-lock-heavy-migration
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-B1C:
+    name: irreversible-migration-no-rollback
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-B1D:
+    name: non-idempotent-migration
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-C1A:
+    name: missing-index-for-hot-query
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-C1B:
+    name: n-plus-one-query
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - corpus
+    notes: moved from QAL-G1D at ratification
+  DAT-C1C:
+    name: unbounded-result-set
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    cwe:
+    - CWE-770
+  DAT-C1D:
+    name: select-star-in-production-path
+    typical_severity: LOW
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-D1A:
+    name: isolation-level-mismatch
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-D1B:
+    name: missing-transaction-boundary
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-D1C:
+    name: read-modify-write-race
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    cwe:
+    - CWE-362
+  DAT-D1D:
+    name: long-running-transaction
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-E1A:
+    name: code-schema-drift-without-migration
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-E1B:
+    name: orphaned-rows-on-delete
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  DAT-E1C:
+    name: soft-delete-inconsistency
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review

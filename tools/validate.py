@@ -27,6 +27,7 @@ except ImportError:  # build tooling fails loudly — no degraded builds
     sys.exit("tools/validate.py requires PyYAML (pip install pyyaml)")
 
 CODE_RE = re.compile(r"^([A-Z]{3})-([A-Z])([1-9])([A-Z])$")
+CWE_RE = re.compile(r"^CWE-\d+$")
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 SEVERITIES = {"INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"}
 STATUSES = {"active", "deprecated"}
@@ -86,6 +87,9 @@ def validate_schema(docs):
                 errors.append(f"{ctx}: superseded_by on a non-deprecated entry")
             if "character" in e and e["character"] not in CHARACTERS:
                 errors.append(f"{ctx}: character {e['character']!r} not in {sorted(CHARACTERS)}")
+            for w in e.get("cwe") or []:
+                if not (isinstance(w, str) and CWE_RE.match(w)):
+                    errors.append(f"{ctx}: cwe {w!r} must be a 'CWE-<n>' string")
             if "recurrence" in e and (not isinstance(e["recurrence"], int)
                                       or e["recurrence"] < 1):
                 errors.append(f"{ctx}: recurrence must be a positive int")

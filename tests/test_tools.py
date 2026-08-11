@@ -22,14 +22,14 @@ class TestValidateRealDraft(unittest.TestCase):
     def test_draft_has_no_schema_errors(self):
         errors, warnings, codes = validate.validate_schema(_real_docs())
         self.assertEqual(errors, [])
-        self.assertEqual(len(codes), 320)
+        self.assertEqual(len(codes), 381)
 
-    def test_big_rock_zero_duplicates_surface_as_warnings(self):
-        # The known cross-domain duplicate (COD-E1D = SEC-A3A, identical name)
-        # must be WARNED, not silently passed and not hard-failed pre-ruling.
+    def test_single_homing_ratified_no_cross_domain_duplicates(self):
+        # Ratified 0.1: single-homing (big rock #0) resolved every cross-domain
+        # duplicate, so the validator surfaces NO duplicate-name warnings.
         _, warnings, _ = validate.validate_schema(_real_docs())
-        self.assertTrue(any("sql-injection-via-string-concatenation" in w
-                            for w in warnings), warnings)
+        dup = [w for w in warnings if "cross-domain duplicate" in w]
+        self.assertEqual(dup, [], dup)
 
 
 class TestValidateSyntheticErrors(unittest.TestCase):
@@ -138,7 +138,7 @@ class TestBundleBuild(unittest.TestCase):
                     self.assertEqual(f1.read(), f2.read(), fn)
             bundle = json.load(open(os.path.join(out1, "ocrdb-0.0.0-test.json")))
             n = sum(len(d["entries"]) for d in bundle["domains"].values())
-            self.assertEqual(n, 320)
+            self.assertEqual(n, 381)
             self.assertEqual(bundle["license"], "CC BY-SA 4.0")
 
     def test_sarif_taxa_match_entries_and_levels(self):
@@ -146,11 +146,11 @@ class TestBundleBuild(unittest.TestCase):
         bundle = build_bundle.build_bundle(docs, "0.0.0-test")
         sarif = build_bundle.build_sarif(bundle)
         taxa = sarif["runs"][0]["taxonomies"][0]["taxa"]
-        self.assertEqual(len(taxa), 320)
+        self.assertEqual(len(taxa), 381)
         by_id = {t["id"]: t for t in taxa}
         # SEC-A3A is CRITICAL -> error; QAL-B2B is LOW -> note
         self.assertEqual(by_id["SEC-A3A"]["defaultConfiguration"]["level"], "error")
-        self.assertEqual(by_id["QAL-B2B"]["defaultConfiguration"]["level"], "note")
+        self.assertEqual(by_id["QAL-B2A"]["defaultConfiguration"]["level"], "note")
 
     def test_menus_gate_c_form(self):
         bundle = build_bundle.build_bundle(_real_docs(), "0.0.0-test")
@@ -194,7 +194,49 @@ class TestValidateCli(unittest.TestCase):
              "--domains-dir", os.path.join(ROOT, "domains")],
             capture_output=True, text=True)
         self.assertEqual(proc.returncode, 0, proc.stderr)
-        self.assertIn("320 entries", proc.stdout)
+        self.assertIn("381 entries", proc.stdout)
+
+
+class TestCatalog(unittest.TestCase):
+    def _bundle(self, tmp):
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            build_bundle.main(["--version", "0.0.0-test",
+                               "--domains-dir", os.path.join(ROOT, "domains"),
+                               "--out", tmp])
+        return os.path.join(tmp, "ocrdb-0.0.0-test.json")
+
+    def test_catalog_views_are_complete_and_deterministic(self):
+        import build_catalog, json
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle = self._bundle(tmp)
+            a, b = os.path.join(tmp, "a"), os.path.join(tmp, "b")
+            os.makedirs(a); os.makedirs(b)
+            for d in (a, b):
+                with redirect_stdout(io.StringIO()):
+                    build_catalog.main(["--bundle", bundle, "--out", d, "--html-out", d])
+            md = open(os.path.join(a, "CATALOG.md"), encoding="utf-8").read()
+            html = open(os.path.join(a, "ocrdb-0.0.0-test.html"), encoding="utf-8").read()
+            codes = [c for dom in json.load(open(bundle))["domains"].values()
+                     for c in dom["entries"]]
+            self.assertEqual(len(codes), 381)
+            for c in codes:
+                self.assertIn(c, md, c)
+                self.assertIn(c, html, c)
+            # byte-identical re-run
+            self.assertEqual(open(os.path.join(a, "CATALOG.md"), "rb").read(),
+                             open(os.path.join(b, "CATALOG.md"), "rb").read())
+            self.assertEqual(open(os.path.join(a, "ocrdb-0.0.0-test.html"), "rb").read(),
+                             open(os.path.join(b, "ocrdb-0.0.0-test.html"), "rb").read())
+
+    def test_html_is_self_contained(self):
+        import build_catalog
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle = self._bundle(tmp)
+            with redirect_stdout(io.StringIO()):
+                build_catalog.main(["--bundle", bundle, "--out", tmp, "--html-out", tmp])
+            html = open(os.path.join(tmp, "ocrdb-0.0.0-test.html"), encoding="utf-8").read()
+            for external in ("http://", "https://", "src=", "cdn"):
+                self.assertNotIn(external, html.lower().replace("initial-scale", ""))
 
 
 if __name__ == "__main__":

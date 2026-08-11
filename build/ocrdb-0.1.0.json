@@ -1,0 +1,5685 @@
+{
+  "$schema": "ocrdb-bundle",
+  "domains": {
+    "AGT": {
+      "areas": {
+        "A": {
+          "categories": {
+            "1": "injection-channels"
+          },
+          "name": "prompt-injection-surfaces"
+        },
+        "B": {
+          "categories": {
+            "1": "authority-scope"
+          },
+          "name": "tool-and-permission-scoping"
+        },
+        "C": {
+          "categories": {
+            "1": "unverified-trust"
+          },
+          "name": "output-trust-boundaries"
+        },
+        "D": {
+          "categories": {
+            "1": "verifier-and-action-integrity"
+          },
+          "name": "autonomy-and-oversight"
+        },
+        "E": {
+          "categories": {
+            "1": "budget-and-loops"
+          },
+          "name": "resource-and-cost-safety"
+        },
+        "F": {
+          "categories": {
+            "1": "provider-egress"
+          },
+          "name": "data-egress"
+        }
+      },
+      "entries": {
+        "AGT-A1A": {
+          "cwe": [
+            "CWE-1427"
+          ],
+          "examples": [
+            "Reviewer agent prompt templates never tell the model that reviewed file content is untrusted, leaving the pipe",
+            "Advisor prompt embeds an unfiltered agent-authored finding JSON, opening an indirect-prompt-injection channel"
+          ],
+          "name": "indirect-prompt-injection-untrusted-content-in-agent-context",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "AGT-A1B": {
+          "cwe": [
+            "CWE-1427"
+          ],
+          "name": "untrusted-content-in-agent-context",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "AGT-B1A": {
+          "cwe": [
+            "CWE-863",
+            "CWE-284"
+          ],
+          "examples": [
+            "Write-guard covers only Write/Edit/NotebookEdit tool_name calls; Bash (the exact vector the hook's own project"
+          ],
+          "name": "incomplete-mediation-coverage-gap",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "AGT-B1B": {
+          "cwe": [
+            "CWE-862"
+          ],
+          "name": "missing-approval-gate-for-destructive-action",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "AGT-B1C": {
+          "cwe": [
+            "CWE-284"
+          ],
+          "name": "unscoped-write-authority",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "AGT-B1D": {
+          "cwe": [
+            "CWE-269"
+          ],
+          "name": "overbroad-tool-grant",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "AGT-C1A": {
+          "cwe": [
+            "CWE-290",
+            "CWE-345"
+          ],
+          "examples": [
+            "Self-asserted corroborated/corroborated_by fields bypass agent-trust sanitization and forge cross-panel verifi",
+            "Self-asserted source/reinforced fields let an agent finding forge tool_confirmed evidence and bypass advisor v",
+            "Agent-authored `cvss`/`exploit_scenario` unconditionally overwrite a tool-verified finding's own metadata duri",
+            "Self-asserted `corroborated`/`corroborated_by` fields let an untrusted reviewer finding forge verification sta",
+            "Self-asserted _group field can misattribute a finding to the wrong review group when the source filename doesn"
+          ],
+          "name": "self-asserted-trust-metadata-spoofing",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "AGT-C1B": {
+          "cwe": [
+            "CWE-693"
+          ],
+          "examples": [
+            "Findings from an undeclared/unexpected findings file are flagged in meta.integrity but still merged into the c"
+          ],
+          "name": "findings-from-undeclared-source-merged-despite-flagging",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "AGT-C1C": {
+          "cwe": [
+            "CWE-345",
+            "CWE-290"
+          ],
+          "examples": [
+            "recover-linkage rebuilds the fingerprint-to-issue trust mapping from unauthenticated issue body text, with no ",
+            "Ledger recovery trusts unauthenticated GitHub issue-body content to rebuild the fingerprint-to-issue linkage"
+          ],
+          "name": "unauthenticated-external-data-rebuilds-trust-mapping",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "AGT-C1D": {
+          "cwe": [
+            "CWE-345"
+          ],
+          "examples": [
+            "Advisor verdict ingestion trusts lenient, unauthenticated free-text LLM output that can silently suppress conf"
+          ],
+          "name": "unstructured-llm-output-trusted-for-control-decision",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "AGT-D1A": {
+          "name": "agent-confabulated-action",
+          "provenance": [
+            "corpus-2.3.0"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "AGT-D1B": {
+          "cwe": [
+            "CWE-532"
+          ],
+          "name": "secret-materialized-into-agent-output",
+          "provenance": [
+            "corpus-2.3.0"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "AGT-D1C": {
+          "cwe": [
+            "CWE-863"
+          ],
+          "examples": [
+            "Evidence model gives a single advisor-LLM verdict unilateral, uncorroborated power to null out a tool-confirme"
+          ],
+          "name": "single-verifier-unilateral-override-authority",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "AGT-E1A": {
+          "cwe": [
+            "CWE-834"
+          ],
+          "name": "unbounded-agent-loop",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "AGT-E1B": {
+          "name": "unbounded-tool-call-budget",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "AGT-F1A": {
+          "cwe": [
+            "CWE-200"
+          ],
+          "name": "sensitive-data-sent-to-model-provider",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        }
+      },
+      "name": "agentic-trust"
+    },
+    "ARC": {
+      "areas": {
+        "A": {
+          "categories": {
+            "1": "cohesion",
+            "2": "coupling",
+            "3": "duplication",
+            "4": "extension-point-consistency",
+            "5": "canonical-ownership"
+          },
+          "name": "module-boundaries"
+        },
+        "B": {
+          "categories": {
+            "1": "packaging-metadata",
+            "3": "container-image-design"
+          },
+          "name": "dependency-and-build-architecture"
+        },
+        "C": {
+          "categories": {
+            "1": "pipeline-gating",
+            "2": "failure-handling"
+          },
+          "name": "ci-cd-pipeline-architecture"
+        },
+        "D": {
+          "categories": {
+            "1": "schema-implementation-drift",
+            "2": "contract-completeness",
+            "3": "missing-referenced-artifacts"
+          },
+          "name": "contracts-and-interfaces"
+        },
+        "E": {
+          "categories": {
+            "1": "hardcoded-values",
+            "2": "implicit-and-global-state",
+            "3": "config-model-complexity"
+          },
+          "name": "configuration-architecture"
+        },
+        "F": {
+          "categories": {
+            "1": "enforcement-gap",
+            "2": "fail-open-defaults"
+          },
+          "name": "enforcement-and-security-boundary"
+        },
+        "G": {
+          "categories": {
+            "1": "doc-reality-drift",
+            "2": "design-doc-lifecycle",
+            "3": "repo-hygiene-and-meta-config"
+          },
+          "name": "documentation-and-spec-integrity"
+        }
+      },
+      "entries": {
+        "ARC-A1A": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "Evidence status precedence hierarchy (verdict > corroboration > tool_source, reinforced handling) is implicit and scattered across multiple functions instead of centralized",
+            "Template management scattered across multiple functions with no single owner"
+          ],
+          "name": "fragmented-logic-no-single-owner",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-A1B": {
+          "cwe": [
+            "CWE-1120"
+          ],
+          "examples": [
+            "Monolithic dispatch.py module violates single responsibility principle (template loading, frontmatter parsing, model resolution, plan emission all in one ~687-line module)",
+            "orchestrator.py/evidence.py/run_tools.py/synthesize.py each mix file discovery, pattern matching, execution, and reporting concerns with no internal boundary"
+          ],
+          "name": "mixed-responsibility-module",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 11,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-A1C": {
+          "cwe": [
+            "CWE-1120"
+          ],
+          "examples": [
+            "Monolithic main() violates single responsibility principle",
+            "Rendering function mixes data transformation and HTML generation",
+            "Complex directory-walking logic combines discovery, filtering, and pattern matching in one routine"
+          ],
+          "name": "monolithic-function-mixed-concerns",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-A2A": {
+          "cwe": [
+            "CWE-1047"
+          ],
+          "examples": [
+            "Circular module dependency between dispatch.py and orchestrator.py held together only by a deferred import",
+            "Tool adapter registration tightly coupled at module load time",
+            "Direct ADAPTERS registry import creates tight coupling between synthesize and domain modules"
+          ],
+          "name": "circular-or-load-order-coupling",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 5,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-A2B": {
+          "cwe": [
+            "CWE-1008",
+            "CWE-710"
+          ],
+          "examples": [
+            "group_runner.py's _OUTFILE_RE regex is the only specification of the group/panel filename grammar shared between producer and consumer modules",
+            "reconcile_apply.ledger_key() must byte-for-byte match file_issues.key_for() with no shared source of truth",
+            "Panel names require manual synchronization in a regex pattern maintained separately from the panel registry"
+          ],
+          "name": "hidden-contract-via-informal-parsing",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-A2C": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "sys.path.insert(0, ...) in dispatch.py to import sibling modules instead of a proper package layout",
+            "Ad hoc sys.path bootstrap duplicated verbatim across three entry-point scripts",
+            "Inconsistent sys.path manipulation and import-fallback patterns across the codebase undermine installability"
+          ],
+          "name": "unpackaged-module-resolution-hack",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-A2D": {
+          "cwe": [
+            "CWE-1061"
+          ],
+          "examples": [
+            "Public module re-exports internal implementation details via __all__, coupling the public surface to another module's internals",
+            "Module aliasing functions from another module without an explicit interface contract",
+            "Tool-specific noise-filtering policy (bandit B101 suppression) embedded directly in a shared, tool-agnostic helper"
+          ],
+          "name": "leaky-module-interface",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-A2E": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "_depth_gte's name is inverted relative to what it actually computes, inviting a future off-by-logic regression"
+          ],
+          "name": "misleading-interface-naming",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-A3A": {
+          "cwe": [
+            "CWE-1041"
+          ],
+          "examples": [
+            "gh-retry-with-backoff and ledger-persistence logic reimplemented independently in three separate scripts",
+            "Finding-construction boilerplate copy-pasted across nine tool adapters instead of one shared builder in base.py",
+            "html_report's compare-mode fingerprint reimplements (and regresses) synthesize's already-fixed finding-identity logic"
+          ],
+          "name": "duplicated-business-logic-without-shared-module",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 7,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-A3B": {
+          "cwe": [
+            "CWE-1041"
+          ],
+          "examples": [
+            "Role-to-filename mappings defined in two places (ROLE_FILES and AGENT_NAME) with no single source of truth",
+            "dispatch-plan*.json glob duplicated verbatim across two functions with a documented history of drifting apart",
+            "Model policy hardcoded and duplicated across dispatch.py and model_resolver.py"
+          ],
+          "name": "duplicated-configuration-or-mapping-table",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 5,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-A4A": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "pip_audit.parse() indexes dict keys directly, breaking the .get()-with-default convention every sibling adapter uses",
+            "cargo_audit defaults missing-CVSS advisories to HIGH, the opposite fail-safe direction used elsewhere in the same file set",
+            "spotbugs.py is the only adapter parsing tool output with un-hardened stdlib XML instead of JSON/SARIF like its siblings"
+          ],
+          "name": "adapter-implementation-inconsistency",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 10,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-A4B": {
+          "cwe": [
+            "CWE-561"
+          ],
+          "examples": [
+            "ADAPTERS still registers a retired 'eslint' adapter that is guaranteed to raise NotImplementedError if ever selected"
+          ],
+          "name": "dead-registry-entry",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-A4C": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "PROBES is a hand-maintained shadow of the ADAPTERS registry with no enforced parity; live adapters have shipped without a matching probe entry"
+          ],
+          "name": "shadow-registry-without-enforced-parity",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-A4D": {
+          "cwe": [
+            "CWE-390",
+            "CWE-392"
+          ],
+          "examples": [
+            "Unregistered tool output formats silently skip instead of raising or logging",
+            "Generic host model resolution returns None instead of a diagnosable error when a host/role has no mapping"
+          ],
+          "name": "silent-failure-on-unrecognized-extension",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-A5A": {
+          "character": "opportunity",
+          "examples": [
+            "SEV_ORDER and PANELS redefined locally in synthesize.py and html_report.py instead of owned by evidence.py and aliased",
+            "GROUP_RE/_OUTFILE_RE regex panel-alternation lists hand-duplicated instead of derived from PANELS"
+          ],
+          "name": "non-canonical-constant-duplication",
+          "provenance": [
+            "pr945",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-A5B": {
+          "character": "opportunity",
+          "examples": [
+            "dispatch.py's AGENT_NAME dict was a byte-for-byte parallel derivation of ROLE_FILES; replaced with agent_name(role) function"
+          ],
+          "name": "redundant-derived-structure",
+          "provenance": [
+            "pr945",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-B1A": {
+          "examples": [
+            "pyyaml, jsonschema, and pytest are imported and used throughout the project but never declared as dependencies in pyproject.toml"
+          ],
+          "name": "missing-dependency-manifest-declarations",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-B1B": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "pyproject.toml declares version 3.0.0 while SKILL.md metadata and DEVELOPMENT.md both state the current version is 4.2.0 - two major versions behind"
+          ],
+          "name": "packaging-version-drift",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 5,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-B1C": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "pyproject.toml Homepage/Repository/Issues URLs point to a GitHub org the repo itself no longer uses"
+          ],
+          "name": "stale-project-metadata-urls",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-B1D": {
+          "examples": [
+            "pyproject.toml declares rich PyPI-style [project] metadata but has no [build-system] table, so the package is not actually pip-installable"
+          ],
+          "name": "incomplete-build-system-declaration",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-B1E": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "ruff line-length=100 is declared but the rule that enforces it (E501) is explicitly listed in the ignore set"
+          ],
+          "name": "self-contradictory-lint-configuration",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-B1F": {
+          "examples": [
+            "README documents symlink-based installation into agent skill directories instead of a pip package install"
+          ],
+          "name": "nonstandard-install-mechanism-bypasses-package-manager",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "INFO"
+        },
+        "ARC-B3A": {
+          "examples": [
+            "ci.yml tests Python 3.11-3.13 but the Dockerfile base image only uses 3.12, so tested versions never match the deployed one",
+            "Inconsistent security posture between production and test Docker images",
+            "Optional Docker container creates divergent code-execution paths depending on whether it's present",
+            "Asymmetric dispatch architecture across agent platforms (kimi/claude/openrouter hosts) gives some hosts capabilities others lack"
+          ],
+          "name": "divergent-execution-path-across-environments",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 5,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-B3B": {
+          "examples": [
+            "panopticon-tools Dockerfile installs 8+ language toolchains plus 10+ security scanners into one image"
+          ],
+          "name": "monolithic-multi-toolchain-image",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-B3C": {
+          "cwe": [
+            "CWE-1047"
+          ],
+          "examples": [
+            "Dockerfile.fixtures builds FROM panopticon-tools:latest, so a failed tools build silently breaks fixture validation"
+          ],
+          "name": "circular-build-dependency",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-C1A": {
+          "cwe": [
+            "CWE-693"
+          ],
+          "examples": [
+            "The 'ingest findings and gate on HIGH/CRITICAL' CI step calls ingest_tools.ingest_dir() and filters on raw tool severity directly, bypassing the project's own evidence/confirmation model entirely"
+          ],
+          "name": "ci-gate-bypasses-domain-verdict-model",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "ARC-C1B": {
+          "examples": [
+            "docker-publish.yml's trigger paths: filter doesn't cover everything the Dockerfile COPYs into the published image, so some changes ship unbuilt"
+          ],
+          "name": "ci-trigger-path-filter-incomplete",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-C1C": {
+          "examples": [
+            "Phase-1 tool-adapter integration tests never execute with real tooling in any CI workflow"
+          ],
+          "name": "untested-integration-path-in-ci",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-C1D": {
+          "examples": [
+            "Top-level ops scripts that call the GitHub API are excluded from the CI lint job's file globs"
+          ],
+          "name": "ci-lint-gate-scope-gap",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-C1E": {
+          "cwe": [
+            "CWE-732"
+          ],
+          "examples": [
+            "ci.yml is the only in-scope workflow with no explicit least-privilege permissions: block, unlike codeql.yml/security.yml/docker-publish.yml"
+          ],
+          "name": "inconsistent-workflow-permissions-scoping",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-C2A": {
+          "cwe": [
+            "CWE-390"
+          ],
+          "examples": [
+            "security.yml silently falls back to a local docker build if pulling the pre-built panopticon-tools image fails, masking incomplete publishes"
+          ],
+          "name": "silent-fallback-masks-pipeline-failure",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-C2B": {
+          "cwe": [
+            "CWE-392"
+          ],
+          "examples": [
+            "The merge job's build-provenance attestation step runs with continue-on-error: true, so a failed attestation is silently accepted"
+          ],
+          "name": "swallowed-ci-step-failure",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "INFO"
+        },
+        "ARC-D1A": {
+          "cwe": [
+            "CWE-436"
+          ],
+          "examples": [
+            "file_issues.py scrubs absolute paths when posting to GitHub, but the ledger-recovery fallback doesn't apply the same scrub, so recovered keys silently fail to match findings with absolute-path locations"
+          ],
+          "name": "lossy-round-trip-between-producer-and-recovery-path",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "ARC-D1B": {
+          "cwe": [
+            "CWE-1059",
+            "CWE-436"
+          ],
+          "examples": [
+            "report-schema.json is materially out of sync with the documented report contract (INCONCLUSIVE status, coverage_certified, and other fields SKILL.md/panel-review.md/lens-sweep.md describe but the schema doesn't match)"
+          ],
+          "name": "report-contract-out-of-sync-with-schema",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "ARC-D1C": {
+          "cwe": [
+            "CWE-436"
+          ],
+          "examples": [
+            "Fingerprint-based queue ID format lacks a formal specification and has undocumented collision-suffix behavior",
+            "Compare-mode fingerprint hashes LLM-authored free text, which is not stable across runs of the same underlying finding"
+          ],
+          "name": "fingerprint-identity-instability",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-D1D": {
+          "cwe": [
+            "CWE-436"
+          ],
+          "examples": [
+            "report-schema.json's finding-id pattern (^[A-Z]{2,4}-[0-9]{3,}$) is stricter than the id format synthesize.py actually produces",
+            "base.py's ID_RE constant is dead and has drifted from the actual authoritative finding-id validator",
+            "Finding-ID regex diverges between agent prompt templates and the report schema"
+          ],
+          "name": "id-format-schema-mismatch",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 7,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-D1E": {
+          "cwe": [
+            "CWE-1041"
+          ],
+          "examples": [
+            "Fan-out coverage is derived from multiple independent sources that could disagree with no reconciliation step"
+          ],
+          "name": "redundant-independent-derivation-of-shared-fact",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-D1F": {
+          "examples": [
+            "Pipeline phase coordination (scout -> dispatch -> synthesize) relies on JSON artifact contracts with no version field"
+          ],
+          "name": "unversioned-inter-phase-data-contract",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-D2A": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "README Quick start examples show a --mode/--target invocation syntax that does not exist anywhere in the actual CLI",
+            "Frontmatter arguments list covers only 4 of roughly 13 documented CLI flags"
+          ],
+          "name": "cli-interface-contract-drift",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "ARC-D2B": {
+          "cwe": [
+            "CWE-436"
+          ],
+          "examples": [
+            "enrich_citations derives citation_quality differently depending on whether a finding's citations field is missing versus present-but-empty, with no documented rationale for the distinction"
+          ],
+          "name": "inconsistent-handling-of-equivalent-edge-case-inputs",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-D2C": {
+          "cwe": [
+            "CWE-662"
+          ],
+          "examples": [
+            "No defined coordination mechanism exists between lens_sweep and panel_review agents despite both writing to shared state",
+            "Panel-review lens-coverage fallback text conflates two opposite dispatch states, leaving readers unable to tell which one applies"
+          ],
+          "name": "missing-coordination-contract-between-agents",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-D2D": {
+          "examples": [
+            "The scout prompt never populates several ScopeProfile fields, orphaning the facet feature the schema was built to support"
+          ],
+          "name": "orphaned-schema-field-never-populated",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-D2E": {
+          "cwe": [
+            "CWE-436"
+          ],
+          "examples": [
+            "report-schema.json requires findings[].confidence but neither lens-sweep.md nor panel-review.md ever instructs agents to write it"
+          ],
+          "name": "required-field-never-emitted-by-producer",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-D2F": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "Pipeline step 5 (plan dispatch) is ambiguous about single-group vs. multi-group invocation of dispatch.py",
+            "'repo-scope' is used but never defined in architecture panel scheduling docs",
+            "Scout's default-lens cheat sheet omits the redteam panel that the same document instructs it to schedule under security_mode=redteam"
+          ],
+          "name": "undefined-or-ambiguous-spec-terminology",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 5,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-D3A": {
+          "examples": [
+            "skill/reference/codex-runner-instructions.md is referenced by scope assignment but does not exist in the repository",
+            "skill/reference/findings-envelope-schema.json is referenced but does not exist"
+          ],
+          "name": "missing-referenced-file",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "ARC-D3B": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "README's Repository layout table lists a docs/ directory that does not exist in this checkout",
+            "Documented security-disclosure process tells reporters to file a private advisory, but no SECURITY.md exists anywhere in the repo"
+          ],
+          "name": "documented-artifact-not-present-in-repo",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-D3C": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "CODEOWNERS assigns owners to /scripts/, /scripts/tools/, and /reference/, none of which exist at the repo root - the rules are permanently dead"
+          ],
+          "name": "stale-path-reference-in-governance-config",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-E1A": {
+          "cwe": [
+            "CWE-547"
+          ],
+          "examples": [
+            "REPO_ROOT is a hardcoded absolute filesystem path baked into production code, breaking on any other machine or checkout location"
+          ],
+          "name": "hardcoded-absolute-path-in-source",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "ARC-E1B": {
+          "cwe": [
+            "CWE-547"
+          ],
+          "examples": [
+            "DOC and DOC_URL hardcode a specific date-stamped artifact path (docs/superpowers/2026-08-04-run2-fixmes.md), preventing reuse for any other run"
+          ],
+          "name": "hardcoded-environment-specific-artifact-path",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "ARC-E1C": {
+          "cwe": [
+            "CWE-547"
+          ],
+          "examples": [
+            "The GitHub repo slug is hardcoded independently in file_fixmes.py's DOC_URL and file_issues.py's REPORT_URL and has already diverged between them",
+            "Hardcoded resource file paths scattered across modules instead of a single configuration point"
+          ],
+          "name": "hardcoded-identifier-scattered-across-modules",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-E2A": {
+          "examples": [
+            "triage-ledger.jsonl and filed-issues.json - durable audit ledgers - live inside the fully gitignored, run-scratch .panopticon/ directory alongside disposable state"
+          ],
+          "name": "durable-state-in-ephemeral-scratch-location",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-E2B": {
+          "examples": [
+            "Generated host-native agent registration writes to a global, non-project-scoped directory, in tension with the project's otherwise project-scoped configuration model"
+          ],
+          "name": "global-scope-write-conflicts-with-project-scoped-model",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-E2C": {
+          "examples": [
+            "SKILL.md documents that the pipeline MUST run from the repo root where .panopticon/ lives, but nothing in code checks or enforces this precondition at runtime"
+          ],
+          "name": "implicit-runtime-contract-unenforced",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-E2D": {
+          "examples": [
+            "main() silently auto-discovers .panopticon/groups.json when no --groups argument is given, with no log line indicating the fallback fired"
+          ],
+          "name": "implicit-config-discovery-action-at-a-distance",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-E3A": {
+          "cwe": [
+            "CWE-1120"
+          ],
+          "examples": [
+            "Write-guard enforcement mode (WHERE writes go) and tool-policy mode (enforcement vs. advisory) are independent axes whose cross-product is never enumerated or tested"
+          ],
+          "name": "orthogonal-config-axes-increase-complexity",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-E3B": {
+          "examples": [
+            "There is no architecture-panel equivalent of security-checklists.md, so the architecture lens has less supporting reference material than the security lens"
+          ],
+          "name": "asymmetric-domain-coverage-across-artifacts",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-E3C": {
+          "examples": [
+            "model-profiles.yml's openrouter host profile has no corresponding hardcoded fallback in model_resolver.py, unlike kimi and claude",
+            "Tool policy mode has no cross-host validation, so hosts can silently diverge in enforcement behavior"
+          ],
+          "name": "cross-host-config-parity-gap",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-E3D": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "The cwe_owasp mapping omits 8 of the 34 CWEs listed in the main catalog, silently dropping OWASP derivation for those findings"
+          ],
+          "name": "reference-data-catalog-incomplete",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-F1A": {
+          "cwe": [
+            "CWE-367",
+            "CWE-693"
+          ],
+          "examples": [
+            "--emit-kimi-swarm gates on the persisted plan's stale enforced flag instead of live-verifying current registration state",
+            "The primary plan-emission path never binds the unenforced-ack to plan content, silently defeating the stale-flag guard it was meant to backstop"
+          ],
+          "name": "enforcement-relies-on-stale-flag-not-live-verification",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "ARC-F1B": {
+          "cwe": [
+            "CWE-778"
+          ],
+          "examples": [
+            "meta.tool_policy_mode audit field excludes scout and advisor from enforcement accounting despite their equal exposure to the same policy"
+          ],
+          "name": "audit-accounting-excludes-in-scope-actors",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-F1C": {
+          "cwe": [
+            "CWE-862"
+          ],
+          "examples": [
+            "Only reconcile_apply.py pins --repo and gates on admin permission; triage.py/file_issues.py/file_fixmes.py rely on ambient gh defaults with no equivalent check"
+          ],
+          "name": "inconsistent-authorization-gate-across-sibling-scripts",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-F1D": {
+          "cwe": [
+            "CWE-755"
+          ],
+          "examples": [
+            "reconcile_apply.apply()'s batch loop has no recovery path for a mid-batch GitHub API failure, unlike its sibling function"
+          ],
+          "name": "partial-batch-operation-lacks-failure-recovery-path",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-F1E": {
+          "cwe": [
+            "CWE-693"
+          ],
+          "examples": [
+            "Enforcement for hostile-corpus reviews is SHOULD-level prose guidance in a doc, not an automated gate",
+            "Tool finding verdict handling is not architecturally enforced anywhere in the pipeline",
+            "The 'same flags is a requirement, not a convenience' contract in SKILL.md has no programmatic check"
+          ],
+          "name": "policy-or-verdict-not-enforced-by-code",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-F2A": {
+          "cwe": [
+            "CWE-693"
+          ],
+          "examples": [
+            "The post-fan-out clean-tree check only flags modifications 'outside .panopticon/', exempting the exact directory a compromised unenforced reviewer would use to poison downstream synthesis"
+          ],
+          "name": "compensating-control-has-scope-blind-spot",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "ARC-F2B": {
+          "cwe": [
+            "CWE-284"
+          ],
+          "examples": [
+            "A harness spike confirmed the session-wide write-guard hook cannot distinguish which subagent fired it, blocking per-agent tightening as a documented architectural limitation"
+          ],
+          "name": "enforcement-hook-cannot-scope-to-individual-actor",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "ARC-F2C": {
+          "cwe": [
+            "CWE-20"
+          ],
+          "examples": [
+            "The write-guard hook hardcodes tool_input['file_path'] for Write/Edit/NotebookEdit alike, silently mis-evaluating NotebookEdit's differently-shaped payload",
+            "allowlist_from_plan depends on undocumented plan['out_file'] structure with no schema backing it"
+          ],
+          "name": "security-control-assumes-undocumented-input-shape",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "ARC-F2D": {
+          "cwe": [
+            "CWE-636"
+          ],
+          "examples": [
+            "group_runner.py and ingest_tools.py tolerate non-dict plan entries and malformed input by silently skipping them instead of rejecting",
+            "write_guard_hook.py's main() returns 0 (allow) if JSON parsing fails or the allowlist file is missing"
+          ],
+          "name": "component-fails-open-on-malformed-input",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-F2E": {
+          "cwe": [
+            "CWE-636",
+            "CWE-280"
+          ],
+          "examples": [
+            "Write-guard fails silently open (no deny, no warning) when the allowlist file is missing, malformed, or looked",
+            "Tool-policy enforcement silently degrades to prompt-only (\"advisory\") when a host agent isn't registered, whic"
+          ],
+          "name": "security-control-fails-open-on-misconfiguration",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-F2F": {
+          "cwe": [
+            "CWE-807"
+          ],
+          "examples": [
+            "corroborated/corroborated_by are self-assertable by agents even though the semantically-equivalent source/reinforced fields are explicitly stripped as forbidden, allowing spoofed cross-panel corroboration"
+          ],
+          "name": "self-assertable-trust-field-mirrors-forbidden-field",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-F2G": {
+          "cwe": [
+            "CWE-396"
+          ],
+          "examples": [
+            "Multiple functions catch bare Exception (merge-base lookup, fallback-branch resolution), swallowing intentional and accidental errors alike"
+          ],
+          "name": "overbroad-exception-handling-masks-errors",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-G1A": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "CONTRIBUTING.md's test/lint instructions omit dependency installation steps and diverge from what ci.yml actually runs"
+          ],
+          "name": "contributor-instructions-diverge-from-ci",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-G1B": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "CHANGELOG.md and DEVELOPMENT.md's History section are two divergent, non-overlapping sources of truth for release history",
+            "Documented 'monthly' panopticon-tools rebuild cadence contradicts the actual daily/weekly CI schedule"
+          ],
+          "name": "divergent-duplicate-source-of-truth",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-G1C": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "DEVELOPMENT.md's Architecture section under-describes the Dockerfile's actual tool set",
+            "DEVELOPMENT.md's skill/reference/ inventory omits model-profiles.yml despite the versioning contract requiring it to be bumped together"
+          ],
+          "name": "reference-documentation-incomplete",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-G2A": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "The spec corpus retains superseded and internally-contradictory architecture documents with no deprecation or status marker distinguishing current from historical"
+          ],
+          "name": "superseded-doc-without-deprecation-marker",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "ARC-G2B": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "The Phase-1 design's phased roadmap drifts from the scope actually delivered by the later scanner-ecosystem-expansion work",
+            "A planned Phase-5 integration reuses the static-scan fixture pattern for a corpus that fundamentally differs from static-scan fixtures"
+          ],
+          "name": "design-doc-drifts-from-delivered-scope",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-G3A": {
+          "cwe": [
+            "CWE-561"
+          ],
+          "examples": [
+            "tests/fixtures/semgrep.sarif is a committed, realistic SARIF sample that is not loaded by any test in the repository"
+          ],
+          "name": "orphaned-unused-fixture-file",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "ARC-G3B": {
+          "examples": [
+            "skill/.DS_Store is tracked in git despite .gitignore's own 'OS / editor noise' rule listing .DS_Store"
+          ],
+          "name": "tracked-file-violates-own-gitignore-rule",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        }
+      },
+      "name": "architecture"
+    },
+    "COD": {
+      "areas": {
+        "A": {
+          "categories": {
+            "1": "handle-and-timing-safety",
+            "2": "bounds-and-indexing-safety"
+          },
+          "name": "resource-lifecycle"
+        },
+        "B": {
+          "categories": {
+            "1": "guard-and-permission-scope",
+            "2": "silent-failure-and-diagnostics"
+          },
+          "name": "defensive-checking-discipline"
+        },
+        "C": {
+          "categories": {
+            "1": "severity-confidence-conflation",
+            "2": "parsing-and-selection-logic",
+            "3": "output-conformance-gaps"
+          },
+          "name": "tool-adapter-normalization"
+        },
+        "D": {
+          "categories": {
+            "1": "schema-definition-drift",
+            "2": "doc-implementation-divergence",
+            "3": "boundary-type-and-protocol-mismatch"
+          },
+          "name": "interface-contract-drift"
+        },
+        "E": {
+          "categories": {
+            "1": "iteration-and-shortcut-logic",
+            "2": "execution-context-and-ordering"
+          },
+          "name": "control-flow-and-execution-order"
+        },
+        "F": {
+          "categories": {
+            "1": "shared-state",
+            "2": "liveness-and-blocking",
+            "3": "async-correctness"
+          },
+          "name": "concurrency-and-asynchrony"
+        },
+        "G": {
+          "categories": {
+            "1": "temporal",
+            "2": "numeric",
+            "3": "encoding-and-units"
+          },
+          "name": "data-representation-and-time"
+        }
+      },
+      "entries": {
+        "COD-A1A": {
+          "cwe": [
+            "CWE-772"
+          ],
+          "examples": [
+            "File opened without a context manager; handle never explicitly closed, relying on GC",
+            "json.load(open(...)) pattern never closes the underlying file handle",
+            "File resource leak in apply subcommand"
+          ],
+          "name": "unclosed-file-handle-leak",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 11,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-A1B": {
+          "cwe": [
+            "CWE-367"
+          ],
+          "examples": [
+            "decide() validates a write target via os.path.islink()/os.path.realpath(), but the actual write happens later in a separate tool-call step, leaving a window for the target to change"
+          ],
+          "name": "check-then-use-toctou-gap",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "COD-A2A": {
+          "cwe": [
+            "CWE-787",
+            "CWE-120"
+          ],
+          "examples": [
+            "Unsafe code writes user_input.len() bytes into a fixed 8-byte buffer with no bounds check"
+          ],
+          "name": "unbounded-buffer-write",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "CRITICAL"
+        },
+        "COD-A2B": {
+          "cwe": [
+            "CWE-193"
+          ],
+          "examples": [
+            "env::args().nth(1).unwrap() used to fetch the second CLI arg, but the function actually receives the first argument as its own parameter"
+          ],
+          "name": "off-by-one-argument-index-error",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-A2C": {
+          "cwe": [
+            "CWE-129"
+          ],
+          "examples": [
+            "Missing bounds check on argv access",
+            "min() called on a potentially empty sequence in _max_severity",
+            "pip-audit adapter indexes fix_versions[0] with a default that never fires when the list is present-but-empty"
+          ],
+          "name": "unchecked-index-or-empty-sequence-access",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-B1A": {
+          "cwe": [
+            "CWE-636"
+          ],
+          "examples": [
+            "Missing and corrupted write-allowlist.json are treated identically and both fail open (return 0)",
+            "Allowlist lookup uses a bare relative path and fails OPEN if it cannot be resolved"
+          ],
+          "name": "fail-open-on-missing-or-corrupt-config",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-B1B": {
+          "examples": [
+            "Write-guard hook is meant to gate Write|Edit|NotebookEdit but reads tool_input['file_path'] unconditionally, which doesn't resolve the real target for NotebookEdit"
+          ],
+          "name": "incomplete-guard-coverage-across-input-variants",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-B1C": {
+          "cwe": [
+            "CWE-284"
+          ],
+          "examples": [
+            "Write-allowlist is built from the union of every dispatch-plan-*.json across the fan-out, so one reviewer can overwrite a sibling reviewer's findings file"
+          ],
+          "name": "overly-broad-permission-scope-in-shared-guard",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-B2A": {
+          "cwe": [
+            "CWE-476"
+          ],
+          "examples": [
+            ".get(key, default) + .startswith() crashes on an explicit JSON null, silently dropping the record instead of handling it"
+          ],
+          "name": "unguarded-null-crashes-downstream",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-B2B": {
+          "examples": [
+            "--changes mode's error message blames 'not a git repository' when the real failure is a merge-base lookup"
+          ],
+          "name": "error-message-misattributes-root-cause",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "COD-B2C": {
+          "cwe": [
+            "CWE-755"
+          ],
+          "examples": [
+            "load_report has no error handling around meta.parts continuation files, and its confinement check diverges from the primary path"
+          ],
+          "name": "missing-error-handling-around-auxiliary-load",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "COD-B2D": {
+          "examples": [
+            "write_report()'s oversize split does one unbounded halving pass and never re-validates the result against the original size constraint"
+          ],
+          "name": "result-not-revalidated-after-transform",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "COD-B2E": {
+          "examples": [
+            "recover_linkage_from_github caps at --limit 1000 with no detection or warning that results were truncated"
+          ],
+          "name": "silent-truncation-without-warning",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "COD-C1A": {
+          "examples": [
+            "Brakeman has no real severity field; adapter derives both confidence and severity from the same High/Medium/Weak vocabulary via a map missing a 'low' entry",
+            "SpotBugs BugInstance.priority (its confidence) is mapped onto our severity field, while our confidence field is hardcoded"
+          ],
+          "name": "analyzer-confidence-conflated-with-severity",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-C1B": {
+          "examples": [
+            "roslyn_secguard's parse() hardcodes severity to 'HIGH' for every SecurityCodeScan finding instead of reading the SARIF 'level' field"
+          ],
+          "name": "severity-hardcoded-ignoring-tool-value",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-C2A": {
+          "cwe": [
+            "CWE-706"
+          ],
+          "examples": [
+            "pip-audit's _find_requirement globs requirements*.txt and takes the first sorted match, silently picking a dev/test requirements file over the primary requirements.txt"
+          ],
+          "name": "incorrect-source-file-selection-heuristic",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-C2B": {
+          "examples": [
+            "PipAuditAdapter records the manifest into self._manifest_path in invoke(), but parse() runs in a separate process/instance and never sees it",
+            "PipAuditAdapter maintains mutable instance state, deviating from the stateless adapter pattern"
+          ],
+          "name": "instance-state-not-propagated-through-lifecycle",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-C2C": {
+          "examples": [
+            "LABEL_RE.fullmatch() only matches a single backtick-quoted label, silently failing on multi-label lines",
+            "bundle-audit block regex requires a CVE: line unconditionally while treating the sibling GHSA: line as optional, though either may be absent"
+          ],
+          "name": "regex-rejects-valid-input-variant",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-C2D": {
+          "cwe": [
+            "CWE-706"
+          ],
+          "examples": [
+            "diff_map.classify() does not normalize a ./-prefixed location.file before matching it against the hunk map"
+          ],
+          "name": "unnormalized-identifier-causes-lookup-mismatch",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-C3A": {
+          "examples": [
+            "Findings F-DUP-1/F-DUP-2 lack the required location.line_start field",
+            "Findings contain empty-string values for structurally required panel/category/title fields",
+            "sarif_to_findings() can emit an empty location object when a SARIF result has no locations"
+          ],
+          "name": "required-output-field-missing-or-empty",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 7,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-C3B": {
+          "examples": [
+            "CWE-to-OWASP mapping in the reference catalog is incomplete",
+            "cwe-catalog.json is missing CWE-16, CWE-778, CWE-693 needed by citations.py's category-derived CWE fallback"
+          ],
+          "name": "incomplete-lookup-catalog-silent-fallback-gap",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-C3C": {
+          "examples": [
+            "cargo-audit adapter's non-standard 'rustsec' citation key is dropped by the downstream citation pipeline with no error"
+          ],
+          "name": "nonstandard-key-silently-dropped-downstream",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "COD-D1A": {
+          "examples": [
+            "confirmation_status field carries a value outside its own schema enum",
+            "summary.gate enum is [PASS, FAIL, OFF] but SKILL.md references INCONCLUSIVE as a valid gate value in six places"
+          ],
+          "name": "schema-enum-incomplete-vs-actual-values",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-D1B": {
+          "examples": [
+            "report-schema.json's finding-id pattern (2-4 letters) is stricter than what agents/synthesize.py actually emit"
+          ],
+          "name": "schema-pattern-stricter-than-producer-output",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-D1C": {
+          "examples": [
+            "Finding object schema is inconsistent across the findings array",
+            "Provenance object field structure varies across findings"
+          ],
+          "name": "inconsistent-record-shape-across-array",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-D1D": {
+          "examples": [
+            "report-schema.json's required list omits provenance/citations despite docs mandating 'MUST include provenance/citations'",
+            "Schema is missing an integrity object for fields that are actually emitted"
+          ],
+          "name": "schema-omits-documented-required-fields",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-D2A": {
+          "examples": [
+            "Two files listed in the assignment scope (codex-runner-instructions.md, findings-envelope-*.md) do not exist in the repository"
+          ],
+          "name": "dangling-reference-to-nonexistent-file",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-D2B": {
+          "examples": [
+            "README Quick Start documents a --mode flag that doesn't exist in the CLI",
+            "SKILL.md documents an -e/--explore mode with no corresponding implementation in orchestrator.py",
+            "HTML artifact is only auto-derived when --out is passed explicitly, contradicting the documented default synthesize invocation"
+          ],
+          "name": "documented-feature-or-flag-not-implemented",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-D2C": {
+          "examples": [
+            "A spec's Advisor Confirmation Flow prescribes a severity-downgrade behavior that the same-day epistemics-core spec explicitly supersedes/contradicts"
+          ],
+          "name": "self-contradicting-specification-documents",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-D2D": {
+          "examples": [
+            "'openrouter' host profile has no corresponding documentation in SKILL.md's Host dispatch section",
+            "Step 5's --host hint omits 'codex', the newest first-class host"
+          ],
+          "name": "implemented-capability-missing-from-docs",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-D3A": {
+          "cwe": [
+            "CWE-628"
+          ],
+          "examples": [
+            "security.yml passes a directory path to the SARIF-upload action's sarif_file parameter, which expects a single file"
+          ],
+          "name": "external-api-invoked-with-wrong-parameter-shape",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-D3B": {
+          "cwe": [
+            "CWE-573"
+          ],
+          "examples": [
+            "LegacySarifAdapter violates the ToolAdapter protocol structure",
+            "Phase 1's module-level-function adapter protocol conflicts with the class-based protocol actually adopted elsewhere"
+          ],
+          "name": "adapter-violates-declared-protocol-interface",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-D3C": {
+          "cwe": [
+            "CWE-704"
+          ],
+          "examples": [
+            "derive_evidence() returns 'verified_by' as inconsistent types across return paths",
+            "location.line_start is emitted as a string instead of an integer"
+          ],
+          "name": "inconsistent-field-type-across-boundary",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-E1A": {
+          "examples": [
+            "build_diff silently drops a run3 finding that shares a coarse key with an already-exact-matched run2 fingerprint"
+          ],
+          "name": "dedup-logic-drops-entry-sharing-coarse-key",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-E1B": {
+          "examples": [
+            "NODE_PATH loop breaks after the first global_node, leaving incomplete directory coverage"
+          ],
+          "name": "loop-exits-before-exhausting-valid-entries",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "COD-E2A": {
+          "cwe": [
+            "CWE-670"
+          ],
+          "examples": [
+            "TestRunTool class is defined after the if __name__ == '__main__': unittest.main() block, so its tests never run",
+            "Misplaced __main__ guard sits between class definitions, silently skipping everything after it"
+          ],
+          "name": "unreachable-code-due-to-guard-placed-before-definition",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "CRITICAL"
+        },
+        "COD-E2B": {
+          "cwe": [
+            "CWE-706"
+          ],
+          "examples": [
+            "Hardcoded relative path assumes the test-execution directory as its base",
+            "Security-checklists reference is relative to the skill directory, but the reviewing agent's cwd is the target repo"
+          ],
+          "name": "path-resolved-against-wrong-base-directory",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-F1A": {
+          "cwe": [
+            "CWE-362"
+          ],
+          "name": "atomicity-violation-compound-operation",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-F1B": {
+          "cwe": [
+            "CWE-367"
+          ],
+          "name": "check-then-act-race",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-F1C": {
+          "cwe": [
+            "CWE-362"
+          ],
+          "name": "shared-mutable-state-without-synchronization",
+          "notes": "single-homes COD/ARC/SEC thread-safety duplicates (big rock #0)",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review",
+            "corpus"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-F2A": {
+          "cwe": [
+            "CWE-833"
+          ],
+          "name": "deadlock-lock-ordering",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-F2B": {
+          "name": "blocking-call-in-async-context",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-F3A": {
+          "name": "stale-cache-read-without-invalidation",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-F3B": {
+          "cwe": [
+            "CWE-543"
+          ],
+          "name": "thread-unsafe-lazy-initialization",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-F3C": {
+          "name": "unawaited-async-result",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-F3D": {
+          "cwe": [
+            "CWE-479"
+          ],
+          "name": "unsafe-signal-handler",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-G1A": {
+          "name": "dst-unsafe-time-arithmetic",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-G1B": {
+          "name": "epoch-unit-confusion-ms-vs-s",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-G1C": {
+          "name": "naive-aware-datetime-mixing",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-G1D": {
+          "name": "wall-clock-used-for-elapsed-time",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "COD-G2A": {
+          "cwe": [
+            "CWE-681"
+          ],
+          "name": "monetary-value-in-float",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "COD-G2B": {
+          "cwe": [
+            "CWE-190"
+          ],
+          "name": "integer-overflow-or-truncation",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-G2C": {
+          "cwe": [
+            "CWE-681"
+          ],
+          "name": "precision-loss-in-numeric-conversion",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-G2D": {
+          "name": "float-equality-comparison",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "COD-G3A": {
+          "name": "bytes-string-conflation",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-G3B": {
+          "cwe": [
+            "CWE-176"
+          ],
+          "name": "default-encoding-assumption",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-G3C": {
+          "name": "unit-confusion-in-quantity",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "COD-G3D": {
+          "cwe": [
+            "CWE-176"
+          ],
+          "name": "unicode-normalization-mismatch",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        }
+      },
+      "name": "correctness"
+    },
+    "DAT": {
+      "areas": {
+        "A": {
+          "categories": {
+            "1": "integrity-and-modeling"
+          },
+          "name": "schema-design"
+        },
+        "B": {
+          "categories": {
+            "1": "safety-and-reversibility"
+          },
+          "name": "migrations"
+        },
+        "C": {
+          "categories": {
+            "1": "efficiency-and-scale"
+          },
+          "name": "query-patterns"
+        },
+        "D": {
+          "categories": {
+            "1": "isolation-and-atomicity"
+          },
+          "name": "transactions-and-concurrency"
+        },
+        "E": {
+          "categories": {
+            "1": "retention-and-drift"
+          },
+          "name": "data-lifecycle"
+        }
+      },
+      "entries": {
+        "DAT-A1A": {
+          "name": "inappropriate-type-for-domain",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "DAT-A1B": {
+          "name": "missing-constraint-for-invariant",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "DAT-A1C": {
+          "name": "missing-foreign-key-relationship",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "DAT-A1D": {
+          "name": "nullable-column-ambiguous-semantics",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "DAT-B1A": {
+          "name": "destructive-migration-without-backfill",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "DAT-B1B": {
+          "name": "table-lock-heavy-migration",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "DAT-B1C": {
+          "name": "irreversible-migration-no-rollback",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "DAT-B1D": {
+          "name": "non-idempotent-migration",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "DAT-C1A": {
+          "name": "missing-index-for-hot-query",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "DAT-C1B": {
+          "name": "n-plus-one-query",
+          "notes": "moved from QAL-G1D at ratification",
+          "provenance": [
+            "prior-art",
+            "corpus"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "DAT-C1C": {
+          "cwe": [
+            "CWE-770"
+          ],
+          "name": "unbounded-result-set",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "DAT-C1D": {
+          "name": "select-star-in-production-path",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "DAT-D1A": {
+          "name": "isolation-level-mismatch",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "DAT-D1B": {
+          "name": "missing-transaction-boundary",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "DAT-D1C": {
+          "cwe": [
+            "CWE-362"
+          ],
+          "name": "read-modify-write-race",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "DAT-D1D": {
+          "name": "long-running-transaction",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "DAT-E1A": {
+          "name": "code-schema-drift-without-migration",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "DAT-E1B": {
+          "name": "orphaned-rows-on-delete",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "DAT-E1C": {
+          "name": "soft-delete-inconsistency",
+          "provenance": [
+            "prior-art",
+            "deep-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        }
+      },
+      "name": "data-and-persistence"
+    },
+    "QAL": {
+      "areas": {
+        "A": {
+          "categories": {
+            "1": "naming",
+            "2": "clarity"
+          },
+          "name": "readability"
+        },
+        "B": {
+          "categories": {
+            "1": "imports",
+            "2": "whitespace-and-layout",
+            "3": "string-formatting"
+          },
+          "name": "style-and-formatting"
+        },
+        "C": {
+          "categories": {
+            "1": "stale-references",
+            "2": "docs-code-drift"
+          },
+          "name": "documentation"
+        },
+        "D": {
+          "categories": {
+            "1": "duplicated-logic",
+            "2": "duplicated-test-boilerplate"
+          },
+          "name": "duplication"
+        },
+        "E": {
+          "categories": {
+            "1": "dead-configuration",
+            "2": "stale-artifacts",
+            "3": "unused-code"
+          },
+          "name": "dead-code"
+        },
+        "F": {
+          "categories": {
+            "1": "import-dependency-structure",
+            "2": "code-placement",
+            "3": "convention-divergence"
+          },
+          "name": "structure-and-convention"
+        },
+        "G": {
+          "categories": {
+            "1": "redundant-computation",
+            "2": "memory-and-scale"
+          },
+          "name": "efficiency"
+        },
+        "H": {
+          "categories": {
+            "1": "complexity",
+            "2": "simplification-judgment"
+          },
+          "name": "complexity-and-simplification"
+        },
+        "I": {
+          "categories": {
+            "1": "diagnostics"
+          },
+          "name": "observability"
+        }
+      },
+      "entries": {
+        "QAL-A1A": {
+          "examples": [
+            "Helper _depth_gte computes lens_depth <= panel_depth -- its name promises the opposite comparison direction from what its body does (flagged independently 3 times across review passes)",
+            "Test named for a CWE-uppercasing transformation actually just verifies a static dict lookup"
+          ],
+          "name": "misleading-identifier-name",
+          "provenance": [
+            "corpus-4x",
+            "incl. 1 test-quality-tagged"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-A1B": {
+          "character": "opportunity",
+          "examples": [
+            "maintain consistent naming conventions across a module"
+          ],
+          "name": "inconsistent-naming-convention",
+          "provenance": [
+            "code-simplifier-agent",
+            "coderabbit",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "INFO"
+        },
+        "QAL-A1C": {
+          "examples": [
+            "Filename orchestrator.py collides with the unrelated 'orchestrator' concept used throughout the pipeline docs/agent naming",
+            "Same collision flagged again independently in a later review pass on the same file"
+          ],
+          "name": "name-collision-with-domain-concept",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "INFO"
+        },
+        "QAL-A2A": {
+          "examples": [
+            "`REPO_ROOT = \"/Volumes/Mini Vault/untitled_folder/projects/panopticon/\"` is a literal, single-developer local filesystem path baked into committed source"
+          ],
+          "name": "hardcoded-machine-specific-literal",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-A2B": {
+          "cwe": [
+            "CWE-1078"
+          ],
+          "examples": [
+            "`\"**Found by:** %s%s\" % (src, \"  \\u00b7  model: %s\" % prov[\"model\"] if prov.get(\"model\") else \"\")` reads, at a glance, as if the ternary applies to the wrong operand",
+            "Awkward line break in a conditional expression obscures which branch a continuation line belongs to"
+          ],
+          "name": "confusing-expression-precedence",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-A2C": {
+          "character": "opportunity",
+          "examples": [
+            "title_for() truncates with `room = 240 - len(suffix)`, no comment explaining where 240 comes from",
+            "render_summary() prepends banner lines via three independent lines.insert(<fixed index>, ...) calls with undocumented, fragile hardcoded indices"
+          ],
+          "name": "magic-number-or-fragile-hardcoded-index",
+          "provenance": [
+            "coderabbit",
+            "copilot",
+            "corpus-4x",
+            "skills-class"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-A2D": {
+          "character": "opportunity",
+          "examples": [
+            "removing comments that describe obvious code"
+          ],
+          "name": "comment-noise",
+          "provenance": [
+            "code-simplifier-agent",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "INFO"
+        },
+        "QAL-B1A": {
+          "automated_by": [
+            "ruff:E401"
+          ],
+          "cwe": [
+            "CWE-1078"
+          ],
+          "examples": [
+            "`import contextlib, io, os, sys, json, tempfile, unittest` violates PEP 8's one-import-per-line guidance",
+            "`import sys, os` on a single line (PEP 8 E401), inconsistent with every sibling test file's one-import-per-line style"
+          ],
+          "name": "combined-imports-single-line",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 20,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-B1B": {
+          "automated_by": [
+            "ruff:E402"
+          ],
+          "cwe": [
+            "CWE-1078"
+          ],
+          "examples": [
+            "`import fnmatch` and `from scripts.tools import ADAPTERS` done inside a function body instead of module top-level, unlike the rest of the file",
+            "Import statements placed inside test methods rather than at module level"
+          ],
+          "name": "mid-file-or-inline-import-placement",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 8,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-B1C": {
+          "automated_by": [
+            "ruff:F811"
+          ],
+          "cwe": [
+            "CWE-1041"
+          ],
+          "examples": [
+            "`scripts.evidence` imported twice under two different aliases (`evidence` and `ev`) in the same file, used inconsistently across classes",
+            "10+ test methods locally re-import io/contextlib/tempfile that are already imported at module scope"
+          ],
+          "name": "redundant-shadowing-import",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 11,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-B2A": {
+          "automated_by": [
+            "ruff:E501"
+          ],
+          "cwe": [
+            "CWE-1078"
+          ],
+          "examples": [
+            "A nested ternary conditional expression spans ~107 characters, exceeding PEP 8's line-length guideline",
+            "Line exceeds an 88-character limit"
+          ],
+          "name": "line-too-long",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-B2B": {
+          "cwe": [
+            "CWE-1078"
+          ],
+          "examples": [
+            "Backslash line continuation used instead of implicit (parenthesized) continuation",
+            "Misaligned continuation line in a tuple return statement"
+          ],
+          "name": "misaligned-or-awkward-continuation",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-B2C": {
+          "cwe": [
+            "CWE-1078"
+          ],
+          "examples": [
+            "Missing blank line before a module-level function definition",
+            "Missing PEP8 two-blank-line separation between top-level definitions"
+          ],
+          "name": "missing-blank-line-separation",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-B2D": {
+          "cwe": [
+            "CWE-1078"
+          ],
+          "examples": [
+            "Dict literals throughout a test file consistently omit whitespace after ':' and ',', breaking from the file's dominant formatting style"
+          ],
+          "name": "inconsistent-literal-whitespace",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "INFO"
+        },
+        "QAL-B3A": {
+          "cwe": [
+            "CWE-1078"
+          ],
+          "examples": [
+            "model_resolver.py's 'WARNING:' stderr prefix diverges from the package-wide '<module>: message' convention used by dispatch.py, ingest_tools.py, etc.",
+            "load_findings() mixes four different stderr diagnostic-prefix conventions in a dozen lines"
+          ],
+          "name": "inconsistent-diagnostic-prefix-convention",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 5,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-B3B": {
+          "cwe": [
+            "CWE-1078"
+          ],
+          "examples": [
+            "run_adapters() mixes f-string and %-style diagnostic messages while every sibling function in the same file uses %-formatting",
+            "Mixed f-string and %-formatting used for near-identical diagnostics in one file"
+          ],
+          "name": "mixed-fstring-percent-formatting",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-B3C": {
+          "cwe": [
+            "CWE-1078"
+          ],
+          "examples": [
+            "String built with the + operator instead of an f-string, inconsistent with the file's dominant idiom"
+          ],
+          "name": "string-concatenation-instead-of-fstring",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-C1A": {
+          "examples": [
+            "[project.urls] all point to a stale GitHub org inconsistent with the actual `git remote origin`",
+            "Hardcoded issue-repo org differs between two sibling scripts (psyberone/panopticon vs panopticon-scanner/panopticon)"
+          ],
+          "name": "stale-external-url-reference",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-C1B": {
+          "examples": [
+            "DEVELOPMENT.md's version History list is in neither ascending nor descending order"
+          ],
+          "name": "inconsistent-ordering-in-docs",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-C1C": {
+          "examples": [
+            "CODEOWNERS 'CI / security tooling' and 'Schemas and reference data' sections list paths that no longer exist post-restructure",
+            "A module docstring's Usage: line names the wrong path for the script it documents"
+          ],
+          "name": "stale-file-path-reference",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 7,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-C1D": {
+          "examples": [
+            "pyproject.toml [project].version reads 3.0.0 while the project's actual current version is 4.2.0",
+            "CHANGELOG.md's only versioned entry doesn't match DEVELOPMENT.md's description of the same version"
+          ],
+          "name": "stale-version-number",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 5,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-C2A": {
+          "examples": [
+            "report-schema.json constrains finding IDs to a 2-4 letter prefix pattern, but the real convention elsewhere in the codebase is 2-8 letters",
+            "A CVE ID format placeholder implies a fixed 6-digit sequence number, imprecise relative to the real CVE ID grammar"
+          ],
+          "name": "schema-or-example-stricter-than-reality",
+          "provenance": [
+            "corpus-4x",
+            "incl. 1 correctness-tagged"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-C2B": {
+          "examples": [
+            "SKILL.md's 'Notes' section makes a blanket self-write claim that directly contradicts the Codex and generic-host sections of the same file"
+          ],
+          "name": "self-contradictory-documentation",
+          "provenance": [
+            "corpus-4x",
+            "correctness-tagged"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-C2C": {
+          "examples": [
+            "README Quick Start examples use a --mode/--target CLI syntax that no longer matches the documented flags",
+            "SKILL.md frontmatter's `arguments` list is stale relative to the much larger, differently-named flag surface documented in the body"
+          ],
+          "name": "cli-docs-out-of-sync-with-implementation",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-C2D": {
+          "examples": [
+            "acquire_pr()'s docstring promises a loud RuntimeError on any failure, but a missing gh/git binary actually raises a different, undocumented exception"
+          ],
+          "name": "docstring-inaccurate-error-contract",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-C2E": {
+          "examples": [
+            "Shipped commit-message template contains the typo 'kim port' instead of 'kimi port'"
+          ],
+          "name": "typo-in-shipped-text",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-C2F": {
+          "examples": [
+            "cwe_owasp mapping's intentional sparseness (8 of 34 catalog CWEs unmapped) is undocumented",
+            "model-profiles.yml's claude host entries silently omit max_context_size/max_output_size present on the other two hosts"
+          ],
+          "name": "undocumented-configuration-behavior",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-D1A": {
+          "character": "opportunity",
+          "cwe": [
+            "CWE-1041"
+          ],
+          "examples": [
+            "The retry/backoff-on-rate-limit loop for `gh issue create` is triplicated verbatim across three scripts",
+            "run_tools()'s legacy-SARIF and Phase-1-adapter dispatch blocks duplicate ~20 lines of subprocess invoke/error-handling logic"
+          ],
+          "name": "duplicated-business-logic-block",
+          "provenance": [
+            "corpus-4x",
+            "pr945",
+            "simplify-skill",
+            "skills-class"
+          ],
+          "recurrence": 7,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-D1B": {
+          "cwe": [
+            "CWE-1041"
+          ],
+          "examples": [
+            "RATE_HINTS is defined identically or near-identically in three separate scripts instead of one shared source",
+            "The six canonical panel names are hand-duplicated, with differing order, across three modules instead of imported from one place"
+          ],
+          "name": "duplicated-constant-definition",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 8,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-D1C": {
+          "character": "opportunity",
+          "cwe": [
+            "CWE-1041"
+          ],
+          "examples": [
+            "load_ledger() and record() are nearly identical, copy-pasted across file_fixmes.py and file_issues.py",
+            "_severity_class and _panel_class implement the exact same strip/lowercase transform, differing only in a CSS-class prefix string"
+          ],
+          "name": "duplicated-helper-function",
+          "provenance": [
+            "corpus-4x",
+            "pr945",
+            "skills-class"
+          ],
+          "recurrence": 10,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-D2A": {
+          "cwe": [
+            "CWE-1041"
+          ],
+          "examples": [
+            "The identical sys.path.insert(...) skill-path boilerplate is duplicated verbatim across every one of 35 test files, with no shared conftest.py"
+          ],
+          "name": "duplicated-sys-path-boilerplate",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 5,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-D2B": {
+          "cwe": [
+            "CWE-1041"
+          ],
+          "examples": [
+            "The identical three-line FIXTURE_ROOT env-var lookup block is copy-pasted across all three language-integration test files"
+          ],
+          "name": "duplicated-fixture-root-boilerplate",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "INFO"
+        },
+        "QAL-E1A": {
+          "cwe": [
+            "CWE-561"
+          ],
+          "examples": [
+            "Ruff's `[tool.ruff.lint.pydocstyle] convention = \"google\"` is dead configuration because the \"D\" rule set that would consume it is never selected"
+          ],
+          "name": "dead-configuration-setting",
+          "provenance": [
+            "corpus-4x",
+            "1 correctness-tagged"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-E1B": {
+          "cwe": [
+            "CWE-561",
+            "CWE-1041"
+          ],
+          "examples": [
+            "base.py declares ID_RE, an unused, stricter duplicate of the canonical finding-ID regex actually used in synthesize.py; nothing imports or calls it"
+          ],
+          "name": "unused-duplicate-validator-left-in-code",
+          "provenance": [
+            "corpus-4x",
+            "incl. 1 test-coverage-tagged"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-E2A": {
+          "cwe": [
+            "CWE-561",
+            "CWE-1041"
+          ],
+          "examples": [
+            "test_rust_cs_integration.py is a stray file whose name/class don't match its content and duplicate an existing, correctly-named integration test"
+          ],
+          "name": "orphaned-duplicate-file",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-E2B": {
+          "cwe": [
+            "CWE-561"
+          ],
+          "examples": [
+            "\"eslint\" stays registered in ADAPTERS as a LegacySarifAdapter after being explicitly retired in the module's own comments",
+            "sarif_utils.PREFIX still maps \"brakeman\": \"BR\" though the only Brakeman findings actually come from the dedicated BrakemanAdapter"
+          ],
+          "name": "retired-component-still-registered",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-E2C": {
+          "character": "defect",
+          "examples": [
+            ".grades and .heatmap-more CSS classes in html_report.py with no referencing template markup"
+          ],
+          "name": "orphaned-asset-rules",
+          "provenance": [
+            "pr945",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "INFO"
+        },
+        "QAL-E3A": {
+          "character": "defect",
+          "examples": [
+            "run_adapters: no production caller",
+            "model_resolver.role_config: zero callers"
+          ],
+          "name": "dead-code-unused-function",
+          "notes": "receiving-code-review treats unused/dead code as a YAGNI defect, not merely an opportunity \u2014 character is contested across sources",
+          "provenance": [
+            "pr945",
+            "receiving-code-review-skill",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-F1A": {
+          "examples": [
+            "group_runner.py imports scripts.evidence without ensuring the parent directory is on sys.path, relying implicitly on the caller's setup",
+            "Two incompatible sys.path bootstrap conventions coexist in the test suite, making import success order-dependent"
+          ],
+          "name": "implicit-sys-path-or-import-dependency",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 12,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-F1B": {
+          "cwe": [
+            "CWE-1099"
+          ],
+          "examples": [
+            "Adapter modules use inconsistent import patterns from one file to the next",
+            "unittest.mock.patch used without importing the mock submodule, an inconsistent stderr-capture idiom relative to sibling tests"
+          ],
+          "name": "inconsistent-import-style-across-modules",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 5,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-F2A": {
+          "examples": [
+            "Gate logic is embedded as an inline Python heredoc inside the CI workflow YAML instead of living in a reusable, unit-tested script"
+          ],
+          "name": "logic-embedded-in-non-standard-location",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-F2B": {
+          "cwe": [
+            "CWE-1078"
+          ],
+          "examples": [
+            "`if __name__ == \"__main__\": unittest.main()` is placed mid-file, before a second TestCase class is even defined",
+            "Main block misplaced in the middle of a file rather than at the end"
+          ],
+          "name": "main-guard-or-block-misplaced-mid-file",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-F2C": {
+          "examples": [
+            "test_synthesize.py is a single 1,736-line module covering roughly 27 unrelated test-suite concerns"
+          ],
+          "name": "oversized-unfocused-module",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-F3A": {
+          "cwe": [
+            "CWE-1099"
+          ],
+          "examples": [
+            "A test locally does `from unittest import mock` and nests four levels of `with mock.patch(...)`, diverging from every sibling adapter test's mocking idiom",
+            "TestPanelPriority uses bare `assert` statements instead of the suite's self.assertX idiom used everywhere else"
+          ],
+          "name": "divergent-mocking-idiom-across-test-suite",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 8,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-F3B": {
+          "automated_by": [
+            "ruff:RUF100"
+          ],
+          "examples": [
+            "Bare except Exception blocks in orchestrator.py omit the codebase's noqa:BLE001 tolerant-by-design convention used elsewhere for the same pattern",
+            "# noqa suppressions on identical `class R:` test-double patterns are applied inconsistently within the same file"
+          ],
+          "name": "inconsistent-noqa-annotation-usage",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-F3C": {
+          "cwe": [
+            "CWE-1099"
+          ],
+          "examples": [
+            "model-profiles.yml uses a different field-naming convention for model/effort settings depending on which host section it's in"
+          ],
+          "name": "inconsistent-per-host-field-naming",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "INFO"
+        },
+        "QAL-F3D": {
+          "character": "opportunity",
+          "examples": [
+            "select_adapters() and run_adapters() carry full PEP 484 type annotations while most other functions in the same file have none, with no apparent rule for which get them"
+          ],
+          "name": "partial-type-hint-adoption",
+          "provenance": [
+            "coderabbit",
+            "copilot",
+            "corpus-4x",
+            "skills-class"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "INFO"
+        },
+        "QAL-G1A": {
+          "character": "opportunity",
+          "examples": [
+            "eligible_ids set recomputed inside synthesize's per-group loop despite being loop-invariant"
+          ],
+          "name": "loop-invariant-not-hoisted",
+          "provenance": [
+            "pr945",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-G1B": {
+          "character": "opportunity",
+          "examples": [
+            "dispatch.load_template re-read and re-parsed advisor.md once per verify-queue entry \u2014 412 times in run-3",
+            "synthesize re-loading CWE catalog and verdicts per call site instead of threading loaded values"
+          ],
+          "name": "missing-memoization",
+          "provenance": [
+            "pr945",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-G1C": {
+          "character": "opportunity",
+          "examples": [
+            "orchestrator._within recomputed os.path.realpath(repo) per candidate file on large expansions; cached via _repo_realpath"
+          ],
+          "name": "repeated-filesystem-stat",
+          "provenance": [
+            "pr945",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-G2A": {
+          "character": "defect",
+          "cwe": [
+            "CWE-400"
+          ],
+          "name": "unbounded-collection-load",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-H1A": {
+          "character": "opportunity",
+          "examples": [
+            "function flagged for high cyclomatic complexity / too many responsibilities combined into one function"
+          ],
+          "name": "overly-complex-function",
+          "provenance": [
+            "coderabbit",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-H1B": {
+          "character": "opportunity",
+          "examples": [
+            "nested ternary operators flagged for conversion to switch/if-else chains",
+            "reducing unnecessary complexity and nesting"
+          ],
+          "name": "excess-nesting-complexity",
+          "provenance": [
+            "code-simplifier-agent",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-H2A": {
+          "character": "defect",
+          "examples": [
+            "removing a helpful abstraction that improves organization",
+            "combining too many concerns into a single function to save lines",
+            "prioritizing fewer-lines over readability (dense one-liners, nested ternaries) making code harder to debug or extend"
+          ],
+          "name": "harmful-oversimplification",
+          "provenance": [
+            "code-simplifier-agent",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "QAL-H2B": {
+          "character": "opportunity",
+          "examples": [
+            "eslint _strip_prefix vs sarif_utils._norm_uri: two normalization functions look mergeable but intersect an open correctness finding, so unification was explicitly deferred out of a quality-only PR",
+            "reconcile.load_report / file_issues parts-merge unification deferred: duplicated confinement logic entangled with an open reconcile-fingerprint correctness finding"
+          ],
+          "name": "correctness-entangled-duplication-deferred",
+          "provenance": [
+            "pr945",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-H2C": {
+          "character": "opportunity",
+          "examples": [
+            "eliminating redundant code and abstractions",
+            "removing indirection that adds no value beyond direct derivation"
+          ],
+          "name": "needless-abstraction",
+          "provenance": [
+            "code-simplifier-agent",
+            "simplify-skill",
+            "skills-class"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-I1A": {
+          "name": "missing-trace-context-propagation",
+          "provenance": [
+            "prior-art",
+            "gemini-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "QAL-I1B": {
+          "cwe": [
+            "CWE-778"
+          ],
+          "name": "vague-log-message-without-context",
+          "provenance": [
+            "prior-art",
+            "gemini-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "INFO"
+        }
+      },
+      "name": "quality-maintainability"
+    },
+    "SEC": {
+      "areas": {
+        "A": {
+          "categories": {
+            "1": "command-execution",
+            "2": "code-injection-and-deserialization",
+            "3": "sql-injection",
+            "4": "xml-and-entity-processing"
+          },
+          "name": "injection-and-unsafe-execution"
+        },
+        "B": {
+          "categories": {
+            "1": "output-encoding-and-report-hardening",
+            "2": "information-disclosure",
+            "3": "secrets-handling",
+            "4": "privacy-and-data-protection"
+          },
+          "name": "output-handling-and-data-exposure"
+        },
+        "C": {
+          "categories": {
+            "1": "access-control",
+            "2": "authentication",
+            "3": "cryptography",
+            "4": "logging-and-monitoring"
+          },
+          "name": "identity-access-and-cryptography"
+        },
+        "D": {
+          "categories": {
+            "1": "path-and-search-resolution",
+            "2": "ssrf"
+          },
+          "name": "untrusted-path-and-resource-resolution"
+        },
+        "E": {
+          "categories": {
+            "1": "dependency-management",
+            "2": "pinning-and-provenance",
+            "3": "unverified-code-execution"
+          },
+          "name": "supply-chain-and-build-integrity"
+        },
+        "F": {
+          "categories": {
+            "1": "exception-handling",
+            "2": "resource-management"
+          },
+          "name": "robustness-under-adversarial-input"
+        },
+        "G": {
+          "categories": {
+            "1": "severity-and-triage-fidelity",
+            "2": "scan-coverage-integrity",
+            "3": "security-testing-and-governance"
+          },
+          "name": "security-tooling-and-scan-integrity"
+        },
+        "H": {
+          "categories": {
+            "1": "session-management",
+            "2": "cross-site-request",
+            "3": "token-and-federation",
+            "4": "adversarial-request-processing"
+          },
+          "name": "web-session-and-browser-boundary"
+        }
+      },
+      "entries": {
+        "SEC-A1A": {
+          "cwe": [
+            "CWE-78",
+            "CWE-88"
+          ],
+          "examples": [
+            "OS Command Injection via Unquoted Shell Variable",
+            "Command Injection via Unquoted Docker Build Arguments",
+            "Shell command injection via unescaped fixture paths",
+            "Command injection via unsanitized user input to shell",
+            "OS command injection via unsanitized shell script construction"
+          ],
+          "name": "os-command-injection",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 17,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-A1B": {
+          "cwe": [
+            "CWE-78",
+            "CWE-88"
+          ],
+          "examples": [
+            "subprocess call - check for execution of untrusted input.",
+            "Consider possible security implications associated with the subprocess module.",
+            "Starting a process with a partial executable path",
+            "String Concatenation in Command Argument Construction",
+            "Brittle Path Substitution Pattern in Tool Command Construction"
+          ],
+          "name": "unsafe-subprocess-invocation-pattern",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 96,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-A2A": {
+          "cwe": [
+            "CWE-95",
+            "CWE-94"
+          ],
+          "examples": [
+            "Code injection via eval() with unsanitized user input",
+            "Known vulnerable code pattern: eval() with user input",
+            "Direct eval() of Unvalidated Command-Line Arguments",
+            "Dangerous eval() with user input (CWE-95)"
+          ],
+          "name": "eval-of-untrusted-input",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 8,
+          "status": "active",
+          "typical_severity": "CRITICAL"
+        },
+        "SEC-A2B": {
+          "cwe": [
+            "CWE-502"
+          ],
+          "examples": [
+            "Insecure deserialization of untrusted CBOR and YAML input",
+            "Known vulnerable code pattern: Unsafe deserialization of untrusted input"
+          ],
+          "name": "insecure-deserialization-of-untrusted-data",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-A3A": {
+          "cwe": [
+            "CWE-89"
+          ],
+          "examples": [
+            "SQL injection via string concatenation with user input",
+            "Known vulnerable code pattern: SQL injection via string concatenation"
+          ],
+          "name": "sql-injection-via-string-concatenation",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "CRITICAL"
+        },
+        "SEC-A4A": {
+          "cwe": [
+            "CWE-611",
+            "CWE-776"
+          ],
+          "examples": [
+            "Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks. R",
+            "XML External Entity (XXE) Injection in XML Parsing",
+            "SpotBugs report XML parsed with `xml.etree.ElementTree` instead of a hardened parser"
+          ],
+          "name": "xxe-vulnerable-xml-parsing",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 8,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-A4B": {
+          "cwe": [
+            "CWE-611"
+          ],
+          "examples": [
+            "Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace xml."
+          ],
+          "name": "xml-library-import-flagged",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-B1A": {
+          "cwe": [
+            "CWE-74"
+          ],
+          "examples": [
+            "Scanned-repo file paths flow unescaped into auto-posted GitHub issue comments, enabling markdown/@-mention inj"
+          ],
+          "name": "markdown-mention-injection-in-automated-comments",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-B1B": {
+          "cwe": [
+            "CWE-79",
+            "CWE-601"
+          ],
+          "examples": [
+            "Unrestricted URL Scheme in Reference Links"
+          ],
+          "name": "unsafe-url-scheme-allowed-in-links",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-B1C": {
+          "cwe": [
+            "CWE-79",
+            "CWE-116"
+          ],
+          "examples": [
+            "Unescaped attribute-context interpolation of finding.evidence.citation_quality enables stored HTML/script inje",
+            "Unescaped provenance.confirmation_status enables HTML attribute-injection XSS in generated reports",
+            "Untrusted finding text (title/description/impact/remediation) is aggregated with no content neutralization and",
+            "Repo-controlled file names and messages flow into finding `title`/`location.file`/`description` without contro"
+          ],
+          "name": "untrusted-content-unsanitized-in-generated-output",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 8,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-B1D": {
+          "cwe": [
+            "CWE-200"
+          ],
+          "examples": [
+            "\"Self-contained\" HTML report fetches remote Google Fonts on open, contradicting its offline-safety claim and l"
+          ],
+          "name": "unintended-external-resource-load-in-offline-report",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-B1E": {
+          "cwe": [
+            "CWE-1021",
+            "CWE-693"
+          ],
+          "examples": [
+            "Self-contained HTML report ships an inline <script> with no Content-Security-Policy"
+          ],
+          "name": "missing-content-security-policy-in-generated-report",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "INFO"
+        },
+        "SEC-B2A": {
+          "cwe": [
+            "CWE-215",
+            "CWE-200"
+          ],
+          "examples": [
+            "Sensitive Token Exposure via Debug Endpoint String Formatting"
+          ],
+          "name": "debug-endpoint-secret-exposure",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-B2B": {
+          "cwe": [
+            "CWE-532"
+          ],
+          "examples": [
+            "Hardcoded credentials written directly to standard output",
+            "run_tool's F-CAL-1 stderr diagnostic prints raw subprocess stderr with no secret redaction",
+            "Unfiltered Stderr Output May Leak Sensitive Information"
+          ],
+          "name": "credentials-printed-to-output-or-logs",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-B2C": {
+          "cwe": [
+            "CWE-200"
+          ],
+          "examples": [
+            "Public-issue redaction of local absolute paths is a single hardcoded constant that fails open, not a general c",
+            "Test hardcodes the author's local absolute filesystem path instead of computing it dynamically -- the exact an"
+          ],
+          "name": "incomplete-sensitive-data-redaction",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-B2D": {
+          "cwe": [
+            "CWE-209"
+          ],
+          "examples": [
+            "Attempted read of /etc/shadow combined with verbose internal-error disclosure"
+          ],
+          "name": "verbose-error-message-disclosure",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-B3A": {
+          "cwe": [
+            "CWE-798"
+          ],
+          "examples": [
+            "Known vulnerable code pattern: Hardcoded secrets in source code",
+            "generic-api-key has detected secret for file /src/.env."
+          ],
+          "name": "embedded-credential-or-api-key-in-repo",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-B3B": {
+          "cwe": [
+            "CWE-200"
+          ],
+          "examples": [
+            "Shared `run_tool()` subprocess helper inherits the full parent environment for every scanner invocation"
+          ],
+          "name": "full-environment-inherited-by-subprocess",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-B3C": {
+          "cwe": [
+            "CWE-259",
+            "CWE-798"
+          ],
+          "examples": [
+            "Possible hardcoded password: 'gate-pass'"
+          ],
+          "name": "hardcoded-secret-heuristic-flag",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-B4A": {
+          "cwe": [
+            "CWE-532"
+          ],
+          "name": "pii-in-logs",
+          "provenance": [
+            "prior-art",
+            "gemini-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-B4B": {
+          "cwe": [
+            "CWE-359"
+          ],
+          "name": "excessive-data-collection",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-B4C": {
+          "name": "missing-retention-limit",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-C1A": {
+          "cwe": [
+            "CWE-250",
+            "CWE-1008"
+          ],
+          "examples": [
+            "Scan container combines full read access to the target repository with unrestricted scan-time network egress"
+          ],
+          "name": "excessive-container-network-and-filesystem-privilege",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-C1B": {
+          "cwe": [
+            "CWE-506",
+            "CWE-489"
+          ],
+          "examples": [
+            "Hidden backdoor trigger activated by a magic input string"
+          ],
+          "name": "hardcoded-backdoor-trigger",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-C1C": {
+          "cwe": [
+            "CWE-862",
+            "CWE-285"
+          ],
+          "examples": [
+            "Missing authorization check allows any caller to retrieve admin-only data"
+          ],
+          "name": "missing-function-level-authorization",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-C1D": {
+          "cwe": [
+            "CWE-284"
+          ],
+          "examples": [
+            "triage.py mutates GitHub issues via ambient `gh` repo context with no explicit repo pinning or permission pref"
+          ],
+          "name": "ambient-authority-unscoped-mutation",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-C1E": {
+          "cwe": [
+            "CWE-250"
+          ],
+          "examples": [
+            "Fixtures image never drops root privileges before running third-party build tooling"
+          ],
+          "name": "container-runs-as-root",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-C2A": {
+          "cwe": [
+            "CWE-307"
+          ],
+          "examples": [
+            "Authentication routine uses a non-constant-time comparison and has no brute-force protection"
+          ],
+          "name": "missing-brute-force-protection",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-C2B": {
+          "cwe": [
+            "CWE-208"
+          ],
+          "examples": [
+            "Authentication routine uses a non-constant-time comparison and has no brute-force protection"
+          ],
+          "name": "timing-unsafe-credential-comparison",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-C3A": {
+          "cwe": [
+            "CWE-338"
+          ],
+          "examples": [
+            "Predictable security token generated from a hand-rolled LCG seeded by wall-clock time",
+            "Known vulnerable code pattern: Random() class for token generation"
+          ],
+          "name": "weak-prng-for-security-token",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-C3B": {
+          "cwe": [
+            "CWE-327"
+          ],
+          "name": "weak-standard-crypto-algorithm",
+          "provenance": [
+            "prior-art",
+            "gemini-gap-review"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-C3C": {
+          "cwe": [
+            "CWE-328",
+            "CWE-327"
+          ],
+          "examples": [
+            "Ad-hoc, unsalted, non-cryptographic checksum used in place of a real hash function"
+          ],
+          "name": "non-cryptographic-hash-in-security-context",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-C4A": {
+          "cwe": [
+            "CWE-778",
+            "CWE-223"
+          ],
+          "examples": [
+            "Sensitive fund-transfer action executes with no audit logging"
+          ],
+          "name": "insufficient-log-detail-for-security-events",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-C4B": {
+          "cwe": [
+            "CWE-778"
+          ],
+          "examples": [
+            "Sensitive fund-transfer action executes with no audit logging"
+          ],
+          "name": "missing-audit-logging-for-sensitive-action",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-D1A": {
+          "cwe": [
+            "CWE-22"
+          ],
+          "examples": [
+            "Path Traversal via Unvalidated FIXTURE_ROOT Environment Variable",
+            "Path traversal via unsanitized file path",
+            "Known vulnerable code pattern: Path traversal via unsanitized file path"
+          ],
+          "name": "path-traversal-via-unvalidated-input",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 7,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-D1B": {
+          "cwe": [
+            "CWE-426",
+            "CWE-427"
+          ],
+          "examples": [
+            "NODE_PATH inheritance allows plugin hijacking despite cwd defense",
+            "eslint-security's own code comment confirms plugin resolution is project-root-relative, creating a plugin-hija",
+            "Unsafe sys.path Manipulation",
+            "Silent Selection of First Alphabetically Sorted Requirements File",
+            "External tool binaries (`git`, `gh`, `codex`, `docker`) are invoked by bare name, relying on `$PATH` resolutio"
+          ],
+          "name": "uncontrolled-search-path-element",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 8,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-D1C": {
+          "cwe": [
+            "CWE-61",
+            "CWE-59"
+          ],
+          "examples": [
+            "shutil.copytree dereferences symlinks in the scanned target before building it",
+            "Unguarded `shutil.copytree(target, tmp, dirs_exist_ok=True)` dereferences attacker-controlled symlinks, enabli",
+            "Unvalidated Directory Copy Operation Before Analysis"
+          ],
+          "name": "unsafe-symlink-following-on-copy",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-D2A": {
+          "cwe": [
+            "CWE-918"
+          ],
+          "examples": [
+            "User-controlled URL dispatch pattern without allow-listing (latent SSRF precursor)"
+          ],
+          "name": "server-side-request-forgery-to-internal-service",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-D2B": {
+          "cwe": [
+            "CWE-918"
+          ],
+          "examples": [
+            "User-controlled URL dispatch pattern without allow-listing (latent SSRF precursor)"
+          ],
+          "name": "unvalidated-url-fetch-target-ssrf-precursor",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-E1A": {
+          "cwe": [
+            "CWE-1357"
+          ],
+          "examples": [
+            "This Dependabot configuration does not set a cooldown period. Newly published packages can be malicious or uns"
+          ],
+          "name": "dependabot-missing-cooldown-period",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-E1B": {
+          "cwe": [
+            "CWE-1104",
+            "CWE-937"
+          ],
+          "examples": [
+            "requests 2.25.1: GHSA-9hjg-9r4m-mvj7",
+            "lodash 4.17.20: GHSA-35jh-r3h4-6jhm",
+            "Known vulnerable dependency: serde_yaml 0.8.25 with RUSTSEC-2024-0327",
+            "Package: lodash Installed Version: 4.17.20 Vulnerability CVE-2021-23337 Severity: HIGH Fixed Version: 4.17.21",
+            "Known vulnerable dependency: regex 1.4.0 with RUSTSEC-2022-0013"
+          ],
+          "name": "known-vulnerable-dependency",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 47,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-E1C": {
+          "cwe": [
+            "CWE-494",
+            "CWE-1357"
+          ],
+          "examples": [
+            "Legacy lockfileVersion 1 lockfile carries no subresource-integrity hash for its dependency"
+          ],
+          "name": "missing-lockfile-integrity-hash",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-E1D": {
+          "cwe": [
+            "CWE-1104"
+          ],
+          "name": "abandoned-unmaintained-dependency",
+          "provenance": [
+            "prior-art",
+            "openssf-align"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-E2A": {
+          "cwe": [
+            "CWE-1357",
+            "CWE-829"
+          ],
+          "examples": [
+            "Unversioned pip package installs enable known vulnerability injection",
+            "Unversioned cargo-audit installation enables known vulnerability injection",
+            "Unversioned npm package installs enable known vulnerability injection",
+            "Base Docker image uses version tag without digest, allowing known vulnerabilities in base layers"
+          ],
+          "name": "unpinned-build-dependency-install",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 7,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-E2B": {
+          "cwe": [
+            "CWE-829",
+            "CWE-1357"
+          ],
+          "examples": [
+            "GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by",
+            "GitHub Actions pinned to mutable version tags, not immutable commit SHAs, in the workflow that publishes the s",
+            "Third-party GitHub Actions pinned to mutable tags in a workflow holding write-scoped tokens and attestation au"
+          ],
+          "name": "mutable-ci-action-reference",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 25,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-E2C": {
+          "cwe": [
+            "CWE-829"
+          ],
+          "examples": [
+            "Fixture repos RailsGoat and AspGoat default to the floating `main` branch instead of a pinned ref, and are bui",
+            "Fixture image builds from unpinned mutable git branches of third-party repositories and executes their build t",
+            "Fixture manifest drives supply-chain-unsafe, unpinned third-party code execution during image build"
+          ],
+          "name": "unpinned-third-party-source-reference",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-E3A": {
+          "cwe": [
+            "CWE-94",
+            "CWE-829"
+          ],
+          "examples": [
+            "MSBuild Target Injection with Runtime Command Execution",
+            "MSBuild <Exec> target performs unrestricted network egress and filesystem write on every build",
+            "roslyn-secguard runs `dotnet build` on scanned code, executing arbitrary MSBuild targets/NuGet package content",
+            "roslyn-secguard adapter executes untrusted target source via `dotnet build`, violating the tool ecosystem's st"
+          ],
+          "name": "arbitrary-code-execution-via-untrusted-build-file",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "CRITICAL"
+        },
+        "SEC-E3B": {
+          "cwe": [
+            "CWE-494",
+            "CWE-345"
+          ],
+          "examples": [
+            "FindSecBugs SpotBugs plugin fetched from an unauthenticated scrape URL with no checksum/signature verification",
+            "Scanner toolchain binaries and the Trivy apt signing key are downloaded with no checksum or signature verifica",
+            "Static-analysis tool binaries fetched from GitHub Releases / Maven Central without checksum or signature verif",
+            "Docker scanner-tool image installs unpinned packages and unverified remote binaries with no integrity checks; "
+          ],
+          "name": "unverified-binary-download-no-integrity-check",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-E3C": {
+          "cwe": [
+            "CWE-494",
+            "CWE-829"
+          ],
+          "examples": [
+            "Piping remote script to shell (Rustup installer)",
+            "Piping remote script to shell (.NET SDK installer)",
+            "Unverified curl-pipe-to-shell installers execute remote code during panopticon-tools image build",
+            "Dockerfile.fixtures pipes dotnet-install.sh into bash without version pin or verification"
+          ],
+          "name": "unverified-remote-script-execution-curl-pipe-shell",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 8,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-F1A": {
+          "cwe": [
+            "CWE-248",
+            "CWE-755"
+          ],
+          "examples": [
+            "Unhandled ValueError in line number conversion from XML attributes",
+            "Unguarded XML Parsing Causes Crash on Malformed Output",
+            "Unguarded JSON Parsing in CargoAuditAdapter Causes Crash",
+            "Unguarded JSON Parsing in NpmAuditAdapter Causes Crash",
+            "Unhandled panics on attacker-influenced input crash the process (denial of service)",
+            "`RoslynSecGuardAdapter.is_applicable()` raises an unhandled exception on a missing/inaccessible target directo"
+          ],
+          "name": "crash-on-malformed-input",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 8,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-F1B": {
+          "cwe": [
+            "CWE-390",
+            "CWE-703"
+          ],
+          "examples": [
+            "Try, Except, Continue detected.",
+            "Try, Except, Pass detected."
+          ],
+          "name": "silent-exception-swallowing",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 15,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-F2A": {
+          "cwe": [
+            "CWE-400",
+            "CWE-770"
+          ],
+          "examples": [
+            "Unbounded Response Size in External API Lookup"
+          ],
+          "name": "unbounded-external-response-read",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-G1A": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "osv-scanner adapter silently downgrades known vulnerabilities to INFO severity when a group lacks a numeric ma",
+            "pip-audit adapter hardcodes severity to MEDIUM for essentially all findings, masking the true severity of know",
+            "Shared severity normalizer silently defaults unmapped/un-rated severity strings to INFO across every dependenc",
+            "Brakeman's `confidence` field is reused as panopticon `severity`, silently downgrading low-confidence critical"
+          ],
+          "name": "scanner-severity-silently-misreported",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 7,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-G1B": {
+          "examples": [
+            "Brakeman 'Dangerous Eval' maps to CWE-94 while the equivalent JS eval pattern maps to the more precise CWE-95"
+          ],
+          "name": "tool-citation-cwe-mismatch",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-G2A": {
+          "examples": [
+            "scout.md defines secrets_config as a detectable surface but never routes it (or concurrency-surfaced files) to the security panel/lens"
+          ],
+          "name": "security-surface-not-routed-to-review-lens",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-G2B": {
+          "cwe": [
+            "CWE-778"
+          ],
+          "examples": [
+            "SpotBugs adapter silently no-ops (zero findings, exit 0) when compiled classes are absent",
+            "dependency-check silently falls back to a stale, unrefreshed vulnerability DB when NVD_API_KEY is unset, with ",
+            "Tool/adapter stderr is silently discarded whenever the process exits 0/1, hiding scan failures behind a 'clean",
+            "Fixture-noise suppression exists only for tool/SARIF findings, not for LLM agent (lens_sweep/panel_review) fin",
+            "bandit noise suppression drops B101 project-wide and all findings under any path that merely looks like a test"
+          ],
+          "name": "silent-scan-coverage-loss",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-G2C": {
+          "cwe": [
+            "CWE-1357"
+          ],
+          "examples": [
+            "Semgrep invocation uses `--config auto` without `--metrics=off`, introducing an unpinned remote ruleset and te"
+          ],
+          "name": "unpinned-scan-ruleset",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-G3A": {
+          "examples": [
+            "CODEOWNERS mandatory-review rules for CI/security-tooling and reference data reference stale, non-existent pat",
+            "CODEOWNERS security-tooling and reference-data rules reference stale, non-existent paths"
+          ],
+          "name": "stale-security-ownership-rules",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-G3B": {
+          "cwe": [
+            "CWE-1120"
+          ],
+          "examples": [
+            "test_roslyn_secguard.py has no is_applicable() test, leaving the trigger for the dotnet-build RCE surface (SEC",
+            "SpotBugs adapter test suite has no coverage for malformed/adversarial XML (entity-expansion DoS, CWE-776)",
+            "No test drives dispatch's fail-closed unenforced-reviewer gate through main() with a MIXED-enforcement plan (o",
+            "Write-guard hook test suite never exercises non-string tool_input.file_path, hiding an uncaught TypeError that",
+            "meta.parts confinement test covers relative traversal only, not an absolute-path escape, for a check the sourc"
+          ],
+          "name": "insufficient-negative-test-coverage-for-security-guard",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 10,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-G3C": {
+          "cwe": [
+            "CWE-617"
+          ],
+          "examples": [
+            "Security-ordering invariants in TestPanelPriority are checked with bare `assert`, which `python -O` silently s"
+          ],
+          "name": "security-invariant-enforced-only-via-assert",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-G3D": {
+          "examples": [
+            "No SECURITY.md backing the vulnerability-disclosure instruction"
+          ],
+          "name": "missing-vulnerability-disclosure-policy",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "INFO"
+        },
+        "SEC-H1A": {
+          "cwe": [
+            "CWE-384"
+          ],
+          "name": "session-fixation",
+          "provenance": [
+            "prior-art",
+            "asvs-align"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-H1B": {
+          "cwe": [
+            "CWE-614"
+          ],
+          "name": "missing-secure-cookie-flags",
+          "provenance": [
+            "prior-art",
+            "asvs-align"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-H1C": {
+          "cwe": [
+            "CWE-613"
+          ],
+          "name": "missing-session-expiry",
+          "provenance": [
+            "prior-art",
+            "asvs-align"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-H2A": {
+          "cwe": [
+            "CWE-352"
+          ],
+          "name": "csrf-missing-token-protection",
+          "provenance": [
+            "prior-art",
+            "owasp-align"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-H2B": {
+          "cwe": [
+            "CWE-942"
+          ],
+          "name": "cors-misconfiguration",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-H2C": {
+          "cwe": [
+            "CWE-601"
+          ],
+          "name": "open-redirect",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-H2D": {
+          "cwe": [
+            "CWE-1021"
+          ],
+          "name": "missing-frame-protection-clickjacking",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "SEC-H3A": {
+          "cwe": [
+            "CWE-347"
+          ],
+          "name": "jwt-algorithm-confusion",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-H3B": {
+          "cwe": [
+            "CWE-601"
+          ],
+          "name": "oauth-redirect-uri-validation-gap",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "SEC-H3C": {
+          "cwe": [
+            "CWE-613"
+          ],
+          "name": "jwt-missing-expiry-or-audience-validation",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-H4A": {
+          "cwe": [
+            "CWE-1333"
+          ],
+          "name": "redos-catastrophic-backtracking",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "SEC-H4B": {
+          "cwe": [
+            "CWE-400"
+          ],
+          "name": "unbounded-request-size",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        }
+      },
+      "name": "security"
+    },
+    "TST": {
+      "areas": {
+        "A": {
+          "categories": {
+            "1": "untested-units",
+            "2": "partial-branch-coverage",
+            "3": "shallow-scenario-coverage",
+            "4": "tooling-and-output-validation"
+          },
+          "name": "coverage"
+        },
+        "B": {
+          "categories": {
+            "1": "weak-and-incomplete-assertions",
+            "2": "vacuous-and-tautological-tests",
+            "3": "fragile-and-gameable-assertions"
+          },
+          "name": "assertion-quality"
+        },
+        "C": {
+          "categories": {
+            "1": "discovery-and-organization",
+            "2": "duplication-and-reuse",
+            "3": "naming-and-intent-mismatch",
+            "4": "test-double-fidelity",
+            "5": "test-hygiene-and-setup"
+          },
+          "name": "test-design"
+        },
+        "D": {
+          "categories": {
+            "1": "state-and-resource-cleanup",
+            "2": "filesystem-path-hermeticity"
+          },
+          "name": "isolation-hermeticity"
+        },
+        "E": {
+          "categories": {
+            "1": "fixture-hygiene",
+            "2": "fixture-fidelity-and-drift"
+          },
+          "name": "fixtures-test-data"
+        },
+        "F": {
+          "categories": {
+            "1": "skip-and-environment-gated-execution",
+            "2": "ambiguous-pass-signals"
+          },
+          "name": "flakiness-determinism"
+        },
+        "G": {
+          "categories": {
+            "1": "organization",
+            "2": "hygiene-and-consistency",
+            "3": "coverage-and-verification-gaps"
+          },
+          "name": "suite-architecture"
+        }
+      },
+      "entries": {
+        "TST-A1A": {
+          "examples": [
+            "smoke_adapters.py has zero automated test coverage",
+            "run_fixture_tests.py has no unit tests and no injectable subprocess seam",
+            "Untested error handling in _run_adapter.main()"
+          ],
+          "name": "zero-coverage-script",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 8,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "TST-A1B": {
+          "examples": [
+            "cargo-audit's dict-shaped CVSS severity branch has no test coverage",
+            "No test exercises DependencyCheckAdapter.is_applicable()",
+            "is_architecture_file() function lacks unit test coverage"
+          ],
+          "name": "uncovered-function-or-method",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 73,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-A1C": {
+          "examples": [
+            "save_recovered_ledger() lacks direct test coverage",
+            "build_verify_queue() lacks direct test coverage",
+            "apply_verdict() lacks direct test coverage",
+            "load_verdicts_detailed() lacks direct test coverage"
+          ],
+          "name": "untested-critical-recovery-function",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 12,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-A1D": {
+          "examples": [
+            "--tools-exclude CLI wiring in synthesize.py has no end-to-end test",
+            "dispatch.main()'s --model-lens-sweep/--model-panel-review/--model-advisor and --agents-dir CLI flags are never exercised"
+          ],
+          "name": "untested-cli-flag-or-entrypoint-wiring",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-A2A": {
+          "examples": [
+            "No systemic test guards against a future adapter-prefix collision in the ADAPTERS registry",
+            "Dockerfile tests only cover a stale subset of bundled tools; several later-added tool stages have no assertion coverage"
+          ],
+          "name": "growth-blind-invariant-check",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-A2B": {
+          "examples": [
+            "run_tool tests do not cover timeout exception path",
+            "roslyn_secguard.py invoke() error handling not covered",
+            "Missing exception handling tests for JSON parsing in adapter parsers"
+          ],
+          "name": "untested-error-handling-path",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 13,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-A2C": {
+          "examples": [
+            "cargo_audit.parse's default-severity branch is reached by the module's own fixture but never asserted",
+            "YAML parsing fallback in load_catalog() not tested",
+            "brakeman.py: is_applicable()'s .gemspec fallback path is unreachable by the existing tests"
+          ],
+          "name": "untested-fallback-default-branch",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-A2D": {
+          "examples": [
+            "BrakemanAdapter parse() lacks empty findings test",
+            "Malformed/truncated (non-empty) XML tool output is untested, unlike other adapters' tests in this codebase",
+            "No-CWE-mapping branch (citations key omitted) is never tested"
+          ],
+          "name": "untested-malformed-or-boundary-input",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 26,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-A2E": {
+          "examples": [
+            "SpotBugs priority-to-severity mapping only exercised for priority \"1\"",
+            "BrakemanAdapter._normalize_confidence only has test coverage for one of its four branches",
+            "Category-derived CWE fallback is only tested for one of twelve categories"
+          ],
+          "name": "single-case-enum-mapping-coverage",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 9,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-A2F": {
+          "examples": [
+            "is_applicable() false-path untested in bundler-audit and cargo-audit adapter tests",
+            "is_applicable() only tested for the pom.xml true path",
+            "SpotBugsAdapter.is_applicable test coverage is asymmetric compared to every sibling adapter"
+          ],
+          "name": "untested-negative-boolean-branch",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 10,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-A3A": {
+          "examples": [
+            "Real-tool detection assertions for the vulnerable-python/vulnerable-node/insecure-js fixtures never execute",
+            "osv-scanner is never integration-tested against the real vulnerable-python/vulnerable-node/vulnerable-rust fixtures",
+            "diff_map._mk_worktree_dir's realpath normalization is only ever mocked out, never exercised against a real filesystem"
+          ],
+          "name": "mocked-or-absent-integration-path",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-A3B": {
+          "examples": [
+            "evil.csproj's own containment invariants (egress must fail, marker must stay off the mounted target) are asserted nowhere",
+            "main.rs's ~20 planted source-level CWE patterns have no adapter/tool able to detect them",
+            "hostile-csproj's weak-Random() fixture is opt-in-only and gated, and its consuming test never asserts a finding"
+          ],
+          "name": "unverified-planted-fixture-detection",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-A3C": {
+          "examples": [
+            "Golden-render regression suite exercises only one (panel, depth, security_mode) combination",
+            "Limited path traversal edge case testing",
+            "Sparse dispatch integration test coverage"
+          ],
+          "name": "narrow-scenario-matrix",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 19,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-A4A": {
+          "examples": [
+            "No validation of Docker command output format; check_fixtures assumes docker run output is well-formed and never validates the command succeeded"
+          ],
+          "name": "unvalidated-subprocess-output-format",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-A4B": {
+          "examples": [
+            "Missing schema validation for adapter/tool output files",
+            "tests/fixtures/manifest.json has no automated validation of its own shape or content"
+          ],
+          "name": "unvalidated-tool-output-schema",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-A4C": {
+          "examples": [
+            "Silent skip on missing fixture directory masks fixture rot with no alerting mechanism",
+            "Fixture-presence check silently drops baked fixtures instead of surfacing a check failure, degrading CI signal"
+          ],
+          "name": "unenforced-fixture-presence-check",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-B1A": {
+          "examples": [
+            "The only regression test for the SEC-101 HTML-injection fix in _render_provenance checks cosmetic normalization instead of the injection-blocking property itself"
+          ],
+          "name": "regression-test-verifies-wrong-property",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-B1B": {
+          "examples": [
+            "Weak assertion: checks for substring instead of validating citation structure",
+            "Fragile stringified-dict substring assertion instead of structural check on citations"
+          ],
+          "name": "substring-instead-of-structural-assertion",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-B1C": {
+          "examples": [
+            "Weak assertion: only checks if findings list is truthy",
+            "Minimal asset validation coverage: test_assets.py only checks for string presence, not structure or completeness",
+            "Ambiguous assertTrue usage with confusing assertion semantics"
+          ],
+          "name": "truthy-or-presence-only-assertion",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 10,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-B1D": {
+          "examples": [
+            "Test does not verify comment body argument passed to gh command",
+            "Incomplete verification of command structure in mock assertion"
+          ],
+          "name": "unverified-critical-mock-argument",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-B1E": {
+          "examples": [
+            "Security-critical test lacks positive assertion of expected behavior (verifies cwd != target but never asserts what cwd IS)",
+            "test_unresolvable_recurring_finding_is_omitted lacks positive assertion"
+          ],
+          "name": "missing-positive-assertion",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-B1F": {
+          "name": "universal-invariant-only-example-tested",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-B2A": {
+          "examples": [
+            "Pointless assertion: self.assertTrue(True) always passes, providing no actual test coverage"
+          ],
+          "name": "always-true-assertion",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "TST-B2B": {
+          "examples": [
+            "test_cargo_audit_skips_without_rust is a tautological test that never verifies adapter behavior regardless of which branch executes"
+          ],
+          "name": "environment-branch-vacuous-test",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-B2C": {
+          "examples": [
+            "Test loop with redundant assertions: does not validate all rule mappings"
+          ],
+          "name": "incomplete-loop-assertion-coverage",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-B2D": {
+          "examples": [
+            "Test with inverted logic and meaningless assertion"
+          ],
+          "name": "inverted-logic-assertion",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-B3A": {
+          "examples": [
+            "Brittle test assertion using unsafe list.index(): cmd.index('--network') without error handling raises ValueError instead of a clear assertion failure",
+            "Fragile test with unsafe list indexing on command array"
+          ],
+          "name": "unsafe-index-based-assertion",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "TST-B3B": {
+          "examples": [
+            "Golden fixtures are hand-maintained with no regeneration tooling or documented provenance",
+            "Byte-exact prose snapshots can be satisfied by editing the fixture instead of fixing the regression"
+          ],
+          "name": "unmanaged-golden-snapshot-assertion",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-C1A": {
+          "examples": [
+            "TestRunTool is defined after the `if __name__ == \"__main__\": unittest.main()` guard",
+            "test_base.py places the __main__ guard mid-file, silently dropping TestRunTool from script-mode discovery"
+          ],
+          "name": "test-defined-after-main-guard",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 7,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-C1B": {
+          "examples": [
+            "Test function defined outside unittest.TestCase class",
+            "Module-level test_multi_model_fields_in_schemas is invisible to unittest's own discovery"
+          ],
+          "name": "undiscoverable-test-function",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-C2A": {
+          "examples": [
+            "Single 2,669-line test module conflates dozens of unrelated concerns (~46 independent TestCase classes) for synthesize.py"
+          ],
+          "name": "monolithic-test-module",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-C2B": {
+          "examples": [
+            "Fake subprocess-result class reimplemented locally in ~8 test methods instead of one shared helper",
+            "Duplicate FIXTURE_ROOT initialization across integration tests",
+            "Duplicate _target() helper method across test classes"
+          ],
+          "name": "duplicated-test-helper-across-cases",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-C3A": {
+          "examples": [
+            "test_clean_group_is_shallow exercises a panels input that build_result can never actually produce, masking that the real code path is untested"
+          ],
+          "name": "unrepresentative-test-input",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-C3B": {
+          "examples": [
+            "Test name claims coverage of all four dispatch roles but only pins tokens for two"
+          ],
+          "name": "misleading-test-name",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-C3C": {
+          "examples": [
+            "Helper function _depth_gte is named for the opposite comparison it actually implements"
+          ],
+          "name": "misnamed-helper-inverted-semantics",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-C3D": {
+          "examples": [
+            "File/class name references a non-existent 'cs' scope and duplicates test_rust_integration.py"
+          ],
+          "name": "misnamed-test-artifact",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-C4A": {
+          "examples": [
+            "Incomplete mock_exists function masks unintended behavior: only explicitly returns True for the expected path, silently returning False for everything else"
+          ],
+          "name": "incomplete-test-double-masks-behavior",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-C4B": {
+          "examples": [
+            "Inconsistent subprocess mocking pattern across test suite: patch.object(subprocess, \"run\") in one file vs. mock.patch(\"scripts.tools.base.subprocess.run\") in others"
+          ],
+          "name": "inconsistent-mocking-pattern",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-C4C": {
+          "name": "mock-asserts-internal-behavior-not-output",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-C4D": {
+          "examples": [
+            "Undocumented test double lacks contract specification"
+          ],
+          "name": "undocumented-test-double-contract",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-C5A": {
+          "examples": [
+            "test_synthesize.py calls unittest.mock.patch without importing unittest.mock"
+          ],
+          "name": "missing-import-for-referenced-symbol",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-C5B": {
+          "examples": [
+            "Overly complex test fixture builder with conditional branching"
+          ],
+          "name": "overengineered-fixture-builder",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-C5C": {
+          "examples": [
+            "Late imports: module imports inside test function",
+            "Redundant import shadowing module-level import"
+          ],
+          "name": "nonstandard-import-placement",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-C5D": {
+          "examples": [
+            "Magic number without explanation in test"
+          ],
+          "name": "unexplained-magic-value-in-test",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-D1A": {
+          "examples": [
+            "Test uses direct module state patching instead of context managers: saves original references then restores via try/finally",
+            "Mock patch scope too broad; test depends on internal module structure",
+            "Test mock restoration pattern creates isolation risk"
+          ],
+          "name": "manual-state-patch-without-context-manager",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 5,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-D1B": {
+          "examples": [
+            "Resource leak: files opened without context manager",
+            "Unclosed file handle in test assertion: json.load(open(actions_path)) without context manager",
+            "Multiple unclosed file handles in test method"
+          ],
+          "name": "unclosed-file-handle",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 13,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-D1C": {
+          "examples": [
+            "Test isolation violation: os.environ mutated without proper cleanup",
+            "test_env_override / test_cli_beats_env mutate os.environ directly instead of using mock.patch.dict"
+          ],
+          "name": "unscoped-env-var-mutation",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-D2A": {
+          "examples": [
+            "Non-hermetic test: fixture path is relative to invocation cwd, not the test file",
+            "Hard-coded relative path in test assumes repo-root execution",
+            "test_status_is_in_schema_enum opens a bare CWD-relative path instead of anchoring to __file__/repo root"
+          ],
+          "name": "cwd-relative-fixture-path",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 5,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-D2B": {
+          "examples": [
+            "Hardcoded /tmp path in test bypasses test isolation"
+          ],
+          "name": "hardcoded-shared-tmp-path",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-E1A": {
+          "examples": [
+            "Tests depend on fixture files without existence validation; load_report() failures surface as confusing I/O errors rather than clear test failures"
+          ],
+          "name": "unvalidated-fixture-existence-assumption",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "TST-E1B": {
+          "examples": [
+            "Fixture file vulnerable-python/requirements.txt exists but is unused by specified tests",
+            "tests/fixtures/semgrep.sarif is an orphaned fixture with no consuming test",
+            "Fixture file manifest.json exists but is unused by specified tests"
+          ],
+          "name": "orphaned-unused-fixture",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 6,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-E2A": {
+          "examples": [
+            "Test fixture with incomplete field values for reconciliation edge case: empty strings for severity, panel, category, title",
+            "Test fixture contains intentionally degenerate/empty findings"
+          ],
+          "name": "degenerate-fixture-values",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-E2B": {
+          "examples": [
+            "Cargo.lock has time version mismatch with Cargo.toml (0.1.44 declared vs. 0.1.45 locked)"
+          ],
+          "name": "fixture-lockfile-version-drift",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-E2C": {
+          "examples": [
+            "Hardcoded, machine-specific absolute path embedded in committed test fixture data"
+          ],
+          "name": "hardcoded-machine-specific-path-in-fixture-data",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-E2D": {
+          "examples": [
+            "Synthetic dependency in Cargo.lock fixture may not reflect realistic resolution behavior (serde depending on a package that isn't a real dependency)"
+          ],
+          "name": "unrealistic-synthetic-fixture-data",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-F1A": {
+          "examples": [
+            "Integration tests have cascading skipTest guards making coverage uncertain",
+            "Five cascading skip conditions plus an implicit network dependency reduce this test to a near-permanent skip",
+            "Containment probe test has multiple exit paths that skip validation"
+          ],
+          "name": "cascading-skip-guard-chain",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 7,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "TST-F1B": {
+          "examples": [
+            "Docker availability tests depend on runtime environment",
+            "Conditional test execution based on external tool availability",
+            "Schema validation tests skipped when jsonschema not installed"
+          ],
+          "name": "environment-gated-test-execution",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 9,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-F1C": {
+          "examples": [
+            "Unexpected cargo-audit exit codes are silently skipped instead of failing the test"
+          ],
+          "name": "unexpected-outcome-silently-skipped",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-F1D": {
+          "name": "unseeded-randomness-dependent-test",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-F1E": {
+          "name": "wall-clock-dependent-test",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-F1F": {
+          "examples": [
+            "pip-audit/npm-audit integration tests make live network calls to third-party services with no opt-out marker"
+          ],
+          "name": "unisolated-external-service-call",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 1,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-F2A": {
+          "examples": [
+            "Fragile test discovery with assumed pytest naming convention: pytest -k 'test_{test}_integration' never validates that matching tests exist"
+          ],
+          "name": "unverified-test-selection-filter",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "TST-F2B": {
+          "examples": [
+            "No validation that tests actually executed: a returncode of 0 could mean tests passed OR pytest -k matched nothing",
+            "Non-zero exit code handling in run_adapters not fully tested"
+          ],
+          "name": "exit-code-conflates-pass-with-no-op",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 3,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-F2C": {
+          "name": "test-order-coupling",
+          "provenance": [
+            "prior-art"
+          ],
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-G1A": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "All 18-43 test files inject the skill directory via sys.path.insert(0, ...) at module level instead of relying on an installable package"
+          ],
+          "name": "test-suite-sys-path-import-hack",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "HIGH"
+        },
+        "TST-G1B": {
+          "cwe": [
+            "CWE-1041"
+          ],
+          "examples": [
+            "FIXTURE_ROOT is redefined identically across every integration test file (Java, C#, Ruby, Rust) instead of a shared fixture module",
+            "An identical _touch fixture helper is copy-pasted verbatim into three separate TestCase classes"
+          ],
+          "name": "test-fixture-scaffolding-duplicated-across-files",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 4,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-G1C": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "tests/tools/ mixes fast unit tests and slower real-tool integration tests in one directory with no structural separation"
+          ],
+          "name": "unit-and-integration-tests-not-separated",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-G1D": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "test_roslyn_secguard.py contains three unrelated test classes (TestRoslynSecGuardAdapter, TestSafeCopytree, TestScsOnlyFilter) with no semantic grouping"
+          ],
+          "name": "unrelated-test-classes-grouped-in-single-file",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-G2A": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "test_dependency_check.py imports unittest.mock inside a test method body while every other test file imports it at module level"
+          ],
+          "name": "inconsistent-import-convention-in-test-methods",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-G2B": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "test_status_is_in_schema_enum opens a bare cwd-relative path ('skill/reference/report-schema.json') instead of the __file__-relative pattern the rest of the suite uses"
+          ],
+          "name": "inconsistent-path-resolution-convention-in-tests",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-G2C": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "test_legacy_sarif.py uses patch.object(subprocess, 'run') while every other adapter test file mocks at a different layer"
+          ],
+          "name": "inconsistent-subprocess-mocking-strategy",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-G2D": {
+          "cwe": [
+            "CWE-1041"
+          ],
+          "examples": [
+            "The subprocess timeout value 300 is hardcoded identically as a literal in test assertions across a dozen adapter test files"
+          ],
+          "name": "hardcoded-test-constant-duplicated",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-G2E": {
+          "cwe": [
+            "CWE-710"
+          ],
+          "examples": [
+            "TestPanelPriority uses bare assert statements instead of self.assertEqual/self.assertIn inside a unittest.TestCase, unlike every other test method in the suite"
+          ],
+          "name": "inconsistent-assertion-style-in-test-suite",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-G2F": {
+          "cwe": [
+            "CWE-1059"
+          ],
+          "examples": [
+            "Only 2 of 15 assigned test files contain a meaningful module- or class-level docstring"
+          ],
+          "name": "missing-test-module-documentation",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-G3A": {
+          "examples": [
+            "BrakemanAdapter's exit-code remap (2/3 -> 0) and its ok_codes=(0,1,2,3) wiring into run_tool are never exercised by any test"
+          ],
+          "name": "exit-code-remap-path-never-exercised-by-tests",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-G3B": {
+          "cwe": [
+            "CWE-400"
+          ],
+          "examples": [
+            "TestEndToEnd shells out to the real orchestrator.py and synthesize.py entry points via subprocess.run with no timeout, so a hang in either script hangs the whole test suite/CI"
+          ],
+          "name": "long-running-subprocess-test-has-no-timeout",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-G3C": {
+          "examples": [
+            "TestRunTool is defined after the if __name__ == '__main__': unittest.main() guard in test_base.py, so it is silently omitted from execution"
+          ],
+          "name": "structural-mistake-silently-excludes-tests-from-run",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-G3D": {
+          "examples": [
+            "Hand-built ScopeProfile test fixtures omit schema-required fields and are never validated against scope-profile-schema.json",
+            "Model-resolution precedence tests can't distinguish the YAML-config tier from the hardcoded-fallback tier because fixtures don't isolate them"
+          ],
+          "name": "test-fixture-not-validated-against-authoritative-source",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "MEDIUM"
+        },
+        "TST-G3E": {
+          "examples": [
+            "The write-guard hook's live enforcement path is only exercised via its in-process decide() function - the harness actually denying an out-of-scope Write call is never tested end-to-end"
+          ],
+          "name": "security-critical-path-only-unit-tested-never-e2e",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 2,
+          "status": "active",
+          "typical_severity": "LOW"
+        },
+        "TST-G3F": {
+          "examples": [
+            "A test mocks builtins.open globally via mock_open, so it can never detect a wrong report path or misread content",
+            "Tests enforce architectural conventions by regex-scanning SKILL.md's prose instead of checking actual code structure",
+            "Dockerfile 'bundles core tools' tests only assert case-insensitive substring presence, not that the tools actually run"
+          ],
+          "name": "weak-test-assertion-doesnt-verify-real-behavior",
+          "provenance": [
+            "corpus-4x"
+          ],
+          "recurrence": 5,
+          "status": "active",
+          "typical_severity": "LOW"
+        }
+      },
+      "name": "testing"
+    }
+  },
+  "license": "CC BY-SA 4.0",
+  "version": "0.1.0"
+}

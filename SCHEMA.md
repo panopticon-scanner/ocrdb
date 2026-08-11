@@ -51,10 +51,21 @@ entries:                     # one entry per issue code
     codeql: {tags: [security/cwe/cwe-078]}
     semgrep: {category: security}
     mantyla_class: functional         # functional | evolvability
+    automated_by: [ruff:E401]         # linter/formatter rule that catches it mechanically;
+                                      #   absent/empty = requires human/agent judgment
+    see_also: [COD-A1B]               # cross-references to the single home of a related hazard
     examples: ["…"]                   # illustrative finding titles (bad), and/or {bad: …, good: …}
     remediation: "…"
     notes: "…"                        # curation notes, contested classifications
 ```
+
+### `automated_by` (0.1)
+
+Names the linter/formatter rule that would catch the issue mechanically (e.g. `ruff:E401` for combined-imports). A consumer whose deterministic tool scan ran can instruct reviewers to SKIP `automated_by` entries and disclose the suppression class — the taxonomy encodes *why* a machine-catchable finding is absent, so reviewer-model budget isn't spent re-finding free lints. Empty/absent means the issue needs judgment.
+
+### `see_also` (0.1)
+
+Cross-references the single home of a related hazard (per the single-homing rule in the charter). A `COD` leak entry may `see_also` the `TST` test-code-leak variant; a domain that declines a hazard points at the domain that owns it. `see_also` never creates a second identity for the same hazard — it is a pointer, not a duplicate.
 
 ### `character` (from the agentic-skills survey)
 

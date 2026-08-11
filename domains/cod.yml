@@ -1,6 +1,4 @@
-# OCRDb domain file - DRAFT 0.1 (pre-ratification)
-# Codes are NOT yet stable: ratification may rename/split/merge/re-letter.
-# The stability contract (SCHEMA.md) activates at the 0.1 release tag.
+# OCRDb domain file - 0.1 (RATIFIED; codes final at the 0.1 tag)
 domain: COD
 name: correctness
 areas:
@@ -27,29 +25,24 @@ areas:
       '2': doc-implementation-divergence
       '3': boundary-type-and-protocol-mismatch
   E:
-    name: unsafe-execution-and-exposure
-    categories:
-      '1': injection-and-untrusted-input-execution
-      '2': shared-state-and-coverage-gaps
-  F:
     name: control-flow-and-execution-order
     categories:
       '1': iteration-and-shortcut-logic
       '2': execution-context-and-ordering
+  F:
+    name: concurrency-and-asynchrony
+    categories:
+      '1': shared-state
+      '2': liveness-and-blocking
+      '3': async-correctness
+  G:
+    name: data-representation-and-time
+    categories:
+      '1': temporal
+      '2': numeric
+      '3': encoding-and-units
 entries:
   COD-A1A:
-    name: check-then-use-toctou-gap
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-367
-    examples:
-    - decide() validates a write target via os.path.islink()/os.path.realpath(), but the actual write happens later
-      in a separate tool-call step, leaving a window for the target to change
-  COD-A1B:
     name: unclosed-file-handle-leak
     typical_severity: MEDIUM
     status: active
@@ -62,19 +55,30 @@ entries:
     - File opened without a context manager; handle never explicitly closed, relying on GC
     - json.load(open(...)) pattern never closes the underlying file handle
     - File resource leak in apply subcommand
-  COD-A2A:
-    name: unchecked-index-or-empty-sequence-access
-    typical_severity: MEDIUM
+  COD-A1B:
+    name: check-then-use-toctou-gap
+    typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
-    recurrence: 3
+    recurrence: 2
     cwe:
-    - CWE-129
+    - CWE-367
     examples:
-    - Missing bounds check on argv access
-    - min() called on a potentially empty sequence in _max_severity
-    - pip-audit adapter indexes fix_versions[0] with a default that never fires when the list is present-but-empty
+    - decide() validates a write target via os.path.islink()/os.path.realpath(), but the actual write happens later
+      in a separate tool-call step, leaving a window for the target to change
+  COD-A2A:
+    name: unbounded-buffer-write
+    typical_severity: CRITICAL
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    cwe:
+    - CWE-787
+    - CWE-120
+    examples:
+    - Unsafe code writes user_input.len() bytes into a fixed 8-byte buffer with no bounds check
   COD-A2B:
     name: off-by-one-argument-index-error
     typical_severity: MEDIUM
@@ -88,40 +92,19 @@ entries:
     - env::args().nth(1).unwrap() used to fetch the second CLI arg, but the function actually receives the first
       argument as its own parameter
   COD-A2C:
-    name: unbounded-buffer-write
-    typical_severity: CRITICAL
+    name: unchecked-index-or-empty-sequence-access
+    typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
-    recurrence: 2
+    recurrence: 3
     cwe:
-    - CWE-787
-    - CWE-120
+    - CWE-129
     examples:
-    - Unsafe code writes user_input.len() bytes into a fixed 8-byte buffer with no bounds check
+    - Missing bounds check on argv access
+    - min() called on a potentially empty sequence in _max_severity
+    - pip-audit adapter indexes fix_versions[0] with a default that never fires when the list is present-but-empty
   COD-B1A:
-    name: incomplete-guard-coverage-across-input-variants
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - Write-guard hook is meant to gate Write|Edit|NotebookEdit but reads tool_input['file_path'] unconditionally,
-      which doesn't resolve the real target for NotebookEdit
-  COD-B1B:
-    name: overly-broad-permission-scope-in-shared-guard
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-284
-    examples:
-    - Write-allowlist is built from the union of every dispatch-plan-*.json across the fan-out, so one reviewer
-      can overwrite a sibling reviewer's findings file
-  COD-B1C:
     name: fail-open-on-missing-or-corrupt-config
     typical_severity: HIGH
     status: active
@@ -133,47 +116,29 @@ entries:
     examples:
     - Missing and corrupted write-allowlist.json are treated identically and both fail open (return 0)
     - Allowlist lookup uses a bare relative path and fails OPEN if it cannot be resolved
-  COD-B2A:
-    name: result-not-revalidated-after-transform
-    typical_severity: LOW
+  COD-B1B:
+    name: incomplete-guard-coverage-across-input-variants
+    typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
-    recurrence: 1
+    recurrence: 2
     examples:
-    - write_report()'s oversize split does one unbounded halving pass and never re-validates the result against
-      the original size constraint
-  COD-B2B:
-    name: silent-truncation-without-warning
-    typical_severity: LOW
+    - Write-guard hook is meant to gate Write|Edit|NotebookEdit but reads tool_input['file_path'] unconditionally,
+      which doesn't resolve the real target for NotebookEdit
+  COD-B1C:
+    name: overly-broad-permission-scope-in-shared-guard
+    typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
-    recurrence: 1
-    examples:
-    - recover_linkage_from_github caps at --limit 1000 with no detection or warning that results were truncated
-  COD-B2C:
-    name: error-message-misattributes-root-cause
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - --changes mode's error message blames 'not a git repository' when the real failure is a merge-base lookup
-  COD-B2D:
-    name: missing-error-handling-around-auxiliary-load
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
+    recurrence: 2
     cwe:
-    - CWE-755
+    - CWE-284
     examples:
-    - load_report has no error handling around meta.parts continuation files, and its confinement check diverges
-      from the primary path
-  COD-B2E:
+    - Write-allowlist is built from the union of every dispatch-plan-*.json across the fan-out, so one reviewer
+      can overwrite a sibling reviewer's findings file
+  COD-B2A:
     name: unguarded-null-crashes-downstream
     typical_severity: MEDIUM
     status: active
@@ -185,6 +150,46 @@ entries:
     examples:
     - .get(key, default) + .startswith() crashes on an explicit JSON null, silently dropping the record instead
       of handling it
+  COD-B2B:
+    name: error-message-misattributes-root-cause
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - --changes mode's error message blames 'not a git repository' when the real failure is a merge-base lookup
+  COD-B2C:
+    name: missing-error-handling-around-auxiliary-load
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    cwe:
+    - CWE-755
+    examples:
+    - load_report has no error handling around meta.parts continuation files, and its confinement check diverges
+      from the primary path
+  COD-B2D:
+    name: result-not-revalidated-after-transform
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - write_report()'s oversize split does one unbounded halving pass and never re-validates the result against
+      the original size constraint
+  COD-B2E:
+    name: silent-truncation-without-warning
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - recover_linkage_from_github caps at --limit 1000 with no detection or warning that results were truncated
   COD-C1A:
     name: analyzer-confidence-conflated-with-severity
     typical_severity: HIGH
@@ -208,16 +213,17 @@ entries:
     - roslyn_secguard's parse() hardcodes severity to 'HIGH' for every SecurityCodeScan finding instead of reading
       the SARIF 'level' field
   COD-C2A:
-    name: regex-rejects-valid-input-variant
-    typical_severity: MEDIUM
+    name: incorrect-source-file-selection-heuristic
+    typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
-    recurrence: 4
+    recurrence: 2
+    cwe:
+    - CWE-706
     examples:
-    - LABEL_RE.fullmatch() only matches a single backtick-quoted label, silently failing on multi-label lines
-    - 'bundle-audit block regex requires a CVE: line unconditionally while treating the sibling GHSA: line as optional,
-      though either may be absent'
+    - pip-audit's _find_requirement globs requirements*.txt and takes the first sorted match, silently picking a
+      dev/test requirements file over the primary requirements.txt
   COD-C2B:
     name: instance-state-not-propagated-through-lifecycle
     typical_severity: MEDIUM
@@ -230,6 +236,17 @@ entries:
       process/instance and never sees it
     - PipAuditAdapter maintains mutable instance state, deviating from the stateless adapter pattern
   COD-C2C:
+    name: regex-rejects-valid-input-variant
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    examples:
+    - LABEL_RE.fullmatch() only matches a single backtick-quoted label, silently failing on multi-label lines
+    - 'bundle-audit block regex requires a CVE: line unconditionally while treating the sibling GHSA: line as optional,
+      though either may be absent'
+  COD-C2D:
     name: unnormalized-identifier-causes-lookup-mismatch
     typical_severity: MEDIUM
     status: active
@@ -240,28 +257,17 @@ entries:
     - CWE-706
     examples:
     - diff_map.classify() does not normalize a ./-prefixed location.file before matching it against the hunk map
-  COD-C2D:
-    name: incorrect-source-file-selection-heuristic
+  COD-C3A:
+    name: required-output-field-missing-or-empty
     typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-706
+    recurrence: 7
     examples:
-    - pip-audit's _find_requirement globs requirements*.txt and takes the first sorted match, silently picking a
-      dev/test requirements file over the primary requirements.txt
-  COD-C3A:
-    name: nonstandard-key-silently-dropped-downstream
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - cargo-audit adapter's non-standard 'rustsec' citation key is dropped by the downstream citation pipeline with
-      no error
+    - Findings F-DUP-1/F-DUP-2 lack the required location.line_start field
+    - Findings contain empty-string values for structurally required panel/category/title fields
+    - sarif_to_findings() can emit an empty location object when a SARIF result has no locations
   COD-C3B:
     name: incomplete-lookup-catalog-silent-fallback-gap
     typical_severity: MEDIUM
@@ -273,47 +279,16 @@ entries:
     - CWE-to-OWASP mapping in the reference catalog is incomplete
     - cwe-catalog.json is missing CWE-16, CWE-778, CWE-693 needed by citations.py's category-derived CWE fallback
   COD-C3C:
-    name: required-output-field-missing-or-empty
-    typical_severity: HIGH
+    name: nonstandard-key-silently-dropped-downstream
+    typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
-    recurrence: 7
+    recurrence: 1
     examples:
-    - Findings F-DUP-1/F-DUP-2 lack the required location.line_start field
-    - Findings contain empty-string values for structurally required panel/category/title fields
-    - sarif_to_findings() can emit an empty location object when a SARIF result has no locations
+    - cargo-audit adapter's non-standard 'rustsec' citation key is dropped by the downstream citation pipeline with
+      no error
   COD-D1A:
-    name: inconsistent-record-shape-across-array
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - Finding object schema is inconsistent across the findings array
-    - Provenance object field structure varies across findings
-  COD-D1B:
-    name: schema-omits-documented-required-fields
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 4
-    examples:
-    - report-schema.json's required list omits provenance/citations despite docs mandating 'MUST include provenance/citations'
-    - Schema is missing an integrity object for fields that are actually emitted
-  COD-D1C:
-    name: schema-pattern-stricter-than-producer-output
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    examples:
-    - report-schema.json's finding-id pattern (2-4 letters) is stricter than what agents/synthesize.py actually
-      emit
-  COD-D1D:
     name: schema-enum-incomplete-vs-actual-values
     typical_severity: HIGH
     status: active
@@ -323,16 +298,46 @@ entries:
     examples:
     - confirmation_status field carries a value outside its own schema enum
     - summary.gate enum is [PASS, FAIL, OFF] but SKILL.md references INCONCLUSIVE as a valid gate value in six places
-  COD-D2A:
-    name: implemented-capability-missing-from-docs
+  COD-D1B:
+    name: schema-pattern-stricter-than-producer-output
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    examples:
+    - report-schema.json's finding-id pattern (2-4 letters) is stricter than what agents/synthesize.py actually
+      emit
+  COD-D1C:
+    name: inconsistent-record-shape-across-array
     typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
     examples:
-    - '''openrouter'' host profile has no corresponding documentation in SKILL.md''s Host dispatch section'
-    - Step 5's --host hint omits 'codex', the newest first-class host
+    - Finding object schema is inconsistent across the findings array
+    - Provenance object field structure varies across findings
+  COD-D1D:
+    name: schema-omits-documented-required-fields
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    examples:
+    - report-schema.json's required list omits provenance/citations despite docs mandating 'MUST include provenance/citations'
+    - Schema is missing an integrity object for fields that are actually emitted
+  COD-D2A:
+    name: dangling-reference-to-nonexistent-file
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - Two files listed in the assignment scope (codex-runner-instructions.md, findings-envelope-*.md) do not exist
+      in the repository
   COD-D2B:
     name: documented-feature-or-flag-not-implemented
     typical_severity: HIGH
@@ -356,16 +361,28 @@ entries:
     - A spec's Advisor Confirmation Flow prescribes a severity-downgrade behavior that the same-day epistemics-core
       spec explicitly supersedes/contradicts
   COD-D2D:
-    name: dangling-reference-to-nonexistent-file
+    name: implemented-capability-missing-from-docs
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - '''openrouter'' host profile has no corresponding documentation in SKILL.md''s Host dispatch section'
+    - Step 5's --host hint omits 'codex', the newest first-class host
+  COD-D3A:
+    name: external-api-invoked-with-wrong-parameter-shape
     typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
     recurrence: 1
+    cwe:
+    - CWE-628
     examples:
-    - Two files listed in the assignment scope (codex-runner-instructions.md, findings-envelope-*.md) do not exist
-      in the repository
-  COD-D3A:
+    - security.yml passes a directory path to the SARIF-upload action's sarif_file parameter, which expects a single
+      file
+  COD-D3B:
     name: adapter-violates-declared-protocol-interface
     typical_severity: MEDIUM
     status: active
@@ -378,7 +395,7 @@ entries:
     - LegacySarifAdapter violates the ToolAdapter protocol structure
     - Phase 1's module-level-function adapter protocol conflicts with the class-based protocol actually adopted
       elsewhere
-  COD-D3B:
+  COD-D3C:
     name: inconsistent-field-type-across-boundary
     typical_severity: MEDIUM
     status: active
@@ -390,109 +407,7 @@ entries:
     examples:
     - derive_evidence() returns 'verified_by' as inconsistent types across return paths
     - location.line_start is emitted as a string instead of an integer
-  COD-D3C:
-    name: external-api-invoked-with-wrong-parameter-shape
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - CWE-628
-    examples:
-    - security.yml passes a directory path to the SARIF-upload action's sarif_file parameter, which expects a single
-      file
   COD-E1A:
-    name: xml-parsed-without-xxe-hardening
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - CWE-611
-    examples:
-    - SpotBugs adapter parses XML with xml.etree.ElementTree without XXE/entity-expansion hardening
-  COD-E1B:
-    name: unescaped-output-propagates-injection-risk
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - CWE-79
-    - CWE-116
-    examples:
-    - A design doc's own HTML-rendering sample omits the escaping it uses one line later, modeling the exact pattern
-      that downstream code then copies
-  COD-E1C:
-    name: symlink-dereference-enables-exfiltration
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - CWE-59
-    examples:
-    - shutil.copytree(target, tmp, dirs_exist_ok=True) uses default symlinks=False, so a symlink inside the scanned
-      repo is followed, enabling exfiltration or a symlink-loop DoS
-  COD-E1D:
-    name: sql-injection-via-string-concatenation
-    typical_severity: CRITICAL
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-89
-    examples:
-    - User input concatenated directly into a SQL query string with no parameterization or escaping
-  COD-E1E:
-    name: arbitrary-code-execution-via-untrusted-build
-    typical_severity: CRITICAL
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - CWE-94
-    - CWE-829
-    examples:
-    - RoslynSecGuardAdapter runs a live 'dotnet build' directly against the scanned target repo, executing arbitrary
-      MSBuild tasks from untrusted code
-  COD-E2A:
-    name: thread-unsafe-global-mutable-state
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - CWE-362
-    examples:
-    - Thread-unsafe global mutable state in model_resolver.py
-  COD-E2B:
-    name: security-surface-not-routed-to-review-lens
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - scout.md defines secrets_config as a detectable surface but never routes it (or concurrency-surfaced files)
-      to the security panel/lens
-  COD-F1A:
-    name: loop-exits-before-exhausting-valid-entries
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - NODE_PATH loop breaks after the first global_node, leaving incomplete directory coverage
-  COD-F1B:
     name: dedup-logic-drops-entry-sharing-coarse-key
     typical_severity: MEDIUM
     status: active
@@ -501,20 +416,16 @@ entries:
     recurrence: 1
     examples:
     - build_diff silently drops a run3 finding that shares a coarse key with an already-exact-matched run2 fingerprint
-  COD-F2A:
-    name: path-resolved-against-wrong-base-directory
-    typical_severity: MEDIUM
+  COD-E1B:
+    name: loop-exits-before-exhausting-valid-entries
+    typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-706
+    recurrence: 1
     examples:
-    - Hardcoded relative path assumes the test-execution directory as its base
-    - Security-checklists reference is relative to the skill directory, but the reviewing agent's cwd is the target
-      repo
-  COD-F2B:
+    - NODE_PATH loop breaks after the first global_node, leaving incomplete directory coverage
+  COD-E2A:
     name: unreachable-code-due-to-guard-placed-before-definition
     typical_severity: CRITICAL
     status: active
@@ -527,3 +438,187 @@ entries:
     - 'TestRunTool class is defined after the if __name__ == ''__main__'': unittest.main() block, so its tests never
       run'
     - Misplaced __main__ guard sits between class definitions, silently skipping everything after it
+  COD-E2B:
+    name: path-resolved-against-wrong-base-directory
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    cwe:
+    - CWE-706
+    examples:
+    - Hardcoded relative path assumes the test-execution directory as its base
+    - Security-checklists reference is relative to the skill directory, but the reviewing agent's cwd is the target
+      repo
+  COD-F1A:
+    name: atomicity-violation-compound-operation
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    cwe:
+    - CWE-362
+  COD-F1B:
+    name: check-then-act-race
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    cwe:
+    - CWE-367
+  COD-F1C:
+    name: shared-mutable-state-without-synchronization
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    - corpus
+    cwe:
+    - CWE-362
+    notes: 'single-homes COD/ARC/SEC thread-safety duplicates (big rock #0)'
+  COD-F2A:
+    name: deadlock-lock-ordering
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    cwe:
+    - CWE-833
+  COD-F2B:
+    name: blocking-call-in-async-context
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  COD-F3A:
+    name: stale-cache-read-without-invalidation
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  COD-F3B:
+    name: thread-unsafe-lazy-initialization
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    cwe:
+    - CWE-543
+  COD-F3C:
+    name: unawaited-async-result
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  COD-F3D:
+    name: unsafe-signal-handler
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    cwe:
+    - CWE-479
+  COD-G1A:
+    name: dst-unsafe-time-arithmetic
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  COD-G1B:
+    name: epoch-unit-confusion-ms-vs-s
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  COD-G1C:
+    name: naive-aware-datetime-mixing
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  COD-G1D:
+    name: wall-clock-used-for-elapsed-time
+    typical_severity: LOW
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  COD-G2A:
+    name: monetary-value-in-float
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    cwe:
+    - CWE-681
+  COD-G2B:
+    name: integer-overflow-or-truncation
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    cwe:
+    - CWE-190
+  COD-G2C:
+    name: precision-loss-in-numeric-conversion
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    cwe:
+    - CWE-681
+  COD-G2D:
+    name: float-equality-comparison
+    typical_severity: LOW
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  COD-G3A:
+    name: bytes-string-conflation
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  COD-G3B:
+    name: default-encoding-assumption
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    cwe:
+    - CWE-176
+  COD-G3C:
+    name: unit-confusion-in-quantity
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+  COD-G3D:
+    name: unicode-normalization-mismatch
+    typical_severity: LOW
+    status: active
+    provenance:
+    - prior-art
+    - deep-gap-review
+    cwe:
+    - CWE-176
