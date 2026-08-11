@@ -67,21 +67,31 @@ E2E/UI test flakiness. Full original text retained in the project intake.
    they carry `automated_by` too — confirming this review and the tool-rule
    crosswalk are the **same 0.2 stream**, not two.
 
-## Open questions for the 0.2 ratification
+## 0.2 ratification rulings (2026-08-11, maintainer)
 
-1. `COD-F4A` placement — fold into the new **unsafe-mutation/aliasing** COD
-   category (with `mutable-default-argument`, `internal-mutable-representation-exposed`)?
-2. `ARC-E1D` — broaden to `hardcoded-cloud-resource-identifier`, or demote to an
-   `ARC-E1C` example?
-3. `DAT-A2A` — new category `DAT-A2 document-design`, or a `DAT-A1F` slot?
-4. `DAT-F1A` — seed a new area `DAT-F event-streaming` now, or declare
-   event-streaming incubating until a streaming corpus is mined?
-5. `TST-F3A` / `TST-F3B` — two codes or one merged synchronization entry?
-6. **OPS seeding** — seed OPS with `missing-resource-allocation-limit` alone, or
-   wait for an IaC/cloud corpus to seed it with several entries at once (per the
-   charter's "no skeleton" discipline)?
-7. Confirm `automated_by` tags for the adopted, linter-catchable candidates as
-   part of the tool-rule-mining pass.
+1. **`COD-F4A` cluster → defer to the tool-mining pass.** Let the mining pass
+   surface the full mutation family before shaping the unsafe-mutation/aliasing
+   category; `COD-F4A`, `mutable-default-argument`, and
+   `internal-mutable-representation-exposed` are held for that pass. `COD-F4A`
+   itself: adopt the hazard, framework-neutral name, **MEDIUM** (not HIGH).
+2. **`ARC-E1D` → broaden** to `hardcoded-cloud-resource-identifier`
+   (region/account/arn/bucket), one entry covering the IaC family.
+3. **`DAT-A2A` → `DAT-A1F` slot** under integrity-and-modeling (beside the
+   adopted `DAT-A1E` shard-key); no new `DAT-A2` category yet.
+4. **`DAT-F1A` → incubate event-streaming.** Declare streaming incubating; the
+   offset entry is held until a streaming corpus is mined (no-skeleton).
+5. **`TST-F3A` / `TST-F3B` → two codes** under a new `TST-F3 synchronization`
+   category (framework-neutral names: arbitrary-sleep; interaction-before-readiness-check).
+6. **OPS → dedicated mining pass.** Not seeded in 0.2. The Fable-authored OPS
+   payload is adjudicated and parked as the **prior-art seed input** to that
+   pass — see `reviews/2026-08-11-ops-seed-input.md`.
+7. **`automated_by` tags** for the adopted, linter-catchable candidates are
+   confirmed, applied as part of the tool-rule-mining pass.
+
+**Adopts standing as adjudicated (no fork):** `COD-A1C` renamed
+`unremoved-listener-or-subscription-leak`; `DAT-A1E` missing-partition-or-shard-key
+(HIGH). `ARC-E2E` declined (≡ `ARC-E2A`, enrich with example);
+`missing-resource-allocation-limit` → OPS seed input (per §6).
 
 ## Non-goals of this doc
 
