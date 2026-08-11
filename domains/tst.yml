@@ -382,6 +382,14 @@ entries:
     examples:
     - Fake subprocess-result class reimplemented locally in ~8 test methods instead of one shared helper
     - Duplicate _target() helper method across test classes
+    criteria: >-
+      Qualifies when test LOGIC — a helper method or a hand-rolled fake/stub/mock
+      class — is reimplemented near-identically across multiple test methods or
+      cases instead of shared; the duplicated unit carries behavior. Inert fixture
+      scaffolding (a fixture-root/path constant or setup boilerplate) duplicated
+      across test FILES is TST-G1B.
+    see_also:
+    - TST-G1B
   TST-C3A:
     name: unrepresentative-test-input
     typical_severity: MEDIUM
@@ -723,6 +731,14 @@ entries:
     - FIXTURE_ROOT is redefined identically across every integration test file (Java, C#, Ruby, Rust) instead of
       a shared fixture module
     - An identical _touch fixture helper is copy-pasted verbatim into three separate TestCase classes
+    criteria: >-
+      Qualifies when inert fixture SCAFFOLDING — a fixture-root/path constant,
+      environment/directory setup, or config boilerplate — is redefined
+      identically across multiple test FILES instead of a shared fixture module;
+      the duplicated unit is not behavior. A duplicated behavioral helper method
+      or fake/stub class across cases is TST-C2B.
+    see_also:
+    - TST-C2B
   TST-G1C:
     name: unit-and-integration-tests-not-separated
     typical_severity: MEDIUM
