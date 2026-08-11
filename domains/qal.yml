@@ -248,9 +248,6 @@ entries:
     provenance:
     - corpus-4x
     recurrence: 4
-    examples:
-    - '[project.urls] all point to a stale GitHub org inconsistent with the actual `git remote origin`'
-    - Hardcoded issue-repo org differs between two sibling scripts (psyberone/panopticon vs panopticon-scanner/panopticon)
     criteria: >-
       Qualifies when a URL or reference in documentation or code is STALE — it
       points to an outdated org, host, or target — as a single per-instance
@@ -382,7 +379,6 @@ entries:
     cwe:
     - CWE-1041
     examples:
-    - The retry/backoff-on-rate-limit loop for `gh issue create` is triplicated verbatim across three scripts
     - run_tools()'s legacy-SARIF and Phase-1-adapter dispatch blocks duplicate ~20 lines of subprocess invoke/error-handling
       logic
     criteria: >-
@@ -401,10 +397,6 @@ entries:
     recurrence: 8
     cwe:
     - CWE-1041
-    examples:
-    - RATE_HINTS is defined identically or near-identically in three separate scripts instead of one shared source
-    - The six canonical panel names are hand-duplicated, with differing order, across three modules instead of imported
-      from one place
     criteria: >-
       Qualifies per-instance when the same constant is defined in two or more
       places and should be unified — the finding is the duplicate definitions
@@ -542,7 +534,6 @@ entries:
     cwe:
     - CWE-1078
     examples:
-    - '`if __name__ == "__main__": unittest.main()` is placed mid-file, before a second TestCase class is even defined'
     - Main block misplaced in the middle of a file rather than at the end
     criteria: >-
       Qualifies ONLY when a misplaced `__main__` guard (or top-level block) is

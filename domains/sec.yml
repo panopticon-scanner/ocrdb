@@ -134,11 +134,6 @@ entries:
     cwe:
     - CWE-611
     - CWE-776
-    examples:
-    - Using xml.etree.ElementTree.fromstring to parse untrusted XML data is known to be vulnerable to XML attacks.
-      R
-    - XML External Entity (XXE) Injection in XML Parsing
-    - SpotBugs report XML parsed with `xml.etree.ElementTree` instead of a hardened parser
     criteria: >-
       Qualifies (MEDIUM) when parsing of UNTRUSTED input is demonstrated AND the
       parser configuration permits external entities/DTD/expansion, or the library
@@ -158,6 +153,8 @@ entries:
     examples:
     - Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace
       xml.
+    - XML External Entity (XXE) Injection in XML Parsing
+    - SpotBugs report XML parsed with `xml.etree.ElementTree` instead of a hardened parser
     criteria: >-
       Qualifies (LOW) on HEURISTIC presence alone — an XML library import or call
       flagged by a rule with no dataflow evidence that untrusted input reaches it
@@ -288,9 +285,6 @@ entries:
     recurrence: 4
     cwe:
     - CWE-798
-    examples:
-    - 'Known vulnerable code pattern: Hardcoded secrets in source code'
-    - generic-api-key has detected secret for file /src/.env.
     criteria: >-
       Qualifies (HIGH) when the material is a REAL credential — valid format plus
       context indicating actual use (a non-placeholder value in production config,
@@ -321,6 +315,8 @@ entries:
     - CWE-798
     examples:
     - 'Possible hardcoded password: ''gate-pass'''
+    - 'Known vulnerable code pattern: Hardcoded secrets in source code'
+    - generic-api-key has detected secret for file /src/.env.
     criteria: >-
       Qualifies (LOW) when the evidence is a pattern/entropy DETECTOR hit of
       unconfirmed validity — possible-secret strings, placeholders, test fixtures,
@@ -419,7 +415,7 @@ entries:
     cwe:
     - CWE-307
     examples:
-    - Authentication routine uses a non-constant-time comparison and has no brute-force protection
+    - Authentication routine has no brute-force protection
     criteria: >-
       Qualifies when an authentication endpoint lacks throttling/lockout/backoff
       against repeated attempts (CWE-307), regardless of how the credential
@@ -436,7 +432,7 @@ entries:
     cwe:
     - CWE-208
     examples:
-    - Authentication routine uses a non-constant-time comparison and has no brute-force protection
+    - Authentication routine uses a non-constant-time comparison
     criteria: >-
       Qualifies when a credential/token comparison short-circuits on first
       difference (==, early-exit loop) instead of a constant-time compare
@@ -539,8 +535,6 @@ entries:
     - prior-art
     cwe:
     - CWE-918
-    examples:
-    - User-controlled URL dispatch pattern without allow-listing (latent SSRF precursor)
     criteria: >-
       Qualifies (HIGH) only when server-side URL fetching is DEMONSTRATED to reach
       internal targets — loopback/link-local, cloud metadata (169.254.169.254),

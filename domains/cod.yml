@@ -101,9 +101,6 @@ entries:
     recurrence: 3
     cwe:
     - CWE-636
-    examples:
-    - Missing and corrupted write-allowlist.json are treated identically and both fail open (return 0)
-    - Allowlist lookup uses a bare relative path and fails OPEN if it cannot be resolved
     criteria: >-
       Qualifies when config-LOADING code chooses a permissive default on a missing
       or corrupt config artifact (treats absent and corrupt alike, or resolves a
@@ -442,10 +439,6 @@ entries:
     recurrence: 4
     cwe:
     - CWE-670
-    examples:
-    - 'TestRunTool class is defined after the if __name__ == ''__main__'': unittest.main() block, so its tests never
-      run'
-    - Misplaced __main__ guard sits between class definitions, silently skipping everything after it
     criteria: >-
       Qualifies when a guard, return, or exit placed before later definitions
       makes PRODUCTION code unreachable — the skipped code would run in normal

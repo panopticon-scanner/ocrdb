@@ -227,6 +227,7 @@ entries:
     - SEV_ORDER and PANELS redefined locally in synthesize.py and html_report.py instead of owned by evidence.py
       and aliased
     - GROUP_RE/_OUTFILE_RE regex panel-alternation lists hand-duplicated instead of derived from PANELS
+    - RATE_HINTS is defined identically or near-identically in three separate scripts instead of one shared source
     criteria: >-
       Qualifies when a constant or structure is duplicated because no CANONICAL
       OWNER exists — a proper fix establishes a single authoritative definition
@@ -465,16 +466,14 @@ entries:
     cwe:
     - CWE-436
     examples:
-    - report-schema.json's finding-id pattern (^[A-Z]{2,4}-[0-9]{3,}$) is stricter than the id format synthesize.py
-      actually produces
-    - base.py's ID_RE constant is dead and has drifted from the actual authoritative finding-id validator
     - Finding-ID regex diverges between agent prompt templates and the report schema
     criteria: >-
       Qualifies when the SAME id or format is specified inconsistently across two
-      or more artifacts (schema pattern vs producer vs prompt template, or a
+      or more specification artifacts (schema pattern vs prompt template, or a
       drifted authoritative validator) so the contract has no single format
-      authority — a structural cross-artifact mismatch, independent of any one
-      rejected instance. A live schema that actively rejects real output is
+      authority — three or more artifacts disagree with no single authority, not a
+      single schema-vs-producer rejection, and independent of any one rejected
+      instance. A live schema that actively rejects real output is
       COD-D1B; inert over-precision that rejects nothing is QAL-C2A; a dead,
       unimported stricter duplicate is QAL-E1B.
   ARC-D1E:
@@ -508,8 +507,6 @@ entries:
     cwe:
     - CWE-1059
     examples:
-    - README Quick start examples show a --mode/--target invocation syntax that does not exist anywhere in the actual
-      CLI
     - Frontmatter arguments list covers only 4 of roughly 13 documented CLI flags
     criteria: >-
       Qualifies when the CLI's declared interface contract as a whole has drifted
@@ -839,7 +836,6 @@ entries:
     examples:
     - group_runner.py and ingest_tools.py tolerate non-dict plan entries and malformed input by silently skipping
       them instead of rejecting
-    - write_guard_hook.py's main() returns 0 (allow) if JSON parsing fails or the allowlist file is missing
     criteria: >-
       Qualifies when a general, non-enforcement component silently SKIPS or
       tolerates malformed or unexpected-shape runtime INPUT instead of rejecting
