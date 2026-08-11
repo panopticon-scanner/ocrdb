@@ -2,7 +2,111 @@
 
 All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (incubating); see SCHEMA.md stability contract.
 
-<!-- TODO(0.2.0): Renamed `typical_severity` → `default_severity` (breaking, pre-1.0). Full 0.2.0 changelog entry is written in Task 9. -->
+## 0.2.0 — 2026-08-11 (clean identity base, breaking)
+
+A sanctioned **pre-1.0 identity-base reset**. The 0.1 release had duplicate
+codes for the same hazard, dead-letter promises (`see_also` declared but never
+populated), and vendor names leaked into a public taxonomy. This release fixes
+all three. Per the stability contract, codes are held stable *per release* but
+free to change *before* 1.0 (CHARTER, SCHEMA.md) — there are no 0.1.0
+consumers yet, so the 0.1 pin promise protected no one. **381 → 357 entries**
+(24 duplicate codes removed).
+
+**Single-homing (identity):** 19 advisor-verified same-hazard clusters plus
+the `TST-G3C` verbatim duplicate resolved by **clean rewrite**: each
+duplicate's YAML block is deleted outright and folded into its named
+survivor (distinct `examples`/`cwe`/`recurrence` merged; severity set by
+the R2 bar — "exploitable now, data loss, or silently wrong at scale"). Four
+of these clusters fold two duplicates into one survivor each, so the 20
+cluster-groups remove **24 codes** in total. **No `status: deprecated`
+tombstones** — this is a rewrite, not a deprecation. `COD-E2B` was flagged as
+a same-hazard candidate but **kept and re-scoped** (its production example is
+genuine, not a duplicate). Full working notes, severity-reconciliation flags,
+and the CWE/recurrence fold policy live in `scratch/0.2-migration.md`
+(git-ignored, not shipped); the migration table below is the shareable
+summary:
+
+| Removed code | Survivor |
+|---|---|
+| `COD-D2A` | `ARC-D3A` |
+| `SEC-G3A` | `QAL-C1C` |
+| `ARC-D3C` | `QAL-C1C` |
+| `QAL-A2A` | `ARC-E1A` |
+| `ARC-B1B` | `QAL-C1D` |
+| `ARC-G3A` | `TST-E1B` |
+| `ARC-A4B` | `QAL-E2B` |
+| `QAL-D2A` | `TST-G1A` |
+| `QAL-D2B` | `TST-G1B` |
+| `QAL-E2A` | `TST-C3D` |
+| `TST-G2B` | `TST-D2A` |
+| `QAL-A1A` | `TST-C3C` |
+| `ARC-A2E` | `TST-C3C` |
+| `TST-G2C` | `TST-C4B` |
+| `QAL-F3A` | `TST-C4B` |
+| `TST-G1D` | `TST-C2A` |
+| `QAL-F2C` | `TST-C2A` |
+| `ARC-F2F` | `AGT-C1A` |
+| `COD-B1B` | `ARC-F2C` |
+| `SEC-G1A` | `COD-C1A` / `COD-C1B` (split fold) |
+| `ARC-E3D` | `COD-C3B` |
+| `SEC-C4A` | `SEC-C4B` |
+| `COD-A1B` | `COD-F1B` |
+| `TST-G3C` | `TST-C1A` |
+
+Per-domain: `ARC` 77→70, `COD` 58→55, `QAL` 58→51, `SEC` 73→70, `TST` 80→76,
+`AGT` 16 (unchanged), `DAT` 19 (unchanged).
+
+**Disambiguation:** `criteria` (positive-qualification rule + nearest-neighbor
+exclusion, naming the neighbor code in prose) added to 44 entries across the
+audit's 9 confusable-boundary clusters plus the top Appendix-B priority pairs
+(SEC's four high-priority pairs, the AGT-B1 authority-scope cluster, the
+DAT-B1 destructive/irreversible/non-idempotent triangle, and `TST-C2B` vs
+`TST-G1B`, the one surviving-pair boundary an independent advisor re-check
+flagged post-rewrite). `see_also` — declared in 0.1 but never populated —
+is now populated with 56 mutual cross-references: the routing hints 0.1
+promised but never delivered.
+
+**Provenance:** normalized to a vendor-neutral controlled vocabulary of 7
+active tiers — `corpus`, `tool-observed`, `gap-review`, `prior-art`,
+`owasp-align`, `asvs-align`, `openssf-align` (an 8th, `cwe-align`, is defined
+in the vocabulary and reserved for future crosswalk-driven additions, not yet
+assigned to any entry). Commercial tool names (`coderabbit`, `copilot`),
+internal run/skill identifiers (`pr945`, `skills-class`, `simplify-skill`,
+`code-simplifier-agent`, `receiving-code-review-skill`), version-qualified
+corpus tags (`corpus-4x`, `corpus-2.3.0`), and source-specific gap-review tags
+(`deep-gap-review`, `gemini-gap-review`) are stripped — OSS project names and
+named standards are retained. **Examples:** 48 examples across 27 entries
+(AGT/ARC/COD/SEC), truncated at 0.1's ~110-char signature bug, repaired: 13
+completed unambiguously, 35 trimmed to the last complete clause.
+
+**Validator hardening (`tools/validate.py`):** four checks added —
+`see_also`-target existence (a `see_also` pointing at a nonexistent code is
+now a hard error), duplicate-domain declaration, `automated_by` shape
+(`tool:rule-id` pattern), and provenance-controlled-vocabulary membership.
+
+**Schema (breaking):** field `typical_severity` → `default_severity`. Freezes
+at 1.0 per the governance change below.
+
+**Governance:** the stability freeze is now stated as activating at **1.0**,
+not at each 0.x tag (CHARTER.md, SCHEMA.md) — 0.x releases are held stable as
+a courtesy, not a contract, which is what licenses this release to change
+codes at all. A `CHARTER.md` concurrency-domain drift (`COD-G` in the
+single-homing prose vs the ratified `COD-F`) was fixed. The 0.1.0 changelog
+entry's false "+ `see_also` cross-refs" credit — `see_also` was declared in
+0.1 but never actually populated — was removed retroactively.
+
+**Gate A (domain-unpinned re-run):** with duplicates removed and `criteria`
+present, a 100-finding recurrence-weighted, domain-stratified re-run measured
+**85% full-code / 86% category** 3-way advisor agreement (89% / 90%
+pairwise), **zero duplicate-driven splits** (the "same hazard under two
+codes" wobble that drove 0.1's residual disagreement is gone) and **zero
+hallucinated codes** across 300 assignments, on the harder unpinned task (full
+357-code menu, not a pinned domain). Below the pinned 0.1 baseline (91% / 94%)
+by construction — unpinned assignment is a harder task — but validates the
+single-homing rewrite. Full method, per-domain breakdown, and the 15
+remaining near-boundary disagreements (mostly ARC/COD/QAL contract-drift; DAT
+uncovered, its examples having been re-homed in Task 3-4): see
+`reviews/2026-08-11-gate-a-unpinned.md`.
 
 ## 0.1.0 — 2026-08-10 (first ratified release, private incubation)
 
