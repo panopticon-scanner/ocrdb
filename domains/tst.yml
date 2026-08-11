@@ -365,9 +365,13 @@ entries:
     provenance:
     - corpus-4x
     recurrence: 2
+    cwe:
+    - CWE-710
     examples:
     - Single 2,669-line test module conflates dozens of unrelated concerns (~46 independent TestCase classes) for
       synthesize.py
+    - test_roslyn_secguard.py contains three unrelated test classes (TestRoslynSecGuardAdapter, TestSafeCopytree,
+      TestScsOnlyFilter) with no semantic grouping
   TST-C2B:
     name: duplicated-test-helper-across-cases
     typical_severity: LOW
@@ -377,7 +381,6 @@ entries:
     recurrence: 4
     examples:
     - Fake subprocess-result class reimplemented locally in ~8 test methods instead of one shared helper
-    - Duplicate FIXTURE_ROOT initialization across integration tests
     - Duplicate _target() helper method across test classes
   TST-C3A:
     name: unrepresentative-test-input
@@ -405,6 +408,8 @@ entries:
     provenance:
     - corpus-4x
     recurrence: 2
+    cwe:
+    - CWE-710
     examples:
     - Helper function _depth_gte is named for the opposite comparison it actually implements
   TST-C3D:
@@ -413,7 +418,10 @@ entries:
     status: active
     provenance:
     - corpus-4x
-    recurrence: 2
+    recurrence: 3
+    cwe:
+    - CWE-561
+    - CWE-1041
     examples:
     - File/class name references a non-existent 'cs' scope and duplicates test_rust_integration.py
   TST-C4A:
@@ -428,14 +436,19 @@ entries:
       path, silently returning False for everything else'
   TST-C4B:
     name: inconsistent-mocking-pattern
-    typical_severity: LOW
+    typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
     recurrence: 3
+    cwe:
+    - CWE-710
+    - CWE-1099
     examples:
     - 'Inconsistent subprocess mocking pattern across test suite: patch.object(subprocess, "run") in one file vs.
       mock.patch("scripts.tools.base.subprocess.run") in others'
+    - A test locally does `from unittest import mock` and nests four levels of `with mock.patch(...)`, diverging
+      from every sibling adapter test's mocking idiom
   TST-C4C:
     name: mock-asserts-internal-behavior-not-output
     typical_severity: LOW
@@ -528,6 +541,8 @@ entries:
     provenance:
     - corpus-4x
     recurrence: 5
+    cwe:
+    - CWE-710
     examples:
     - 'Non-hermetic test: fixture path is relative to invocation cwd, not the test file'
     - Hard-coded relative path in test assumes repo-root execution
@@ -558,6 +573,8 @@ entries:
     provenance:
     - corpus-4x
     recurrence: 6
+    cwe:
+    - CWE-561
     examples:
     - Fixture file vulnerable-python/requirements.txt exists but is unused by specified tests
     - tests/fixtures/semgrep.sarif is an orphaned fixture with no consuming test
@@ -686,9 +703,10 @@ entries:
     status: active
     provenance:
     - corpus-4x
-    recurrence: 4
+    recurrence: 5
     cwe:
     - CWE-710
+    - CWE-1041
     examples:
     - All 18-43 test files inject the skill directory via sys.path.insert(0, ...) at module level instead of relying
       on an installable package
@@ -717,18 +735,6 @@ entries:
     examples:
     - tests/tools/ mixes fast unit tests and slower real-tool integration tests in one directory with no structural
       separation
-  TST-G1D:
-    name: unrelated-test-classes-grouped-in-single-file
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - test_roslyn_secguard.py contains three unrelated test classes (TestRoslynSecGuardAdapter, TestSafeCopytree,
-      TestScsOnlyFilter) with no semantic grouping
   TST-G2A:
     name: inconsistent-import-convention-in-test-methods
     typical_severity: MEDIUM
@@ -741,30 +747,6 @@ entries:
     examples:
     - test_dependency_check.py imports unittest.mock inside a test method body while every other test file imports
       it at module level
-  TST-G2B:
-    name: inconsistent-path-resolution-convention-in-tests
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - test_status_is_in_schema_enum opens a bare cwd-relative path ('skill/reference/report-schema.json') instead
-      of the __file__-relative pattern the rest of the suite uses
-  TST-G2C:
-    name: inconsistent-subprocess-mocking-strategy
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - test_legacy_sarif.py uses patch.object(subprocess, 'run') while every other adapter test file mocks at a different
-      layer
   TST-G2D:
     name: hardcoded-test-constant-duplicated
     typical_severity: LOW
@@ -822,16 +804,6 @@ entries:
     examples:
     - TestEndToEnd shells out to the real orchestrator.py and synthesize.py entry points via subprocess.run with
       no timeout, so a hang in either script hangs the whole test suite/CI
-  TST-G3C:
-    name: structural-mistake-silently-excludes-tests-from-run
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - 'TestRunTool is defined after the if __name__ == ''__main__'': unittest.main() guard in test_base.py, so it
-      is silently omitted from execution'
   TST-G3D:
     name: test-fixture-not-validated-against-authoritative-source
     typical_severity: MEDIUM

@@ -55,18 +55,6 @@ entries:
     - File opened without a context manager; handle never explicitly closed, relying on GC
     - json.load(open(...)) pattern never closes the underlying file handle
     - File resource leak in apply subcommand
-  COD-A1B:
-    name: check-then-use-toctou-gap
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-367
-    examples:
-    - decide() validates a write target via os.path.islink()/os.path.realpath(), but the actual write happens later
-      in a separate tool-call step, leaving a window for the target to change
   COD-A2A:
     name: unbounded-buffer-write
     typical_severity: CRITICAL
@@ -116,16 +104,6 @@ entries:
     examples:
     - Missing and corrupted write-allowlist.json are treated identically and both fail open (return 0)
     - Allowlist lookup uses a bare relative path and fails OPEN if it cannot be resolved
-  COD-B1B:
-    name: incomplete-guard-coverage-across-input-variants
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - Write-guard hook is meant to gate Write|Edit|NotebookEdit but reads tool_input['file_path'] unconditionally,
-      which doesn't resolve the real target for NotebookEdit
   COD-B1C:
     name: overly-broad-permission-scope-in-shared-guard
     typical_severity: MEDIUM
@@ -202,6 +180,9 @@ entries:
       vocabulary via a map missing a 'low' entry
     - SpotBugs BugInstance.priority (its confidence) is mapped onto our severity field, while our confidence field
       is hardcoded
+    - osv-scanner adapter silently downgrades known vulnerabilities to INFO severity when a group lacks a numeric
+      ma
+    - Shared severity normalizer silently defaults unmapped/un-rated severity strings to INFO across every dependenc
   COD-C1B:
     name: severity-hardcoded-ignoring-tool-value
     typical_severity: HIGH
@@ -212,6 +193,8 @@ entries:
     examples:
     - roslyn_secguard's parse() hardcodes severity to 'HIGH' for every SecurityCodeScan finding instead of reading
       the SARIF 'level' field
+    - pip-audit adapter hardcodes severity to MEDIUM for essentially all findings, masking the true severity of
+      know
   COD-C2A:
     name: incorrect-source-file-selection-heuristic
     typical_severity: HIGH
@@ -274,10 +257,12 @@ entries:
     status: active
     provenance:
     - corpus-4x
-    recurrence: 2
+    recurrence: 3
     examples:
     - CWE-to-OWASP mapping in the reference catalog is incomplete
     - cwe-catalog.json is missing CWE-16, CWE-778, CWE-693 needed by citations.py's category-derived CWE fallback
+    - The cwe_owasp mapping omits 8 of the 34 CWEs listed in the main catalog, silently dropping OWASP derivation
+      for those findings
   COD-C3C:
     name: nonstandard-key-silently-dropped-downstream
     typical_severity: LOW
@@ -328,16 +313,6 @@ entries:
     examples:
     - report-schema.json's required list omits provenance/citations despite docs mandating 'MUST include provenance/citations'
     - Schema is missing an integrity object for fields that are actually emitted
-  COD-D2A:
-    name: dangling-reference-to-nonexistent-file
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - Two files listed in the assignment scope (codex-runner-instructions.md, findings-envelope-*.md) do not exist
-      in the repository
   COD-D2B:
     name: documented-feature-or-flag-not-implemented
     typical_severity: HIGH
@@ -448,7 +423,6 @@ entries:
     cwe:
     - CWE-706
     examples:
-    - Hardcoded relative path assumes the test-execution directory as its base
     - Security-checklists reference is relative to the skill directory, but the reviewing agent's cwd is the target
       repo
   COD-F1A:
@@ -467,8 +441,13 @@ entries:
     provenance:
     - prior-art
     - deep-gap-review
+    - corpus-4x
+    recurrence: 2
     cwe:
     - CWE-367
+    examples:
+    - decide() validates a write target via os.path.islink()/os.path.realpath(), but the actual write happens later
+      in a separate tool-call step, leaving a window for the target to change
   COD-F1C:
     name: shared-mutable-state-without-synchronization
     typical_severity: MEDIUM

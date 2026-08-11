@@ -94,10 +94,11 @@ entries:
     status: active
     provenance:
     - corpus-4x
-    recurrence: 6
+    recurrence: 9
     cwe:
     - CWE-290
     - CWE-345
+    - CWE-807
     examples:
     - Self-asserted corroborated/corroborated_by fields bypass agent-trust sanitization and forge cross-panel verifi
     - Self-asserted source/reinforced fields let an agent finding forge tool_confirmed evidence and bypass advisor
@@ -107,6 +108,8 @@ entries:
     - Self-asserted `corroborated`/`corroborated_by` fields let an untrusted reviewer finding forge verification
       sta
     - Self-asserted _group field can misattribute a finding to the wrong review group when the source filename doesn
+    - corroborated/corroborated_by are self-assertable by agents even though the semantically-equivalent source/reinforced
+      fields are explicitly stripped as forbidden, allowing spoofed cross-panel corroboration
   AGT-C1B:
     name: findings-from-undeclared-source-merged-despite-flagging
     typical_severity: MEDIUM

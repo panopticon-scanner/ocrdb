@@ -22,7 +22,6 @@ areas:
     name: duplication
     categories:
       '1': duplicated-logic
-      '2': duplicated-test-boilerplate
   E:
     name: dead-code
     categories:
@@ -50,18 +49,6 @@ areas:
     categories:
       '1': diagnostics
 entries:
-  QAL-A1A:
-    name: misleading-identifier-name
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    - incl. 1 test-quality-tagged
-    recurrence: 4
-    examples:
-    - Helper _depth_gte computes lens_depth <= panel_depth -- its name promises the opposite comparison direction
-      from what its body does (flagged independently 3 times across review passes)
-    - Test named for a CWE-uppercasing transformation actually just verifies a static dict lookup
   QAL-A1B:
     name: inconsistent-naming-convention
     typical_severity: INFO
@@ -84,16 +71,6 @@ entries:
     - Filename orchestrator.py collides with the unrelated 'orchestrator' concept used throughout the pipeline docs/agent
       naming
     - Same collision flagged again independently in a later review pass on the same file
-  QAL-A2A:
-    name: hardcoded-machine-specific-literal
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - '`REPO_ROOT = "/Volumes/Mini Vault/untitled_folder/projects/panopticon/"` is a literal, single-developer local
-      filesystem path baked into committed source'
   QAL-A2B:
     name: confusing-expression-precedence
     typical_severity: LOW
@@ -290,6 +267,8 @@ entries:
     provenance:
     - corpus-4x
     recurrence: 7
+    cwe:
+    - CWE-1059
     examples:
     - CODEOWNERS 'CI / security tooling' and 'Schemas and reference data' sections list paths that no longer exist
       post-restructure
@@ -301,6 +280,8 @@ entries:
     provenance:
     - corpus-4x
     recurrence: 5
+    cwe:
+    - CWE-1059
     examples:
     - pyproject.toml [project].version reads 3.0.0 while the project's actual current version is 4.2.0
     - CHANGELOG.md's only versioned entry doesn't match DEVELOPMENT.md's description of the same version
@@ -415,30 +396,6 @@ entries:
     - _severity_class and _panel_class implement the exact same strip/lowercase transform, differing only in a CSS-class
       prefix string
     character: opportunity
-  QAL-D2A:
-    name: duplicated-sys-path-boilerplate
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 5
-    cwe:
-    - CWE-1041
-    examples:
-    - The identical sys.path.insert(...) skill-path boilerplate is duplicated verbatim across every one of 35 test
-      files, with no shared conftest.py
-  QAL-D2B:
-    name: duplicated-fixture-root-boilerplate
-    typical_severity: INFO
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 4
-    cwe:
-    - CWE-1041
-    examples:
-    - The identical three-line FIXTURE_ROOT env-var lookup block is copy-pasted across all three language-integration
-      test files
   QAL-E1A:
     name: dead-configuration-setting
     typical_severity: LOW
@@ -466,19 +423,6 @@ entries:
     examples:
     - base.py declares ID_RE, an unused, stricter duplicate of the canonical finding-ID regex actually used in synthesize.py;
       nothing imports or calls it
-  QAL-E2A:
-    name: orphaned-duplicate-file
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-561
-    - CWE-1041
-    examples:
-    - test_rust_cs_integration.py is a stray file whose name/class don't match its content and duplicate an existing,
-      correctly-named integration test
   QAL-E2B:
     name: retired-component-still-registered
     typical_severity: MEDIUM
@@ -563,29 +507,6 @@ entries:
     examples:
     - '`if __name__ == "__main__": unittest.main()` is placed mid-file, before a second TestCase class is even defined'
     - Main block misplaced in the middle of a file rather than at the end
-  QAL-F2C:
-    name: oversized-unfocused-module
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - test_synthesize.py is a single 1,736-line module covering roughly 27 unrelated test-suite concerns
-  QAL-F3A:
-    name: divergent-mocking-idiom-across-test-suite
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 8
-    cwe:
-    - CWE-1099
-    examples:
-    - A test locally does `from unittest import mock` and nests four levels of `with mock.patch(...)`, diverging
-      from every sibling adapter test's mocking idiom
-    - TestPanelPriority uses bare `assert` statements instead of the suite's self.assertX idiom used everywhere
-      else
   QAL-F3B:
     name: inconsistent-noqa-annotation-usage
     typical_severity: LOW

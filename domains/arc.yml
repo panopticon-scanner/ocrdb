@@ -140,17 +140,6 @@ entries:
     - Module aliasing functions from another module without an explicit interface contract
     - Tool-specific noise-filtering policy (bandit B101 suppression) embedded directly in a shared, tool-agnostic
       helper
-  ARC-A2E:
-    name: misleading-interface-naming
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - _depth_gte's name is inverted relative to what it actually computes, inviting a future off-by-logic regression
   ARC-A3A:
     name: duplicated-business-logic-without-shared-module
     typical_severity: MEDIUM
@@ -194,18 +183,6 @@ entries:
       same file set
     - spotbugs.py is the only adapter parsing tool output with un-hardened stdlib XML instead of JSON/SARIF like
       its siblings
-  ARC-A4B:
-    name: dead-registry-entry
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-561
-    examples:
-    - ADAPTERS still registers a retired 'eslint' adapter that is guaranteed to raise NotImplementedError if ever
-      selected
   ARC-A4C:
     name: shadow-registry-without-enforced-parity
     typical_severity: MEDIUM
@@ -264,18 +241,6 @@ entries:
     examples:
     - pyyaml, jsonschema, and pytest are imported and used throughout the project but never declared as dependencies
       in pyproject.toml
-  ARC-B1B:
-    name: packaging-version-drift
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 5
-    cwe:
-    - CWE-1059
-    examples:
-    - pyproject.toml declares version 3.0.0 while SKILL.md metadata and DEVELOPMENT.md both state the current version
-      is 4.2.0 - two major versions behind
   ARC-B1C:
     name: stale-project-metadata-urls
     typical_severity: MEDIUM
@@ -597,18 +562,6 @@ entries:
     - README's Repository layout table lists a docs/ directory that does not exist in this checkout
     - Documented security-disclosure process tells reporters to file a private advisory, but no SECURITY.md exists
       anywhere in the repo
-  ARC-D3C:
-    name: stale-path-reference-in-governance-config
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-1059
-    examples:
-    - CODEOWNERS assigns owners to /scripts/, /scripts/tools/, and /reference/, none of which exist at the repo
-      root - the rules are permanently dead
   ARC-E1A:
     name: hardcoded-absolute-path-in-source
     typical_severity: HIGH
@@ -719,18 +672,6 @@ entries:
     - model-profiles.yml's openrouter host profile has no corresponding hardcoded fallback in model_resolver.py,
       unlike kimi and claude
     - Tool policy mode has no cross-host validation, so hosts can silently diverge in enforcement behavior
-  ARC-E3D:
-    name: reference-data-catalog-incomplete
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-1059
-    examples:
-    - The cwe_owasp mapping omits 8 of the 34 CWEs listed in the main catalog, silently dropping OWASP derivation
-      for those findings
   ARC-F1A:
     name: enforcement-relies-on-stale-flag-not-live-verification
     typical_severity: HIGH
@@ -859,18 +800,6 @@ entries:
     - Write-guard fails silently open (no deny, no warning) when the allowlist file is missing, malformed, or looked
     - Tool-policy enforcement silently degrades to prompt-only ("advisory") when a host agent isn't registered,
       whic
-  ARC-F2F:
-    name: self-assertable-trust-field-mirrors-forbidden-field
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-807
-    examples:
-    - corroborated/corroborated_by are self-assertable by agents even though the semantically-equivalent source/reinforced
-      fields are explicitly stripped as forbidden, allowing spoofed cross-panel corroboration
   ARC-F2G:
     name: overbroad-exception-handling-masks-errors
     typical_severity: LOW
@@ -947,18 +876,6 @@ entries:
       work
     - A planned Phase-5 integration reuses the static-scan fixture pattern for a corpus that fundamentally differs
       from static-scan fixtures
-  ARC-G3A:
-    name: orphaned-unused-fixture-file
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-561
-    examples:
-    - tests/fixtures/semgrep.sarif is a committed, realistic SARIF sample that is not loaded by any test in the
-      repository
   ARC-G3B:
     name: tracked-file-violates-own-gitignore-rule
     typical_severity: LOW

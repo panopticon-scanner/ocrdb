@@ -438,17 +438,6 @@ entries:
     - CWE-327
     examples:
     - Ad-hoc, unsalted, non-cryptographic checksum used in place of a real hash function
-  SEC-C4A:
-    name: insufficient-log-detail-for-security-events
-    typical_severity: LOW
-    status: active
-    provenance:
-    - prior-art
-    cwe:
-    - CWE-778
-    - CWE-223
-    examples:
-    - Sensitive fund-transfer action executes with no audit logging
   SEC-C4B:
     name: missing-audit-logging-for-sensitive-action
     typical_severity: LOW
@@ -458,6 +447,7 @@ entries:
     recurrence: 2
     cwe:
     - CWE-778
+    - CWE-223
     examples:
     - Sensitive fund-transfer action executes with no audit logging
   SEC-D1A:
@@ -708,22 +698,6 @@ entries:
     - CWE-770
     examples:
     - Unbounded Response Size in External API Lookup
-  SEC-G1A:
-    name: scanner-severity-silently-misreported
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 7
-    cwe:
-    - CWE-1059
-    examples:
-    - osv-scanner adapter silently downgrades known vulnerabilities to INFO severity when a group lacks a numeric
-      ma
-    - pip-audit adapter hardcodes severity to MEDIUM for essentially all findings, masking the true severity of
-      know
-    - Shared severity normalizer silently defaults unmapped/un-rated severity strings to INFO across every dependenc
-    - Brakeman's `confidence` field is reused as panopticon `severity`, silently downgrading low-confidence critical
   SEC-G1B:
     name: tool-citation-cwe-mismatch
     typical_severity: LOW
@@ -773,17 +747,6 @@ entries:
     examples:
     - Semgrep invocation uses `--config auto` without `--metrics=off`, introducing an unpinned remote ruleset and
       te
-  SEC-G3A:
-    name: stale-security-ownership-rules
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    examples:
-    - CODEOWNERS mandatory-review rules for CI/security-tooling and reference data reference stale, non-existent
-      pat
-    - CODEOWNERS security-tooling and reference-data rules reference stale, non-existent paths
   SEC-G3B:
     name: insufficient-negative-test-coverage-for-security-guard
     typical_severity: LOW
