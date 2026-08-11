@@ -263,6 +263,8 @@ entries:
     provenance:
     - corpus
     recurrence: 3
+    cwe:
+    - CWE-1059
     examples:
     - CWE-to-OWASP mapping in the reference catalog is incomplete
     - cwe-catalog.json is missing CWE-16, CWE-778, CWE-693 needed by citations.py's category-derived CWE fallback

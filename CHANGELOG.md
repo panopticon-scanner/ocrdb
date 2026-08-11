@@ -63,7 +63,7 @@ audit's 9 confusable-boundary clusters plus the top Appendix-B priority pairs
 DAT-B1 destructive/irreversible/non-idempotent triangle, and `TST-C2B` vs
 `TST-G1B`, the one surviving-pair boundary an independent advisor re-check
 flagged post-rewrite). `see_also` — declared in 0.1 but never populated —
-is now populated with 56 mutual cross-references: the routing hints 0.1
+is now populated with mutual cross-references across 56 entries (48 pairs): the routing hints 0.1
 promised but never delivered.
 
 **Provenance:** normalized to a vendor-neutral controlled vocabulary of 7

@@ -1758,6 +1758,9 @@
           "status": "active"
         },
         "COD-C3B": {
+          "cwe": [
+            "CWE-1059"
+          ],
           "default_severity": "MEDIUM",
           "examples": [
             "CWE-to-OWASP mapping in the reference catalog is incomplete",

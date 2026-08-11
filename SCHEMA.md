@@ -1,6 +1,6 @@
 # OCRDb Schema — Normative
 
-**Status:** Draft 0.1 (pre-ratification). The stability contract below **activates at the 1.0 release**; until then, ratification may rename, split, merge, and re-letter freely.
+**Status:** Normative — pre-1.0 (incubating). The stability contract below **activates at the 1.0 release**; until then, ratification may rename, split, merge, and re-letter freely.
 
 ## Code grammar
 
