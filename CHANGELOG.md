@@ -2,6 +2,8 @@
 
 All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (incubating); see SCHEMA.md stability contract.
 
+<!-- TODO(0.2.0): Renamed `typical_severity` → `default_severity` (breaking, pre-1.0). Full 0.2.0 changelog entry is written in Task 9. -->
+
 ## 0.1.0 — 2026-08-10 (first ratified release, private incubation)
 
 The seeding round: 320 mined draft entries walked in an owner ratification session, restructured per the rulings below, and re-lettered by typical severity into final codes. **381 entries across 7 domains.** Codes are held stable per release but may change before 1.0 (incubating).

@@ -46,7 +46,7 @@ areas:
 entries:
   ARC-A1A:
     name: fragmented-logic-no-single-owner
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -59,7 +59,7 @@ entries:
     - Template management scattered across multiple functions with no single owner
   ARC-A1B:
     name: mixed-responsibility-module
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -73,7 +73,7 @@ entries:
       and reporting concerns with no internal boundary
   ARC-A1C:
     name: monolithic-function-mixed-concerns
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -86,7 +86,7 @@ entries:
     - Complex directory-walking logic combines discovery, filtering, and pattern matching in one routine
   ARC-A2A:
     name: circular-or-load-order-coupling
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -99,7 +99,7 @@ entries:
     - Direct ADAPTERS registry import creates tight coupling between synthesize and domain modules
   ARC-A2B:
     name: hidden-contract-via-informal-parsing
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -114,7 +114,7 @@ entries:
     - Panel names require manual synchronization in a regex pattern maintained separately from the panel registry
   ARC-A2C:
     name: unpackaged-module-resolution-hack
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -129,7 +129,7 @@ entries:
     - TST-G1A
   ARC-A2D:
     name: leaky-module-interface
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -144,7 +144,7 @@ entries:
       helper
   ARC-A3A:
     name: duplicated-business-logic-without-shared-module
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -167,7 +167,7 @@ entries:
     - QAL-D1A
   ARC-A3B:
     name: duplicated-configuration-or-mapping-table
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -180,7 +180,7 @@ entries:
     - Model policy hardcoded and duplicated across dispatch.py and model_resolver.py
   ARC-A4A:
     name: adapter-implementation-inconsistency
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -196,7 +196,7 @@ entries:
       its siblings
   ARC-A4C:
     name: shadow-registry-without-enforced-parity
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -210,7 +210,7 @@ entries:
     - QAL-E2B
   ARC-A4D:
     name: silent-failure-on-unrecognized-extension
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -223,7 +223,7 @@ entries:
     - Generic host model resolution returns None instead of a diagnosable error when a host/role has no mapping
   ARC-A5A:
     name: non-canonical-constant-duplication
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - tool-observed
@@ -243,7 +243,7 @@ entries:
     - QAL-D1B
   ARC-A5B:
     name: redundant-derived-structure
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - tool-observed
@@ -253,7 +253,7 @@ entries:
       function
   ARC-B1A:
     name: missing-dependency-manifest-declarations
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -263,7 +263,7 @@ entries:
       in pyproject.toml
   ARC-B1C:
     name: stale-project-metadata-urls
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -284,7 +284,7 @@ entries:
     - QAL-C1A
   ARC-B1D:
     name: incomplete-build-system-declaration
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -294,7 +294,7 @@ entries:
       is not actually pip-installable
   ARC-B1E:
     name: self-contradictory-lint-configuration
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -305,7 +305,7 @@ entries:
     - ruff line-length=100 is declared but the rule that enforces it (E501) is explicitly listed in the ignore set
   ARC-B1F:
     name: nonstandard-install-mechanism-bypasses-package-manager
-    typical_severity: INFO
+    default_severity: INFO
     status: active
     provenance:
     - corpus
@@ -314,7 +314,7 @@ entries:
     - README documents symlink-based installation into agent skill directories instead of a pip package install
   ARC-B3A:
     name: divergent-execution-path-across-environments
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -328,7 +328,7 @@ entries:
       others lack
   ARC-B3B:
     name: monolithic-multi-toolchain-image
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -337,7 +337,7 @@ entries:
     - panopticon-tools Dockerfile installs 8+ language toolchains plus 10+ security scanners into one image
   ARC-B3C:
     name: circular-build-dependency
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -348,7 +348,7 @@ entries:
     - Dockerfile.fixtures builds FROM panopticon-tools:latest, so a failed tools build silently breaks fixture validation
   ARC-C1A:
     name: ci-gate-bypasses-domain-verdict-model
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -360,7 +360,7 @@ entries:
       tool severity directly, bypassing the project's own evidence/confirmation model entirely
   ARC-C1B:
     name: ci-trigger-path-filter-incomplete
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -370,7 +370,7 @@ entries:
       image, so some changes ship unbuilt'
   ARC-C1C:
     name: untested-integration-path-in-ci
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -379,7 +379,7 @@ entries:
     - Phase-1 tool-adapter integration tests never execute with real tooling in any CI workflow
   ARC-C1D:
     name: ci-lint-gate-scope-gap
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -388,7 +388,7 @@ entries:
     - Top-level ops scripts that call the GitHub API are excluded from the CI lint job's file globs
   ARC-C1E:
     name: inconsistent-workflow-permissions-scoping
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -399,7 +399,7 @@ entries:
     - 'ci.yml is the only in-scope workflow with no explicit least-privilege permissions: block, unlike codeql.yml/security.yml/docker-publish.yml'
   ARC-C2A:
     name: silent-fallback-masks-pipeline-failure
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -411,7 +411,7 @@ entries:
       masking incomplete publishes
   ARC-C2B:
     name: swallowed-ci-step-failure
-    typical_severity: INFO
+    default_severity: INFO
     status: active
     provenance:
     - corpus
@@ -423,7 +423,7 @@ entries:
       is silently accepted'
   ARC-D1A:
     name: lossy-round-trip-between-producer-and-recovery-path
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -435,7 +435,7 @@ entries:
       the same scrub, so recovered keys silently fail to match findings with absolute-path locations
   ARC-D1B:
     name: report-contract-out-of-sync-with-schema
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -457,7 +457,7 @@ entries:
     - COD-D1D
   ARC-D1C:
     name: fingerprint-identity-instability
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -470,7 +470,7 @@ entries:
       finding
   ARC-D1D:
     name: id-format-schema-mismatch
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -494,7 +494,7 @@ entries:
     - QAL-E1B
   ARC-D1E:
     name: redundant-independent-derivation-of-shared-fact
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -505,7 +505,7 @@ entries:
     - Fan-out coverage is derived from multiple independent sources that could disagree with no reconciliation step
   ARC-D1F:
     name: unversioned-inter-phase-data-contract
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -515,7 +515,7 @@ entries:
       field
   ARC-D2A:
     name: cli-interface-contract-drift
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -536,7 +536,7 @@ entries:
     - QAL-C2C
   ARC-D2B:
     name: inconsistent-handling-of-equivalent-edge-case-inputs
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -548,7 +548,7 @@ entries:
       missing versus present-but-empty, with no documented rationale for the distinction
   ARC-D2C:
     name: missing-coordination-contract-between-agents
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -562,7 +562,7 @@ entries:
       tell which one applies
   ARC-D2D:
     name: orphaned-schema-field-never-populated
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -572,7 +572,7 @@ entries:
       to support
   ARC-D2E:
     name: required-field-never-emitted-by-producer
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -584,7 +584,7 @@ entries:
       agents to write it
   ARC-D2F:
     name: undefined-or-ambiguous-spec-terminology
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -598,7 +598,7 @@ entries:
       security_mode=redteam
   ARC-D3A:
     name: missing-referenced-file
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -608,7 +608,7 @@ entries:
     - skill/reference/findings-envelope-schema.json is referenced but does not exist
   ARC-D3B:
     name: documented-artifact-not-present-in-repo
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -621,7 +621,7 @@ entries:
       anywhere in the repo
   ARC-E1A:
     name: hardcoded-absolute-path-in-source
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -635,7 +635,7 @@ entries:
     - TST-E2C
   ARC-E1B:
     name: hardcoded-environment-specific-artifact-path
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -647,7 +647,7 @@ entries:
       preventing reuse for any other run
   ARC-E1C:
     name: hardcoded-identifier-scattered-across-modules
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -669,7 +669,7 @@ entries:
     - QAL-C1A
   ARC-E2A:
     name: durable-state-in-ephemeral-scratch-location
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -679,7 +679,7 @@ entries:
       .panopticon/ directory alongside disposable state
   ARC-E2B:
     name: global-scope-write-conflicts-with-project-scoped-model
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -689,7 +689,7 @@ entries:
       the project's otherwise project-scoped configuration model
   ARC-E2C:
     name: implicit-runtime-contract-unenforced
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -699,7 +699,7 @@ entries:
       code checks or enforces this precondition at runtime
   ARC-E2D:
     name: implicit-config-discovery-action-at-a-distance
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -709,7 +709,7 @@ entries:
       indicating the fallback fired
   ARC-E3A:
     name: orthogonal-config-axes-increase-complexity
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -721,7 +721,7 @@ entries:
       axes whose cross-product is never enumerated or tested
   ARC-E3B:
     name: asymmetric-domain-coverage-across-artifacts
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -731,7 +731,7 @@ entries:
       reference material than the security lens
   ARC-E3C:
     name: cross-host-config-parity-gap
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -742,7 +742,7 @@ entries:
     - Tool policy mode has no cross-host validation, so hosts can silently diverge in enforcement behavior
   ARC-F1A:
     name: enforcement-relies-on-stale-flag-not-live-verification
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -757,7 +757,7 @@ entries:
       guard it was meant to backstop
   ARC-F1B:
     name: audit-accounting-excludes-in-scope-actors
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -769,7 +769,7 @@ entries:
       exposure to the same policy
   ARC-F1C:
     name: inconsistent-authorization-gate-across-sibling-scripts
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -781,7 +781,7 @@ entries:
       rely on ambient gh defaults with no equivalent check
   ARC-F1D:
     name: partial-batch-operation-lacks-failure-recovery-path
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -793,7 +793,7 @@ entries:
       function
   ARC-F1E:
     name: policy-or-verdict-not-enforced-by-code
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -806,7 +806,7 @@ entries:
     - The 'same flags is a requirement, not a convenience' contract in SKILL.md has no programmatic check
   ARC-F2A:
     name: compensating-control-has-scope-blind-spot
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -818,7 +818,7 @@ entries:
       a compromised unenforced reviewer would use to poison downstream synthesis
   ARC-F2B:
     name: enforcement-hook-cannot-scope-to-individual-actor
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -830,7 +830,7 @@ entries:
       per-agent tightening as a documented architectural limitation
   ARC-F2C:
     name: security-control-assumes-undocumented-input-shape
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -852,7 +852,7 @@ entries:
     - AGT-B1A
   ARC-F2D:
     name: component-fails-open-on-malformed-input
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -876,7 +876,7 @@ entries:
     - SEC-G2B
   ARC-F2E:
     name: security-control-fails-open-on-misconfiguration
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -901,7 +901,7 @@ entries:
     - SEC-G2B
   ARC-F2G:
     name: overbroad-exception-handling-masks-errors
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -913,7 +913,7 @@ entries:
       and accidental errors alike
   ARC-G1A:
     name: contributor-instructions-diverge-from-ci
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -925,7 +925,7 @@ entries:
       runs
   ARC-G1B:
     name: divergent-duplicate-source-of-truth
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -938,7 +938,7 @@ entries:
     - Documented 'monthly' panopticon-tools rebuild cadence contradicts the actual daily/weekly CI schedule
   ARC-G1C:
     name: reference-documentation-incomplete
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -951,7 +951,7 @@ entries:
       it to be bumped together
   ARC-G2A:
     name: superseded-doc-without-deprecation-marker
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -963,7 +963,7 @@ entries:
       or status marker distinguishing current from historical
   ARC-G2B:
     name: design-doc-drifts-from-delivered-scope
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -977,7 +977,7 @@ entries:
       from static-scan fixtures
   ARC-G3B:
     name: tracked-file-violates-own-gitignore-rule
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus

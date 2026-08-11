@@ -82,8 +82,8 @@ def validate_schema(docs):
             name = e.get("name")
             if not name or not NAME_RE.match(str(name)):
                 errors.append(f"{ctx}: name missing or not kebab-case: {name!r}")
-            if e.get("typical_severity") not in SEVERITIES:
-                errors.append(f"{ctx}: typical_severity {e.get('typical_severity')!r} "
+            if e.get("default_severity") not in SEVERITIES:
+                errors.append(f"{ctx}: default_severity {e.get('default_severity')!r} "
                               f"not in {sorted(SEVERITIES)}")
             if e.get("status") not in STATUSES:
                 errors.append(f"{ctx}: status {e.get('status')!r} not in {sorted(STATUSES)}")

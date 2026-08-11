@@ -51,7 +51,7 @@ areas:
 entries:
   QAL-A1B:
     name: inconsistent-naming-convention
-    typical_severity: INFO
+    default_severity: INFO
     status: active
     provenance:
     - tool-observed
@@ -60,7 +60,7 @@ entries:
     - maintain consistent naming conventions across a module
   QAL-A1C:
     name: name-collision-with-domain-concept
-    typical_severity: INFO
+    default_severity: INFO
     status: active
     provenance:
     - corpus
@@ -71,7 +71,7 @@ entries:
     - Same collision flagged again independently in a later review pass on the same file
   QAL-A2B:
     name: confusing-expression-precedence
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -84,7 +84,7 @@ entries:
     - Awkward line break in a conditional expression obscures which branch a continuation line belongs to
   QAL-A2C:
     name: magic-number-or-fragile-hardcoded-index
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - tool-observed
@@ -97,7 +97,7 @@ entries:
     character: opportunity
   QAL-A2D:
     name: comment-noise
-    typical_severity: INFO
+    default_severity: INFO
     status: active
     provenance:
     - tool-observed
@@ -106,7 +106,7 @@ entries:
     - removing comments that describe obvious code
   QAL-B1A:
     name: combined-imports-single-line
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -121,7 +121,7 @@ entries:
     - ruff:E401
   QAL-B1B:
     name: mid-file-or-inline-import-placement
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -136,7 +136,7 @@ entries:
     - ruff:E402
   QAL-B1C:
     name: redundant-shadowing-import
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -151,7 +151,7 @@ entries:
     - ruff:F811
   QAL-B2A:
     name: line-too-long
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -165,7 +165,7 @@ entries:
     - ruff:E501
   QAL-B2B:
     name: misaligned-or-awkward-continuation
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -177,7 +177,7 @@ entries:
     - Misaligned continuation line in a tuple return statement
   QAL-B2C:
     name: missing-blank-line-separation
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -189,7 +189,7 @@ entries:
     - Missing PEP8 two-blank-line separation between top-level definitions
   QAL-B2D:
     name: inconsistent-literal-whitespace
-    typical_severity: INFO
+    default_severity: INFO
     status: active
     provenance:
     - corpus
@@ -201,7 +201,7 @@ entries:
       dominant formatting style
   QAL-B3A:
     name: inconsistent-diagnostic-prefix-convention
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -214,7 +214,7 @@ entries:
     - load_findings() mixes four different stderr diagnostic-prefix conventions in a dozen lines
   QAL-B3B:
     name: mixed-fstring-percent-formatting
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -227,7 +227,7 @@ entries:
     - Mixed f-string and %-formatting used for near-identical diagnostics in one file
   QAL-B3C:
     name: string-concatenation-instead-of-fstring
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -238,7 +238,7 @@ entries:
     - String built with the + operator instead of an f-string, inconsistent with the file's dominant idiom
   QAL-C1A:
     name: stale-external-url-reference
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -254,7 +254,7 @@ entries:
     - ARC-E1C
   QAL-C1B:
     name: inconsistent-ordering-in-docs
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -263,7 +263,7 @@ entries:
     - DEVELOPMENT.md's version History list is in neither ascending nor descending order
   QAL-C1C:
     name: stale-file-path-reference
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -276,7 +276,7 @@ entries:
     - 'A module docstring''s Usage: line names the wrong path for the script it documents'
   QAL-C1D:
     name: stale-version-number
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -288,7 +288,7 @@ entries:
     - CHANGELOG.md's only versioned entry doesn't match DEVELOPMENT.md's description of the same version
   QAL-C2A:
     name: schema-or-example-stricter-than-reality
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -311,7 +311,7 @@ entries:
     - QAL-E1B
   QAL-C2B:
     name: self-contradictory-documentation
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -321,7 +321,7 @@ entries:
       sections of the same file
   QAL-C2C:
     name: cli-docs-out-of-sync-with-implementation
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -341,7 +341,7 @@ entries:
     - COD-D2B
   QAL-C2D:
     name: docstring-inaccurate-error-contract
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -351,7 +351,7 @@ entries:
       raises a different, undocumented exception
   QAL-C2E:
     name: typo-in-shipped-text
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -360,7 +360,7 @@ entries:
     - Shipped commit-message template contains the typo 'kim port' instead of 'kimi port'
   QAL-C2F:
     name: undocumented-configuration-behavior
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -371,7 +371,7 @@ entries:
       two hosts
   QAL-D1A:
     name: duplicated-business-logic-block
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -393,7 +393,7 @@ entries:
     - ARC-A3A
   QAL-D1B:
     name: duplicated-constant-definition
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -411,7 +411,7 @@ entries:
     - QAL-E1B
   QAL-D1C:
     name: duplicated-helper-function
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -426,7 +426,7 @@ entries:
     character: opportunity
   QAL-E1A:
     name: dead-configuration-setting
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -438,7 +438,7 @@ entries:
       that would consume it is never selected
   QAL-E1B:
     name: unused-duplicate-validator-left-in-code
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -462,7 +462,7 @@ entries:
     - QAL-D1B
   QAL-E2B:
     name: retired-component-still-registered
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -478,7 +478,7 @@ entries:
     - ARC-A4C
   QAL-E2C:
     name: orphaned-asset-rules
-    typical_severity: INFO
+    default_severity: INFO
     status: active
     provenance:
     - tool-observed
@@ -487,7 +487,7 @@ entries:
     - .grades and .heatmap-more CSS classes in html_report.py with no referencing template markup
   QAL-E3A:
     name: dead-code-unused-function
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - tool-observed
@@ -499,7 +499,7 @@ entries:
       is contested across sources
   QAL-F1A:
     name: implicit-sys-path-or-import-dependency
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -510,7 +510,7 @@ entries:
     - Two incompatible sys.path bootstrap conventions coexist in the test suite, making import success order-dependent
   QAL-F1B:
     name: inconsistent-import-style-across-modules
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -523,7 +523,7 @@ entries:
       to sibling tests
   QAL-F2A:
     name: logic-embedded-in-non-standard-location
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -533,7 +533,7 @@ entries:
       unit-tested script
   QAL-F2B:
     name: main-guard-or-block-misplaced-mid-file
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -554,7 +554,7 @@ entries:
     - TST-C1A
   QAL-F3B:
     name: inconsistent-noqa-annotation-usage
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -568,7 +568,7 @@ entries:
     - ruff:RUF100
   QAL-F3C:
     name: inconsistent-per-host-field-naming
-    typical_severity: INFO
+    default_severity: INFO
     status: active
     provenance:
     - corpus
@@ -580,7 +580,7 @@ entries:
       section it's in
   QAL-F3D:
     name: partial-type-hint-adoption
-    typical_severity: INFO
+    default_severity: INFO
     status: active
     provenance:
     - tool-observed
@@ -592,7 +592,7 @@ entries:
     character: opportunity
   QAL-G1A:
     name: loop-invariant-not-hoisted
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - tool-observed
@@ -601,7 +601,7 @@ entries:
     - eligible_ids set recomputed inside synthesize's per-group loop despite being loop-invariant
   QAL-G1B:
     name: missing-memoization
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - tool-observed
@@ -611,7 +611,7 @@ entries:
     - synthesize re-loading CWE catalog and verdicts per call site instead of threading loaded values
   QAL-G1C:
     name: repeated-filesystem-stat
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - tool-observed
@@ -621,7 +621,7 @@ entries:
       _repo_realpath
   QAL-G2A:
     name: unbounded-collection-load
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -630,7 +630,7 @@ entries:
     character: defect
   QAL-H1A:
     name: overly-complex-function
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - tool-observed
@@ -639,7 +639,7 @@ entries:
     - function flagged for high cyclomatic complexity / too many responsibilities combined into one function
   QAL-H1B:
     name: excess-nesting-complexity
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - tool-observed
@@ -649,7 +649,7 @@ entries:
     - reducing unnecessary complexity and nesting
   QAL-H2A:
     name: harmful-oversimplification
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - tool-observed
@@ -661,7 +661,7 @@ entries:
       or extend
   QAL-H2B:
     name: correctness-entangled-duplication-deferred
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - tool-observed
@@ -673,7 +673,7 @@ entries:
       with an open reconcile-fingerprint correctness finding'
   QAL-H2C:
     name: needless-abstraction
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - tool-observed
@@ -683,14 +683,14 @@ entries:
     - removing indirection that adds no value beyond direct derivation
   QAL-I1A:
     name: missing-trace-context-propagation
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - prior-art
     - gap-review
   QAL-I1B:
     name: vague-log-message-without-context
-    typical_severity: INFO
+    default_severity: INFO
     status: active
     provenance:
     - prior-art

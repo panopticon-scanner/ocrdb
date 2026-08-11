@@ -32,7 +32,7 @@ entries:                     # one entry per issue code
   SEC-A1B:
     # ---- required core ----
     name: os-command-injection        # kebab-case, stable once released
-    typical_severity: HIGH            # INFO | LOW | MEDIUM | HIGH | CRITICAL
+    default_severity: HIGH            # INFO | LOW | MEDIUM | HIGH | CRITICAL
     status: active                    # active | deprecated
     provenance: [corpus]              # where this entry came from — see "Provenance vocabulary" below
     # ---- optional enrichment (any subset, added when needed) ----
@@ -78,7 +78,7 @@ Emitting skills default to `character: opportunity` unless explicitly running in
 
 ## Severity scale
 
-`INFO < LOW < MEDIUM < HIGH < CRITICAL`. `typical_severity` is the *typical* grade for the defect type — never a per-instance verdict. Consumers may override per instance under their own disclosed discipline (panopticon: `severity_override {from, to, reason}`, advisor-checked). Trend lines anchor to the catalog default so overrides never bend history.
+`INFO < LOW < MEDIUM < HIGH < CRITICAL`. `default_severity` is the *typical* grade for the defect type — never a per-instance verdict. Consumers may override per instance under their own disclosed discipline (panopticon: `severity_override {from, to, reason}`, advisor-checked). Trend lines anchor to the catalog default so overrides never bend history.
 
 ## Stability contract (activates at 1.0)
 

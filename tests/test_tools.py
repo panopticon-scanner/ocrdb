@@ -38,7 +38,7 @@ class TestValidateSyntheticErrors(unittest.TestCase):
             "domain": "SEC", "name": "security",
             "areas": {"A": {"name": "a", "categories": {"1": "c"}}},
             "entries": {"SEC-A1A": {
-                "name": "ok-entry", "typical_severity": "LOW",
+                "name": "ok-entry", "default_severity": "LOW",
                 "status": "active", "provenance": ["corpus"]}}}}
 
     def _errs(self, docs):
@@ -69,10 +69,10 @@ class TestValidateSyntheticErrors(unittest.TestCase):
     def test_enum_and_provenance_and_deprecation(self):
         d = self._base_doc()
         e = d["x.yml"]["entries"]["SEC-A1A"]
-        e.update(typical_severity="SEVERE", status="retired", provenance=[],
+        e.update(default_severity="SEVERE", status="retired", provenance=[],
                  name="Bad Name")
         errs = self._errs(d)
-        for frag in ("typical_severity", "status", "provenance", "kebab-case"):
+        for frag in ("default_severity", "status", "provenance", "kebab-case"):
             self.assertTrue(any(frag in x for x in errs), (frag, errs))
 
     def test_deprecated_requires_existing_superseded_by(self):
@@ -206,7 +206,7 @@ class TestBundleBuild(unittest.TestCase):
             os.makedirs(dom_dir)
             with open(os.path.join(dom_dir, "bad.yml"), "w") as fh:
                 fh.write("domain: SEC\nname: security\nareas: {}\n"
-                         "entries:\n  SEC-A1A: {name: x, typical_severity: NOPE,"
+                         "entries:\n  SEC-A1A: {name: x, default_severity: NOPE,"
                          " status: active, provenance: [c]}\n")
             with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
                 rc = build_bundle.main(["--version", "0.0.0-test",

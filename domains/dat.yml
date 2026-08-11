@@ -25,35 +25,35 @@ areas:
 entries:
   DAT-A1A:
     name: inappropriate-type-for-domain
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   DAT-A1B:
     name: missing-constraint-for-invariant
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   DAT-A1C:
     name: missing-foreign-key-relationship
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   DAT-A1D:
     name: nullable-column-ambiguous-semantics
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - prior-art
     - gap-review
   DAT-B1A:
     name: destructive-migration-without-backfill
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
@@ -70,14 +70,14 @@ entries:
     - DAT-B1D
   DAT-B1B:
     name: table-lock-heavy-migration
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
     - gap-review
   DAT-B1C:
     name: irreversible-migration-no-rollback
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -93,7 +93,7 @@ entries:
     - DAT-B1D
   DAT-B1D:
     name: non-idempotent-migration
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -109,14 +109,14 @@ entries:
     - DAT-B1C
   DAT-C1A:
     name: missing-index-for-hot-query
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   DAT-C1B:
     name: n-plus-one-query
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -124,7 +124,7 @@ entries:
     notes: moved from QAL-G1D at ratification
   DAT-C1C:
     name: unbounded-result-set
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -133,28 +133,28 @@ entries:
     - CWE-770
   DAT-C1D:
     name: select-star-in-production-path
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - prior-art
     - gap-review
   DAT-D1A:
     name: isolation-level-mismatch
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
     - gap-review
   DAT-D1B:
     name: missing-transaction-boundary
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
     - gap-review
   DAT-D1C:
     name: read-modify-write-race
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
@@ -163,28 +163,28 @@ entries:
     - CWE-362
   DAT-D1D:
     name: long-running-transaction
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   DAT-E1A:
     name: code-schema-drift-without-migration
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
     - gap-review
   DAT-E1B:
     name: orphaned-rows-on-delete
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   DAT-E1C:
     name: soft-delete-inconsistency
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art

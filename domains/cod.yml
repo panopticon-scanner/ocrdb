@@ -44,7 +44,7 @@ areas:
 entries:
   COD-A1A:
     name: unclosed-file-handle-leak
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -57,7 +57,7 @@ entries:
     - File resource leak in apply subcommand
   COD-A2A:
     name: unbounded-buffer-write
-    typical_severity: CRITICAL
+    default_severity: CRITICAL
     status: active
     provenance:
     - corpus
@@ -69,7 +69,7 @@ entries:
     - Unsafe code writes user_input.len() bytes into a fixed 8-byte buffer with no bounds check
   COD-A2B:
     name: off-by-one-argument-index-error
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -81,7 +81,7 @@ entries:
       argument as its own parameter
   COD-A2C:
     name: unchecked-index-or-empty-sequence-access
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -94,7 +94,7 @@ entries:
     - pip-audit adapter indexes fix_versions[0] with a default that never fires when the list is present-but-empty
   COD-B1A:
     name: fail-open-on-missing-or-corrupt-config
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -113,7 +113,7 @@ entries:
     - ARC-F2E
   COD-B1C:
     name: overly-broad-permission-scope-in-shared-guard
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -125,7 +125,7 @@ entries:
       can overwrite a sibling reviewer's findings file
   COD-B2A:
     name: unguarded-null-crashes-downstream
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -137,7 +137,7 @@ entries:
       of handling it
   COD-B2B:
     name: error-message-misattributes-root-cause
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -146,7 +146,7 @@ entries:
     - --changes mode's error message blames 'not a git repository' when the real failure is a merge-base lookup
   COD-B2C:
     name: missing-error-handling-around-auxiliary-load
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -158,7 +158,7 @@ entries:
       from the primary path
   COD-B2D:
     name: result-not-revalidated-after-transform
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -168,7 +168,7 @@ entries:
       the original size constraint
   COD-B2E:
     name: silent-truncation-without-warning
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -177,7 +177,7 @@ entries:
     - recover_linkage_from_github caps at --limit 1000 with no detection or warning that results were truncated
   COD-C1A:
     name: analyzer-confidence-conflated-with-severity
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -191,7 +191,7 @@ entries:
     - Shared severity normalizer silently defaults unmapped/un-rated severity strings to INFO across every dependency
   COD-C1B:
     name: severity-hardcoded-ignoring-tool-value
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -202,7 +202,7 @@ entries:
     - pip-audit adapter hardcodes severity to MEDIUM for essentially all findings, masking the true severity
   COD-C2A:
     name: incorrect-source-file-selection-heuristic
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -214,7 +214,7 @@ entries:
       dev/test requirements file over the primary requirements.txt
   COD-C2B:
     name: instance-state-not-propagated-through-lifecycle
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -225,7 +225,7 @@ entries:
     - PipAuditAdapter maintains mutable instance state, deviating from the stateless adapter pattern
   COD-C2C:
     name: regex-rejects-valid-input-variant
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -236,7 +236,7 @@ entries:
       though either may be absent'
   COD-C2D:
     name: unnormalized-identifier-causes-lookup-mismatch
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -247,7 +247,7 @@ entries:
     - diff_map.classify() does not normalize a ./-prefixed location.file before matching it against the hunk map
   COD-C3A:
     name: required-output-field-missing-or-empty
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -258,7 +258,7 @@ entries:
     - sarif_to_findings() can emit an empty location object when a SARIF result has no locations
   COD-C3B:
     name: incomplete-lookup-catalog-silent-fallback-gap
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -270,7 +270,7 @@ entries:
       for those findings
   COD-C3C:
     name: nonstandard-key-silently-dropped-downstream
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -280,7 +280,7 @@ entries:
       no error
   COD-D1A:
     name: schema-enum-incomplete-vs-actual-values
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -299,7 +299,7 @@ entries:
     - COD-D1D
   COD-D1B:
     name: schema-pattern-stricter-than-producer-output
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -321,7 +321,7 @@ entries:
     - QAL-E1B
   COD-D1C:
     name: inconsistent-record-shape-across-array
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -331,7 +331,7 @@ entries:
     - Provenance object field structure varies across findings
   COD-D1D:
     name: schema-omits-documented-required-fields
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -349,7 +349,7 @@ entries:
     - COD-D1A
   COD-D2B:
     name: documented-feature-or-flag-not-implemented
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -371,7 +371,7 @@ entries:
     - QAL-C2C
   COD-D2C:
     name: self-contradicting-specification-documents
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -381,7 +381,7 @@ entries:
       spec explicitly supersedes/contradicts
   COD-D2D:
     name: implemented-capability-missing-from-docs
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -391,7 +391,7 @@ entries:
     - Step 5's --host hint omits 'codex', the newest first-class host
   COD-D3A:
     name: external-api-invoked-with-wrong-parameter-shape
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -403,7 +403,7 @@ entries:
       file
   COD-D3B:
     name: adapter-violates-declared-protocol-interface
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -416,7 +416,7 @@ entries:
       elsewhere
   COD-D3C:
     name: inconsistent-field-type-across-boundary
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -428,7 +428,7 @@ entries:
     - location.line_start is emitted as a string instead of an integer
   COD-E1A:
     name: dedup-logic-drops-entry-sharing-coarse-key
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -437,7 +437,7 @@ entries:
     - build_diff silently drops a run3 finding that shares a coarse key with an already-exact-matched run2 fingerprint
   COD-E1B:
     name: loop-exits-before-exhausting-valid-entries
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - corpus
@@ -446,7 +446,7 @@ entries:
     - NODE_PATH loop breaks after the first global_node, leaving incomplete directory coverage
   COD-E2A:
     name: unreachable-code-due-to-guard-placed-before-definition
-    typical_severity: CRITICAL
+    default_severity: CRITICAL
     status: active
     provenance:
     - corpus
@@ -464,7 +464,7 @@ entries:
     - TST-C1A
   COD-E2B:
     name: path-resolved-against-wrong-base-directory
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -478,7 +478,7 @@ entries:
     - TST-D2A
   COD-F1A:
     name: atomicity-violation-compound-operation
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -487,7 +487,7 @@ entries:
     - CWE-362
   COD-F1B:
     name: check-then-act-race
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -501,7 +501,7 @@ entries:
       in a separate tool-call step, leaving a window for the target to change
   COD-F1C:
     name: shared-mutable-state-without-synchronization
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -512,7 +512,7 @@ entries:
     notes: 'single-homes COD/ARC/SEC thread-safety duplicates (big rock #0)'
   COD-F2A:
     name: deadlock-lock-ordering
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
@@ -521,21 +521,21 @@ entries:
     - CWE-833
   COD-F2B:
     name: blocking-call-in-async-context
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   COD-F3A:
     name: stale-cache-read-without-invalidation
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   COD-F3B:
     name: thread-unsafe-lazy-initialization
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -544,14 +544,14 @@ entries:
     - CWE-543
   COD-F3C:
     name: unawaited-async-result
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   COD-F3D:
     name: unsafe-signal-handler
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -560,35 +560,35 @@ entries:
     - CWE-479
   COD-G1A:
     name: dst-unsafe-time-arithmetic
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   COD-G1B:
     name: epoch-unit-confusion-ms-vs-s
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   COD-G1C:
     name: naive-aware-datetime-mixing
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   COD-G1D:
     name: wall-clock-used-for-elapsed-time
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - prior-art
     - gap-review
   COD-G2A:
     name: monetary-value-in-float
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
@@ -597,7 +597,7 @@ entries:
     - CWE-681
   COD-G2B:
     name: integer-overflow-or-truncation
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -606,7 +606,7 @@ entries:
     - CWE-190
   COD-G2C:
     name: precision-loss-in-numeric-conversion
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -615,21 +615,21 @@ entries:
     - CWE-681
   COD-G2D:
     name: float-equality-comparison
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - prior-art
     - gap-review
   COD-G3A:
     name: bytes-string-conflation
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   COD-G3B:
     name: default-encoding-assumption
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -638,14 +638,14 @@ entries:
     - CWE-176
   COD-G3C:
     name: unit-confusion-in-quantity
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
     - gap-review
   COD-G3D:
     name: unicode-normalization-mismatch
-    typical_severity: LOW
+    default_severity: LOW
     status: active
     provenance:
     - prior-art

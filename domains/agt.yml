@@ -29,7 +29,7 @@ areas:
 entries:
   AGT-A1A:
     name: indirect-prompt-injection-untrusted-content-in-agent-context
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -41,7 +41,7 @@ entries:
     - Advisor prompt embeds an unfiltered agent-authored finding JSON, opening an indirect-prompt-injection channel
   AGT-A1B:
     name: untrusted-content-in-agent-context
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -50,7 +50,7 @@ entries:
     - CWE-1427
   AGT-B1A:
     name: incomplete-mediation-coverage-gap
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -76,7 +76,7 @@ entries:
     - ARC-F2C
   AGT-B1B:
     name: missing-approval-gate-for-destructive-action
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
@@ -95,7 +95,7 @@ entries:
     - AGT-B1D
   AGT-B1C:
     name: unscoped-write-authority
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
@@ -114,7 +114,7 @@ entries:
     - AGT-B1D
   AGT-B1D:
     name: overbroad-tool-grant
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
@@ -133,7 +133,7 @@ entries:
     - AGT-B1C
   AGT-C1A:
     name: self-asserted-trust-metadata-spoofing
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -152,7 +152,7 @@ entries:
       fields are explicitly stripped as forbidden, allowing spoofed cross-panel corroboration
   AGT-C1B:
     name: findings-from-undeclared-source-merged-despite-flagging
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -163,7 +163,7 @@ entries:
     - Findings from an undeclared/unexpected findings file are flagged in meta.integrity
   AGT-C1C:
     name: unauthenticated-external-data-rebuilds-trust-mapping
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -176,7 +176,7 @@ entries:
     - Ledger recovery trusts unauthenticated GitHub issue-body content to rebuild the fingerprint-to-issue linkage
   AGT-C1D:
     name: unstructured-llm-output-trusted-for-control-decision
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -187,13 +187,13 @@ entries:
     - Advisor verdict ingestion trusts lenient, unauthenticated free-text LLM output
   AGT-D1A:
     name: agent-confabulated-action
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
   AGT-D1B:
     name: secret-materialized-into-agent-output
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - corpus
@@ -201,7 +201,7 @@ entries:
     - CWE-532
   AGT-D1C:
     name: single-verifier-unilateral-override-authority
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - corpus
@@ -212,7 +212,7 @@ entries:
     - Evidence model gives a single advisor-LLM verdict unilateral, uncorroborated power
   AGT-E1A:
     name: unbounded-agent-loop
-    typical_severity: HIGH
+    default_severity: HIGH
     status: active
     provenance:
     - prior-art
@@ -221,13 +221,13 @@ entries:
     - CWE-834
   AGT-E1B:
     name: unbounded-tool-call-budget
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
   AGT-F1A:
     name: sensitive-data-sent-to-model-provider
-    typical_severity: MEDIUM
+    default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
