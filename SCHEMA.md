@@ -1,6 +1,6 @@
 # OCRDb Schema — Normative
 
-**Status:** Draft 0.1 (pre-ratification). The stability contract below **activates at the 0.1 release tag**; until then, ratification may rename, split, merge, and re-letter freely.
+**Status:** Draft 0.1 (pre-ratification). The stability contract below **activates at the 1.0 release**; until then, ratification may rename, split, merge, and re-letter freely.
 
 ## Code grammar
 
@@ -80,11 +80,11 @@ Emitting skills default to `character: opportunity` unless explicitly running in
 
 `INFO < LOW < MEDIUM < HIGH < CRITICAL`. `typical_severity` is the *typical* grade for the defect type — never a per-instance verdict. Consumers may override per instance under their own disclosed discipline (panopticon: `severity_override {from, to, reason}`, advisor-checked). Trend lines anchor to the catalog default so overrides never bend history.
 
-## Stability contract (activates at 0.1)
+## Stability contract (activates at 1.0)
 
 Per CWE discipline:
 
-1. **Codes are immutable once released** — never reused, never renamed, never re-lettered.
+1. **Codes are immutable from the 1.0 release** — never reused, renamed, or re-lettered thereafter. Before 1.0 the catalog is incubating and codes may change (per CHARTER); 0.x releases are held stable as a courtesy, not a contract.
 2. Corrections happen by `status: deprecated` + `superseded_by` + a new code.
 3. Releases are semver'd with changelogs; consumers pin a release (`build/ocrdb-<ver>.json`).
 4. `tools/validate.py` enforces this mechanically against the previous release bundle: a code that disappears or changes `name` fails the build.
