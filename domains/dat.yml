@@ -65,6 +65,9 @@ entries:
       outranks rollback impossibility). A migration with no working reverse path
       but no apply-time data loss is DAT-B1C; one that is unsafe to re-run is
       DAT-B1D.
+    see_also:
+    - DAT-B1C
+    - DAT-B1D
   DAT-B1B:
     name: table-lock-heavy-migration
     typical_severity: HIGH
@@ -85,6 +88,9 @@ entries:
       applying it also destroys un-backfilled production data, code DAT-B1A instead
       (data loss outranks irreversibility); if the defect is that re-running fails
       or double-applies, that is DAT-B1D.
+    see_also:
+    - DAT-B1A
+    - DAT-B1D
   DAT-B1D:
     name: non-idempotent-migration
     typical_severity: MEDIUM
@@ -98,6 +104,9 @@ entries:
       without IF NOT EXISTS) — often fully reversible and non-destructive, hence
       distinct. Apply-time data destruction is DAT-B1A; an absent or broken
       rollback path is DAT-B1C.
+    see_also:
+    - DAT-B1A
+    - DAT-B1C
   DAT-C1A:
     name: missing-index-for-hot-query
     typical_severity: MEDIUM

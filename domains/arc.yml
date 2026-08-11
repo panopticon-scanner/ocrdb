@@ -125,6 +125,8 @@ entries:
     - sys.path.insert(0, ...) in dispatch.py to import sibling modules instead of a proper package layout
     - Ad hoc sys.path bootstrap duplicated verbatim across three entry-point scripts
     - Inconsistent sys.path manipulation and import-fallback patterns across the codebase undermine installability
+    see_also:
+    - TST-G1A
   ARC-A2D:
     name: leaky-module-interface
     typical_severity: LOW
@@ -161,6 +163,8 @@ entries:
       or boundary change). When the finding is simply that a block of logic is
       copy-pasted and should be consolidated within the existing structure
       (per-instance), that is QAL-D1A.
+    see_also:
+    - QAL-D1A
   ARC-A3B:
     name: duplicated-configuration-or-mapping-table
     typical_severity: LOW
@@ -202,6 +206,8 @@ entries:
     examples:
     - PROBES is a hand-maintained shadow of the ADAPTERS registry with no enforced parity; live adapters have shipped
       without a matching probe entry
+    see_also:
+    - QAL-E2B
   ARC-A4D:
     name: silent-failure-on-unrecognized-extension
     typical_severity: MEDIUM
@@ -234,6 +240,8 @@ entries:
       that other sites import or alias from (a structural ownership change). When
       the finding is simply that a constant is defined in more than one place and
       the copies should be unified (per-instance), that is QAL-D1B.
+    see_also:
+    - QAL-D1B
   ARC-A5B:
     name: redundant-derived-structure
     typical_severity: LOW
@@ -273,6 +281,9 @@ entries:
       project's published identity. A stale URL in ordinary docs or code is
       QAL-C1A; the same identifier hardcoded across several modules so copies
       diverge is ARC-E1C.
+    see_also:
+    - ARC-E1C
+    - QAL-C1A
   ARC-B1D:
     name: incomplete-build-system-declaration
     typical_severity: LOW
@@ -443,6 +454,9 @@ entries:
       the contract as a whole is unreliable (a systemic doc-vs-schema divergence).
       A single field carrying a value outside its enum is COD-D1A; a single
       documented-required field missing from the schema's required list is COD-D1D.
+    see_also:
+    - COD-D1A
+    - COD-D1D
   ARC-D1C:
     name: fingerprint-identity-instability
     typical_severity: MEDIUM
@@ -476,6 +490,10 @@ entries:
       instance. A live schema that actively rejects real output is
       COD-D1B; inert over-precision that rejects nothing is QAL-C2A; a dead,
       unimported stricter duplicate is QAL-E1B.
+    see_also:
+    - COD-D1B
+    - QAL-C2A
+    - QAL-E1B
   ARC-D1E:
     name: redundant-independent-derivation-of-shared-fact
     typical_severity: MEDIUM
@@ -515,6 +533,9 @@ entries:
       line. A single documented flag that is entirely UNIMPLEMENTED is COD-D2B (a
       following user's run breaks); a specific stale or renamed flag description on
       an otherwise-implemented CLI is QAL-C2C (doc hygiene).
+    see_also:
+    - COD-D2B
+    - QAL-C2C
   ARC-D2B:
     name: inconsistent-handling-of-equivalent-edge-case-inputs
     typical_severity: MEDIUM
@@ -612,6 +633,8 @@ entries:
     examples:
     - REPO_ROOT is a hardcoded absolute filesystem path baked into production code, breaking on any other machine
       or checkout location
+    see_also:
+    - TST-E2C
   ARC-E1B:
     name: hardcoded-environment-specific-artifact-path
     typical_severity: HIGH
@@ -643,6 +666,9 @@ entries:
       truth, so the copies can and do diverge — the scatter is the hazard, whether
       or not any copy is currently stale. A single out-of-date URL is staleness:
       QAL-C1A for doc/code references, ARC-B1C for packaging-manifest URLs.
+    see_also:
+    - ARC-B1C
+    - QAL-C1A
   ARC-E2A:
     name: durable-state-in-ephemeral-scratch-location
     typical_severity: MEDIUM
@@ -824,6 +850,8 @@ entries:
       differently) — the control mis-parses what it sees. A control that fails to
       cover a whole class of invocations at all (e.g. Bash never reaching the
       write-guard) is AGT-B1A.
+    see_also:
+    - AGT-B1A
   ARC-F2D:
     name: component-fails-open-on-malformed-input
     typical_severity: MEDIUM
@@ -844,6 +872,10 @@ entries:
       degrades to permit, that is ARC-F2E (the single home for the write-guard
       fail-open incident); the config-load fail-open choice viewed as a
       correctness defect is COD-B1A.
+    see_also:
+    - ARC-F2E
+    - COD-B1A
+    - SEC-G2B
   ARC-F2E:
     name: security-control-fails-open-on-misconfiguration
     typical_severity: MEDIUM
@@ -866,6 +898,10 @@ entries:
       component that skips malformed input is ARC-F2D; the config-loading code's
       fail-open choice viewed as a correctness defect is COD-B1A; a detection /
       scan tool that silently loses coverage is SEC-G2B.
+    see_also:
+    - ARC-F2D
+    - COD-B1A
+    - SEC-G2B
   ARC-F2G:
     name: overbroad-exception-handling-masks-errors
     typical_severity: LOW

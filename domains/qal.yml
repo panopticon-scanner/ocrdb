@@ -254,6 +254,9 @@ entries:
       staleness defect. Does NOT apply to packaging-manifest URLs (project
       identity), which are ARC-B1C, nor to the same identifier hardcoded across
       multiple modules so copies diverge, which is ARC-E1C (scatter).
+    see_also:
+    - ARC-B1C
+    - ARC-E1C
   QAL-C1B:
     name: inconsistent-ordering-in-docs
     typical_severity: LOW
@@ -308,6 +311,10 @@ entries:
       constraint rejects real producer output, that is COD-D1B (correctness); if
       the stricter copy is dead and unimported, QAL-E1B; if the format is defined
       inconsistently across artifacts, ARC-D1D.
+    see_also:
+    - ARC-D1D
+    - COD-D1B
+    - QAL-E1B
   QAL-C2B:
     name: self-contradictory-documentation
     typical_severity: MEDIUM
@@ -336,6 +343,9 @@ entries:
       misname, or under-cover them (doc hygiene, LOW). If a documented feature is
       entirely unimplemented so a following user breaks, that is COD-D2B; if the
       whole interface contract is structurally unreliable, ARC-D2A.
+    see_also:
+    - ARC-D2A
+    - COD-D2B
   QAL-C2D:
     name: docstring-inaccurate-error-contract
     typical_severity: LOW
@@ -388,6 +398,8 @@ entries:
       the STRUCTURAL absence of a shared module or owner that a proper fix must
       create, that is ARC-A3A.
     character: opportunity
+    see_also:
+    - ARC-A3A
   QAL-D1B:
     name: duplicated-constant-definition
     typical_severity: MEDIUM
@@ -403,6 +415,9 @@ entries:
       themselves. When the hazard is the STRUCTURAL lack of a canonical owner that
       a proper fix must establish (an ownership / aliasing change), that is
       ARC-A5A. A dead, unimported stricter duplicate is instead QAL-E1B.
+    see_also:
+    - ARC-A5A
+    - QAL-E1B
   QAL-D1C:
     name: duplicated-helper-function
     typical_severity: MEDIUM
@@ -452,6 +467,11 @@ entries:
       it (dead code plus duplication). If the drifted duplicate is live and rejects
       real output, elevate to COD-D1B; if it is live-but-cosmetic over-precision,
       QAL-C2A; if two live copies simply diverge as a duplication smell, QAL-D1B.
+    see_also:
+    - ARC-D1D
+    - COD-D1B
+    - QAL-C2A
+    - QAL-D1B
   QAL-E2B:
     name: retired-component-still-registered
     typical_severity: MEDIUM
@@ -466,6 +486,8 @@ entries:
       own comments'
     - 'sarif_utils.PREFIX still maps "brakeman": "BR" though the only Brakeman findings actually come from the dedicated
       BrakemanAdapter'
+    see_also:
+    - ARC-A4C
   QAL-E2C:
     name: orphaned-asset-rules
     typical_severity: INFO
@@ -542,6 +564,9 @@ entries:
       hygiene, LOW). If production code after the guard becomes unreachable, that
       is COD-E2A; if test classes after it are silently dropped from discovery,
       TST-C1A.
+    see_also:
+    - COD-E2A
+    - TST-C1A
   QAL-F3B:
     name: inconsistent-noqa-annotation-usage
     typical_severity: LOW

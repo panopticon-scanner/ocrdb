@@ -228,6 +228,8 @@ entries:
       the failure mode is silence. When there is no existence check at all and a
       missing fixture instead surfaces as a confusing low-level I/O error rather
       than a clear test failure, that is TST-E1A.
+    see_also:
+    - TST-E1A
   TST-B1A:
     name: regression-test-verifies-wrong-property
     typical_severity: MEDIUM
@@ -360,6 +362,9 @@ entries:
       coverage is lost without signal. If the unreachable code is production code,
       that is COD-E2A; if the guard is merely misplaced with nothing after it
       actually skipped, QAL-F2B.
+    see_also:
+    - COD-E2A
+    - QAL-F2B
   TST-C1B:
     name: undiscoverable-test-function
     typical_severity: LOW
@@ -421,6 +426,8 @@ entries:
     recurrence: 2
     examples:
     - Test name claims coverage of all four dispatch roles but only pins tokens for two
+    see_also:
+    - TST-C3C
   TST-C3C:
     name: misnamed-helper-inverted-semantics
     typical_severity: LOW
@@ -432,6 +439,8 @@ entries:
     - CWE-710
     examples:
     - Helper function _depth_gte is named for the opposite comparison it actually implements
+    see_also:
+    - TST-C3B
   TST-C3D:
     name: misnamed-test-artifact
     typical_severity: LOW
@@ -469,6 +478,8 @@ entries:
       mock.patch("scripts.tools.base.subprocess.run") in others'
     - A test locally does `from unittest import mock` and nests four levels of `with mock.patch(...)`, diverging
       from every sibling adapter test's mocking idiom
+    see_also:
+    - TST-G2E
   TST-C4C:
     name: mock-asserts-internal-behavior-not-output
     typical_severity: LOW
@@ -567,6 +578,8 @@ entries:
     - 'Non-hermetic test: fixture path is relative to invocation cwd, not the test file'
     - Hard-coded relative path in test assumes repo-root execution
     - test_status_is_in_schema_enum opens a bare CWD-relative path instead of anchoring to __file__/repo root
+    see_also:
+    - COD-E2B
   TST-D2B:
     name: hardcoded-shared-tmp-path
     typical_severity: MEDIUM
@@ -592,6 +605,8 @@ entries:
       clear test failure — the failure mode is loud but misleading. When a presence
       check exists and instead silently skips (masking fixture rot with no alert),
       that is TST-A4C.
+    see_also:
+    - TST-A4C
   TST-E1B:
     name: orphaned-unused-fixture
     typical_severity: LOW
@@ -634,6 +649,8 @@ entries:
     recurrence: 2
     examples:
     - Hardcoded, machine-specific absolute path embedded in committed test fixture data
+    see_also:
+    - ARC-E1A
   TST-E2D:
     name: unrealistic-synthetic-fixture-data
     typical_severity: LOW
@@ -736,6 +753,8 @@ entries:
     examples:
     - All 18-43 test files inject the skill directory via sys.path.insert(0, ...) at module level instead of relying
       on an installable package
+    see_also:
+    - ARC-A2C
   TST-G1B:
     name: test-fixture-scaffolding-duplicated-across-files
     typical_severity: MEDIUM
@@ -805,6 +824,8 @@ entries:
     examples:
     - TestPanelPriority uses bare assert statements instead of self.assertEqual/self.assertIn inside a unittest.TestCase,
       unlike every other test method in the suite
+    see_also:
+    - TST-C4B
   TST-G2F:
     name: missing-test-module-documentation
     typical_severity: LOW

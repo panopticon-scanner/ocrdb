@@ -141,6 +141,8 @@ entries:
       import or call flagged by a rule with no dataflow evidence of untrusted input
       is the LOW heuristic SEC-A4B; if untrusted parsing is shown but entities are
       disabled, the finding declines to A4B. Verify-then-grade per R2.
+    see_also:
+    - SEC-A4B
   SEC-A4B:
     name: xml-library-import-flagged
     typical_severity: LOW
@@ -161,6 +163,8 @@ entries:
       and no confirmation that entity/DTD expansion is enabled. When
       untrusted-input parsing is demonstrated on an entity-permitting or
       known-vulnerable configuration, it promotes to SEC-A4A (MEDIUM) per R2.
+    see_also:
+    - SEC-A4A
   SEC-B1A:
     name: markdown-mention-injection-in-automated-comments
     typical_severity: MEDIUM
@@ -292,6 +296,8 @@ entries:
       assign from detector output alone: an unconfirmed pattern/entropy hit
       (possible-secret, placeholder, fixture, example key) is the LOW SEC-B3C and
       promotes to B3A only on confirmation (verify-then-grade, R2).
+    see_also:
+    - SEC-B3C
   SEC-B3B:
     name: full-environment-inherited-by-subprocess
     typical_severity: MEDIUM
@@ -323,6 +329,8 @@ entries:
       or example keys. When the material is confirmed a real, in-use credential
       (valid format plus production-use context), it elevates to SEC-B3A (HIGH)
       per R2.
+    see_also:
+    - SEC-B3A
   SEC-B4A:
     name: pii-in-logs
     typical_severity: MEDIUM
@@ -422,6 +430,8 @@ entries:
       comparison is implemented. The non-constant-time comparison half of the same
       finding is SEC-C2B; a finding citing both defects should be split, one to
       each.
+    see_also:
+    - SEC-C2B
   SEC-C2B:
     name: timing-unsafe-credential-comparison
     typical_severity: MEDIUM
@@ -439,6 +449,8 @@ entries:
       (hmac.compare_digest or equivalent), regardless of rate limiting (CWE-208).
       The missing-rate-limit half of the same finding is SEC-C2A; split a finding
       that cites both.
+    see_also:
+    - SEC-C2A
   SEC-C3A:
     name: weak-prng-for-security-token
     typical_severity: HIGH
@@ -543,6 +555,8 @@ entries:
       reachability, a user-influenced fetch without allow-listing is the LOW
       precursor SEC-D2B. Elevation rule (R2): demonstrated internal reach or
       bypass promotes D2B to D2A.
+    see_also:
+    - SEC-D2B
   SEC-D2B:
     name: unvalidated-url-fetch-target-ssrf-precursor
     typical_severity: LOW
@@ -560,6 +574,8 @@ entries:
       reachability — a latent SSRF precursor. Once a fetch is shown to reach
       loopback/link-local/metadata/RFC1918 or bypass an allow-list, it elevates to
       SEC-D2A (HIGH) per R2.
+    see_also:
+    - SEC-D2A
   SEC-E1A:
     name: dependabot-missing-cooldown-period
     typical_severity: MEDIUM
@@ -787,6 +803,9 @@ entries:
       findings — so the review under-reports with no signal. The harm is missed
       findings, not a permitted action: a security/enforcement control that fails
       open is ARC-F2E; a general component that skips malformed input is ARC-F2D.
+    see_also:
+    - ARC-F2D
+    - ARC-F2E
   SEC-G2C:
     name: unpinned-scan-ruleset
     typical_severity: LOW

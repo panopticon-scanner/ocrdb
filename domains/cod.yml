@@ -108,6 +108,9 @@ entries:
       loader itself. The specific write-guard / security-control fail-open incident
       single-homes in ARC-F2E; a general component that skips malformed runtime
       input is ARC-F2D.
+    see_also:
+    - ARC-F2D
+    - ARC-F2E
   COD-B1C:
     name: overly-broad-permission-scope-in-shared-guard
     typical_severity: MEDIUM
@@ -293,6 +296,9 @@ entries:
       value-validity violation for one specific field. A specific documented-required
       field omitted from the schema is COD-D1D; a wholesale, multi-field
       contract-vs-schema divergence is ARC-D1B.
+    see_also:
+    - ARC-D1B
+    - COD-D1D
   COD-D1B:
     name: schema-pattern-stricter-than-producer-output
     typical_severity: HIGH
@@ -311,6 +317,10 @@ entries:
       the stricter artifact is a dead, unimported duplicate, QAL-E1B; if the
       defect is the id/format being specified inconsistently across two or more
       artifacts with no single authority, ARC-D1D.
+    see_also:
+    - ARC-D1D
+    - QAL-C2A
+    - QAL-E1B
   COD-D1C:
     name: inconsistent-record-shape-across-array
     typical_severity: MEDIUM
@@ -336,6 +346,9 @@ entries:
       the documentation mandates as mandatory — a required-field gap for specific
       fields. A field carrying a value outside its enum is COD-D1A; a wholesale
       contract-vs-schema divergence spanning many fields or behaviors is ARC-D1B.
+    see_also:
+    - ARC-D1B
+    - COD-D1A
   COD-D2B:
     name: documented-feature-or-flag-not-implemented
     typical_severity: HIGH
@@ -355,6 +368,9 @@ entries:
       documentation is merely stale, renamed, or under-covered, that is QAL-C2C
       (doc hygiene); if the whole CLI interface contract has drifted structurally,
       ARC-D2A.
+    see_also:
+    - ARC-D2A
+    - QAL-C2C
   COD-D2C:
     name: self-contradicting-specification-documents
     typical_severity: HIGH
@@ -445,6 +461,9 @@ entries:
       operation but now never executes (a reachability defect). If the silently
       skipped definitions are test cases (a test-discovery gap), that is TST-C1A;
       if nothing after the guard is actually skipped (pure misplacement), QAL-F2B.
+    see_also:
+    - QAL-F2B
+    - TST-C1A
   COD-E2B:
     name: path-resolved-against-wrong-base-directory
     typical_severity: MEDIUM
@@ -457,6 +476,8 @@ entries:
     examples:
     - Security-checklists reference is relative to the skill directory, but the reviewing agent's cwd is the target
       repo
+    see_also:
+    - TST-D2A
   COD-F1A:
     name: atomicity-violation-compound-operation
     typical_severity: MEDIUM

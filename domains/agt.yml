@@ -70,6 +70,11 @@ entries:
       action is B1B, absent scope bounds on a write-capable tool is B1C, and an
       over-broad grant of tools beyond the task is B1D. A control that runs but
       mis-parses an undocumented input shape is instead ARC-F2C.
+    see_also:
+    - AGT-B1B
+    - AGT-B1C
+    - AGT-B1D
+    - ARC-F2C
   AGT-B1B:
     name: missing-approval-gate-for-destructive-action
     typical_severity: HIGH
@@ -85,6 +90,10 @@ entries:
       merely incomplete. If a mediating control exists but has a coverage gap, that
       is AGT-B1A; if the defect is a write tool lacking scope bounds, AGT-B1C; if
       it is too many tools granted, AGT-B1D.
+    see_also:
+    - AGT-B1A
+    - AGT-B1C
+    - AGT-B1D
   AGT-B1C:
     name: unscoped-write-authority
     typical_severity: HIGH
@@ -100,6 +109,10 @@ entries:
       instead the grant includes more tools than the task needs (breadth), that is
       AGT-B1D; if a mediating control exists but misses a class of invocations,
       AGT-B1A; if a destructive action has no approval gate at all, AGT-B1B.
+    see_also:
+    - AGT-B1A
+    - AGT-B1B
+    - AGT-B1D
   AGT-B1D:
     name: overbroad-tool-grant
     typical_severity: MEDIUM
@@ -115,6 +128,10 @@ entries:
       write tool lacks scope bounds (can act outside its intended path/tenant),
       that is AGT-B1C; if a destructive action has no approval checkpoint, AGT-B1B;
       if an existing mediation control has a coverage gap, AGT-B1A.
+    see_also:
+    - AGT-B1A
+    - AGT-B1B
+    - AGT-B1C
   AGT-C1A:
     name: self-asserted-trust-metadata-spoofing
     typical_severity: HIGH
