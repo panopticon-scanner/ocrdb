@@ -1,6 +1,4 @@
-# OCRDb domain file - DRAFT 0.1 (pre-ratification)
-# Codes are NOT yet stable: ratification may rename/split/merge/re-letter.
-# The stability contract (SCHEMA.md) activates at the 0.1 release tag.
+# OCRDb domain file - 0.1 (RATIFIED; codes final at the 0.1 tag)
 domain: ARC
 name: architecture
 areas:
@@ -16,7 +14,6 @@ areas:
     name: dependency-and-build-architecture
     categories:
       '1': packaging-metadata
-      '2': dependency-pinning
       '3': container-image-design
   C:
     name: ci-cd-pipeline-architecture
@@ -46,14 +43,21 @@ areas:
       '1': doc-reality-drift
       '2': design-doc-lifecycle
       '3': repo-hygiene-and-meta-config
-  H:
-    name: test-suite-architecture
-    categories:
-      '1': test-organization
-      '2': test-hygiene-and-consistency
-      '3': test-coverage-and-verification-gaps
 entries:
   ARC-A1A:
+    name: fragmented-logic-no-single-owner
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    cwe:
+    - CWE-710
+    examples:
+    - Evidence status precedence hierarchy (verdict > corroboration > tool_source, reinforced handling) is implicit
+      and scattered across multiple functions instead of centralized
+    - Template management scattered across multiple functions with no single owner
+  ARC-A1B:
     name: mixed-responsibility-module
     typical_severity: MEDIUM
     status: active
@@ -67,7 +71,7 @@ entries:
       model resolution, plan emission all in one ~687-line module)
     - orchestrator.py/evidence.py/run_tools.py/synthesize.py each mix file discovery, pattern matching, execution,
       and reporting concerns with no internal boundary
-  ARC-A1B:
+  ARC-A1C:
     name: monolithic-function-mixed-concerns
     typical_severity: MEDIUM
     status: active
@@ -80,59 +84,20 @@ entries:
     - Monolithic main() violates single responsibility principle
     - Rendering function mixes data transformation and HTML generation
     - Complex directory-walking logic combines discovery, filtering, and pattern matching in one routine
-  ARC-A1C:
-    name: fragmented-logic-no-single-owner
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-710
-    examples:
-    - Evidence status precedence hierarchy (verdict > corroboration > tool_source, reinforced handling) is implicit
-      and scattered across multiple functions instead of centralized
-    - Template management scattered across multiple functions with no single owner
   ARC-A2A:
-    name: leaky-module-interface
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 6
-    cwe:
-    - CWE-1061
-    examples:
-    - Public module re-exports internal implementation details via __all__, coupling the public surface to another
-      module's internals
-    - Module aliasing functions from another module without an explicit interface contract
-    - Tool-specific noise-filtering policy (bandit B101 suppression) embedded directly in a shared, tool-agnostic
-      helper
-  ARC-A2B:
-    name: misleading-interface-naming
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - _depth_gte's name is inverted relative to what it actually computes, inviting a future off-by-logic regression
-  ARC-A2C:
-    name: unpackaged-module-resolution-hack
+    name: circular-or-load-order-coupling
     typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
-    recurrence: 6
+    recurrence: 5
     cwe:
-    - CWE-710
+    - CWE-1047
     examples:
-    - sys.path.insert(0, ...) in dispatch.py to import sibling modules instead of a proper package layout
-    - Ad hoc sys.path bootstrap duplicated verbatim across three entry-point scripts
-    - Inconsistent sys.path manipulation and import-fallback patterns across the codebase undermine installability
-  ARC-A2D:
+    - Circular module dependency between dispatch.py and orchestrator.py held together only by a deferred import
+    - Tool adapter registration tightly coupled at module load time
+    - Direct ADAPTERS registry import creates tight coupling between synthesize and domain modules
+  ARC-A2B:
     name: hidden-contract-via-informal-parsing
     typical_severity: MEDIUM
     status: active
@@ -147,33 +112,46 @@ entries:
       producer and consumer modules
     - reconcile_apply.ledger_key() must byte-for-byte match file_issues.key_for() with no shared source of truth
     - Panel names require manual synchronization in a regex pattern maintained separately from the panel registry
-  ARC-A2E:
-    name: circular-or-load-order-coupling
+  ARC-A2C:
+    name: unpackaged-module-resolution-hack
     typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
-    recurrence: 5
+    recurrence: 6
     cwe:
-    - CWE-1047
+    - CWE-710
     examples:
-    - Circular module dependency between dispatch.py and orchestrator.py held together only by a deferred import
-    - Tool adapter registration tightly coupled at module load time
-    - Direct ADAPTERS registry import creates tight coupling between synthesize and domain modules
-  ARC-A3A:
-    name: duplicated-configuration-or-mapping-table
+    - sys.path.insert(0, ...) in dispatch.py to import sibling modules instead of a proper package layout
+    - Ad hoc sys.path bootstrap duplicated verbatim across three entry-point scripts
+    - Inconsistent sys.path manipulation and import-fallback patterns across the codebase undermine installability
+  ARC-A2D:
+    name: leaky-module-interface
     typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
-    recurrence: 5
+    recurrence: 6
     cwe:
-    - CWE-1041
+    - CWE-1061
     examples:
-    - Role-to-filename mappings defined in two places (ROLE_FILES and AGENT_NAME) with no single source of truth
-    - dispatch-plan*.json glob duplicated verbatim across two functions with a documented history of drifting apart
-    - Model policy hardcoded and duplicated across dispatch.py and model_resolver.py
-  ARC-A3B:
+    - Public module re-exports internal implementation details via __all__, coupling the public surface to another
+      module's internals
+    - Module aliasing functions from another module without an explicit interface contract
+    - Tool-specific noise-filtering policy (bandit B101 suppression) embedded directly in a shared, tool-agnostic
+      helper
+  ARC-A2E:
+    name: misleading-interface-naming
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    cwe:
+    - CWE-710
+    examples:
+    - _depth_gte's name is inverted relative to what it actually computes, inviting a future off-by-logic regression
+  ARC-A3A:
     name: duplicated-business-logic-without-shared-module
     typical_severity: MEDIUM
     status: active
@@ -187,6 +165,19 @@ entries:
     - Finding-construction boilerplate copy-pasted across nine tool adapters instead of one shared builder in base.py
     - html_report's compare-mode fingerprint reimplements (and regresses) synthesize's already-fixed finding-identity
       logic
+  ARC-A3B:
+    name: duplicated-configuration-or-mapping-table
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 5
+    cwe:
+    - CWE-1041
+    examples:
+    - Role-to-filename mappings defined in two places (ROLE_FILES and AGENT_NAME) with no single source of truth
+    - dispatch-plan*.json glob duplicated verbatim across two functions with a documented history of drifting apart
+    - Model policy hardcoded and duplicated across dispatch.py and model_resolver.py
   ARC-A4A:
     name: adapter-implementation-inconsistency
     typical_severity: MEDIUM
@@ -204,18 +195,6 @@ entries:
     - spotbugs.py is the only adapter parsing tool output with un-hardened stdlib XML instead of JSON/SARIF like
       its siblings
   ARC-A4B:
-    name: shadow-registry-without-enforced-parity
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - PROBES is a hand-maintained shadow of the ADAPTERS registry with no enforced parity; live adapters have shipped
-      without a matching probe entry
-  ARC-A4C:
     name: dead-registry-entry
     typical_severity: MEDIUM
     status: active
@@ -227,6 +206,18 @@ entries:
     examples:
     - ADAPTERS still registers a retired 'eslint' adapter that is guaranteed to raise NotImplementedError if ever
       selected
+  ARC-A4C:
+    name: shadow-registry-without-enforced-parity
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    cwe:
+    - CWE-710
+    examples:
+    - PROBES is a hand-maintained shadow of the ADAPTERS registry with no enforced parity; live adapters have shipped
+      without a matching probe entry
   ARC-A4D:
     name: silent-failure-on-unrecognized-extension
     typical_severity: MEDIUM
@@ -264,36 +255,16 @@ entries:
     - dispatch.py's AGENT_NAME dict was a byte-for-byte parallel derivation of ROLE_FILES; replaced with agent_name(role)
       function
   ARC-B1A:
-    name: nonstandard-install-mechanism-bypasses-package-manager
-    typical_severity: INFO
+    name: missing-dependency-manifest-declarations
+    typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
     examples:
-    - README documents symlink-based installation into agent skill directories instead of a pip package install
+    - pyyaml, jsonschema, and pytest are imported and used throughout the project but never declared as dependencies
+      in pyproject.toml
   ARC-B1B:
-    name: incomplete-build-system-declaration
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    examples:
-    - pyproject.toml declares rich PyPI-style [project] metadata but has no [build-system] table, so the package
-      is not actually pip-installable
-  ARC-B1C:
-    name: self-contradictory-lint-configuration
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - ruff line-length=100 is declared but the rule that enforces it (E501) is explicitly listed in the ignore set
-  ARC-B1D:
     name: packaging-version-drift
     typical_severity: MEDIUM
     status: active
@@ -305,17 +276,7 @@ entries:
     examples:
     - pyproject.toml declares version 3.0.0 while SKILL.md metadata and DEVELOPMENT.md both state the current version
       is 4.2.0 - two major versions behind
-  ARC-B1E:
-    name: missing-dependency-manifest-declarations
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - pyyaml, jsonschema, and pytest are imported and used throughout the project but never declared as dependencies
-      in pyproject.toml
-  ARC-B1F:
+  ARC-B1C:
     name: stale-project-metadata-urls
     typical_severity: MEDIUM
     status: active
@@ -326,57 +287,37 @@ entries:
     - CWE-1059
     examples:
     - pyproject.toml Homepage/Repository/Issues URLs point to a GitHub org the repo itself no longer uses
-  ARC-B2A:
-    name: mutable-tag-dependency
+  ARC-B1D:
+    name: incomplete-build-system-declaration
     typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
-    recurrence: 7
-    cwe:
-    - CWE-1357
-    examples:
-    - Fixture-validation image builds FROM panopticon-tools:latest, a tag now rebuilt daily, so the fixture harness
-      floats on whatever that resolves to
-    - Third-party GitHub Actions pinned to mutable major-version tags (@v4) instead of immutable commit SHAs across
-      all four workflows
-    - Scanner-validation fixture corpus (railsgoat, AspGoat) depends on unpinned, mutable upstream branches
-  ARC-B2B:
-    name: unverified-remote-script-execution
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 4
-    cwe:
-    - CWE-494
-    examples:
-    - curl ... | sh -s -- -y --default-toolchain stable installs Rust with no checksum/signature verification
-    - dotnet-install script piped directly into a shell with no integrity check
-  ARC-B2C:
-    name: unpinned-package-versions
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
     recurrence: 3
-    cwe:
-    - CWE-1357
     examples:
-    - semgrep/bandit/bandit-sarif-formatter installed with no version pin, unlike every other tool in the same image
-    - Most Dockerfile tool installs are unpinned, contradicting the documented monthly-rebuild reproducibility model
-  ARC-B3A:
-    name: circular-build-dependency
+    - pyproject.toml declares rich PyPI-style [project] metadata but has no [build-system] table, so the package
+      is not actually pip-installable
+  ARC-B1E:
+    name: self-contradictory-lint-configuration
     typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
     cwe:
-    - CWE-1047
+    - CWE-710
     examples:
-    - Dockerfile.fixtures builds FROM panopticon-tools:latest, so a failed tools build silently breaks fixture validation
-  ARC-B3B:
+    - ruff line-length=100 is declared but the rule that enforces it (E501) is explicitly listed in the ignore set
+  ARC-B1F:
+    name: nonstandard-install-mechanism-bypasses-package-manager
+    typical_severity: INFO
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    examples:
+    - README documents symlink-based installation into agent skill directories instead of a pip package install
+  ARC-B3A:
     name: divergent-execution-path-across-environments
     typical_severity: MEDIUM
     status: active
@@ -390,7 +331,7 @@ entries:
     - Optional Docker container creates divergent code-execution paths depending on whether it's present
     - Asymmetric dispatch architecture across agent platforms (kimi/claude/openrouter hosts) gives some hosts capabilities
       others lack
-  ARC-B3C:
+  ARC-B3B:
     name: monolithic-multi-toolchain-image
     typical_severity: MEDIUM
     status: active
@@ -399,46 +340,18 @@ entries:
     recurrence: 2
     examples:
     - panopticon-tools Dockerfile installs 8+ language toolchains plus 10+ security scanners into one image
-  ARC-C1A:
-    name: inconsistent-workflow-permissions-scoping
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-732
-    examples:
-    - 'ci.yml is the only in-scope workflow with no explicit least-privilege permissions: block, unlike codeql.yml/security.yml/docker-publish.yml'
-  ARC-C1B:
-    name: ci-lint-gate-scope-gap
+  ARC-B3C:
+    name: circular-build-dependency
     typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
+    cwe:
+    - CWE-1047
     examples:
-    - Top-level ops scripts that call the GitHub API are excluded from the CI lint job's file globs
-  ARC-C1C:
-    name: ci-trigger-path-filter-incomplete
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - 'docker-publish.yml''s trigger paths: filter doesn''t cover everything the Dockerfile COPYs into the published
-      image, so some changes ship unbuilt'
-  ARC-C1D:
-    name: untested-integration-path-in-ci
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - Phase-1 tool-adapter integration tests never execute with real tooling in any CI workflow
-  ARC-C1E:
+    - Dockerfile.fixtures builds FROM panopticon-tools:latest, so a failed tools build silently breaks fixture validation
+  ARC-C1A:
     name: ci-gate-bypasses-domain-verdict-model
     typical_severity: HIGH
     status: active
@@ -450,19 +363,46 @@ entries:
     examples:
     - The 'ingest findings and gate on HIGH/CRITICAL' CI step calls ingest_tools.ingest_dir() and filters on raw
       tool severity directly, bypassing the project's own evidence/confirmation model entirely
-  ARC-C2A:
-    name: swallowed-ci-step-failure
-    typical_severity: INFO
+  ARC-C1B:
+    name: ci-trigger-path-filter-incomplete
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - 'docker-publish.yml''s trigger paths: filter doesn''t cover everything the Dockerfile COPYs into the published
+      image, so some changes ship unbuilt'
+  ARC-C1C:
+    name: untested-integration-path-in-ci
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - Phase-1 tool-adapter integration tests never execute with real tooling in any CI workflow
+  ARC-C1D:
+    name: ci-lint-gate-scope-gap
+    typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
-    cwe:
-    - CWE-392
     examples:
-    - 'The merge job''s build-provenance attestation step runs with continue-on-error: true, so a failed attestation
-      is silently accepted'
-  ARC-C2B:
+    - Top-level ops scripts that call the GitHub API are excluded from the CI lint job's file globs
+  ARC-C1E:
+    name: inconsistent-workflow-permissions-scoping
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    cwe:
+    - CWE-732
+    examples:
+    - 'ci.yml is the only in-scope workflow with no explicit least-privilege permissions: block, unlike codeql.yml/security.yml/docker-publish.yml'
+  ARC-C2A:
     name: silent-fallback-masks-pipeline-failure
     typical_severity: LOW
     status: active
@@ -474,30 +414,43 @@ entries:
     examples:
     - security.yml silently falls back to a local docker build if pulling the pre-built panopticon-tools image fails,
       masking incomplete publishes
+  ARC-C2B:
+    name: swallowed-ci-step-failure
+    typical_severity: INFO
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    cwe:
+    - CWE-392
+    examples:
+    - 'The merge job''s build-provenance attestation step runs with continue-on-error: true, so a failed attestation
+      is silently accepted'
   ARC-D1A:
-    name: unversioned-inter-phase-data-contract
-    typical_severity: LOW
+    name: lossy-round-trip-between-producer-and-recovery-path
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    cwe:
+    - CWE-436
+    examples:
+    - file_issues.py scrubs absolute paths when posting to GitHub, but the ledger-recovery fallback doesn't apply
+      the same scrub, so recovered keys silently fail to match findings with absolute-path locations
+  ARC-D1B:
+    name: report-contract-out-of-sync-with-schema
+    typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
     recurrence: 1
-    examples:
-    - Pipeline phase coordination (scout -> dispatch -> synthesize) relies on JSON artifact contracts with no version
-      field
-  ARC-D1B:
-    name: id-format-schema-mismatch
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 7
     cwe:
+    - CWE-1059
     - CWE-436
     examples:
-    - report-schema.json's finding-id pattern (^[A-Z]{2,4}-[0-9]{3,}$) is stricter than the id format synthesize.py
-      actually produces
-    - base.py's ID_RE constant is dead and has drifted from the actual authoritative finding-id validator
-    - Finding-ID regex diverges between agent prompt templates and the report schema
+    - report-schema.json is materially out of sync with the documented report contract (INCONCLUSIVE status, coverage_certified,
+      and other fields SKILL.md/panel-review.md/lens-sweep.md describe but the schema doesn't match)
   ARC-D1C:
     name: fingerprint-identity-instability
     typical_severity: MEDIUM
@@ -512,6 +465,20 @@ entries:
     - Compare-mode fingerprint hashes LLM-authored free text, which is not stable across runs of the same underlying
       finding
   ARC-D1D:
+    name: id-format-schema-mismatch
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 7
+    cwe:
+    - CWE-436
+    examples:
+    - report-schema.json's finding-id pattern (^[A-Z]{2,4}-[0-9]{3,}$) is stricter than the id format synthesize.py
+      actually produces
+    - base.py's ID_RE constant is dead and has drifted from the actual authoritative finding-id validator
+    - Finding-ID regex diverges between agent prompt templates and the report schema
+  ARC-D1E:
     name: redundant-independent-derivation-of-shared-fact
     typical_severity: MEDIUM
     status: active
@@ -522,57 +489,41 @@ entries:
     - CWE-1041
     examples:
     - Fan-out coverage is derived from multiple independent sources that could disagree with no reconciliation step
-  ARC-D1E:
-    name: lossy-round-trip-between-producer-and-recovery-path
+  ARC-D1F:
+    name: unversioned-inter-phase-data-contract
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - Pipeline phase coordination (scout -> dispatch -> synthesize) relies on JSON artifact contracts with no version
+      field
+  ARC-D2A:
+    name: cli-interface-contract-drift
     typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
     recurrence: 4
     cwe:
-    - CWE-436
-    examples:
-    - file_issues.py scrubs absolute paths when posting to GitHub, but the ledger-recovery fallback doesn't apply
-      the same scrub, so recovered keys silently fail to match findings with absolute-path locations
-  ARC-D1F:
-    name: report-contract-out-of-sync-with-schema
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - CWE-1059
-    - CWE-436
-    examples:
-    - report-schema.json is materially out of sync with the documented report contract (INCONCLUSIVE status, coverage_certified,
-      and other fields SKILL.md/panel-review.md/lens-sweep.md describe but the schema doesn't match)
-  ARC-D2A:
-    name: undefined-or-ambiguous-spec-terminology
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 5
-    cwe:
     - CWE-1059
     examples:
-    - Pipeline step 5 (plan dispatch) is ambiguous about single-group vs. multi-group invocation of dispatch.py
-    - '''repo-scope'' is used but never defined in architecture panel scheduling docs'
-    - Scout's default-lens cheat sheet omits the redteam panel that the same document instructs it to schedule under
-      security_mode=redteam
+    - README Quick start examples show a --mode/--target invocation syntax that does not exist anywhere in the actual
+      CLI
+    - Frontmatter arguments list covers only 4 of roughly 13 documented CLI flags
   ARC-D2B:
-    name: required-field-never-emitted-by-producer
+    name: inconsistent-handling-of-equivalent-edge-case-inputs
     typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
-    recurrence: 3
+    recurrence: 2
     cwe:
     - CWE-436
     examples:
-    - report-schema.json requires findings[].confidence but neither lens-sweep.md nor panel-review.md ever instructs
-      agents to write it
+    - enrich_citations derives citation_quality differently depending on whether a finding's citations field is
+      missing versus present-but-empty, with no documented rationale for the distinction
   ARC-D2C:
     name: missing-coordination-contract-between-agents
     typical_severity: MEDIUM
@@ -588,18 +539,6 @@ entries:
     - Panel-review lens-coverage fallback text conflates two opposite dispatch states, leaving readers unable to
       tell which one applies
   ARC-D2D:
-    name: inconsistent-handling-of-equivalent-edge-case-inputs
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-436
-    examples:
-    - enrich_citations derives citation_quality differently depending on whether a finding's citations field is
-      missing versus present-but-empty, with no documented rationale for the distinction
-  ARC-D2E:
     name: orphaned-schema-field-never-populated
     typical_severity: MEDIUM
     status: active
@@ -609,20 +548,43 @@ entries:
     examples:
     - The scout prompt never populates several ScopeProfile fields, orphaning the facet feature the schema was built
       to support
+  ARC-D2E:
+    name: required-field-never-emitted-by-producer
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    cwe:
+    - CWE-436
+    examples:
+    - report-schema.json requires findings[].confidence but neither lens-sweep.md nor panel-review.md ever instructs
+      agents to write it
   ARC-D2F:
-    name: cli-interface-contract-drift
+    name: undefined-or-ambiguous-spec-terminology
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 5
+    cwe:
+    - CWE-1059
+    examples:
+    - Pipeline step 5 (plan dispatch) is ambiguous about single-group vs. multi-group invocation of dispatch.py
+    - '''repo-scope'' is used but never defined in architecture panel scheduling docs'
+    - Scout's default-lens cheat sheet omits the redteam panel that the same document instructs it to schedule under
+      security_mode=redteam
+  ARC-D3A:
+    name: missing-referenced-file
     typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
-    recurrence: 4
-    cwe:
-    - CWE-1059
+    recurrence: 3
     examples:
-    - README Quick start examples show a --mode/--target invocation syntax that does not exist anywhere in the actual
-      CLI
-    - Frontmatter arguments list covers only 4 of roughly 13 documented CLI flags
-  ARC-D3A:
+    - skill/reference/codex-runner-instructions.md is referenced by scope assignment but does not exist in the repository
+    - skill/reference/findings-envelope-schema.json is referenced but does not exist
+  ARC-D3B:
     name: documented-artifact-not-present-in-repo
     typical_severity: MEDIUM
     status: active
@@ -635,7 +597,7 @@ entries:
     - README's Repository layout table lists a docs/ directory that does not exist in this checkout
     - Documented security-disclosure process tells reporters to file a private advisory, but no SECURITY.md exists
       anywhere in the repo
-  ARC-D3B:
+  ARC-D3C:
     name: stale-path-reference-in-governance-config
     typical_severity: MEDIUM
     status: active
@@ -647,29 +609,18 @@ entries:
     examples:
     - CODEOWNERS assigns owners to /scripts/, /scripts/tools/, and /reference/, none of which exist at the repo
       root - the rules are permanently dead
-  ARC-D3C:
-    name: missing-referenced-file
-    typical_severity: CRITICAL
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    examples:
-    - skill/reference/codex-runner-instructions.md is referenced by scope assignment but does not exist in the repository
-    - skill/reference/findings-envelope-schema.json is referenced but does not exist
   ARC-E1A:
-    name: hardcoded-identifier-scattered-across-modules
-    typical_severity: MEDIUM
+    name: hardcoded-absolute-path-in-source
+    typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
-    recurrence: 3
+    recurrence: 2
     cwe:
     - CWE-547
     examples:
-    - The GitHub repo slug is hardcoded independently in file_fixmes.py's DOC_URL and file_issues.py's REPORT_URL
-      and has already diverged between them
-    - Hardcoded resource file paths scattered across modules instead of a single configuration point
+    - REPO_ROOT is a hardcoded absolute filesystem path baked into production code, breaking on any other machine
+      or checkout location
   ARC-E1B:
     name: hardcoded-environment-specific-artifact-path
     typical_severity: HIGH
@@ -683,40 +634,38 @@ entries:
     - DOC and DOC_URL hardcode a specific date-stamped artifact path (docs/superpowers/2026-08-04-run2-fixmes.md),
       preventing reuse for any other run
   ARC-E1C:
-    name: hardcoded-absolute-path-in-source
-    typical_severity: CRITICAL
+    name: hardcoded-identifier-scattered-across-modules
+    typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
-    recurrence: 2
+    recurrence: 3
     cwe:
     - CWE-547
     examples:
-    - REPO_ROOT is a hardcoded absolute filesystem path baked into production code, breaking on any other machine
-      or checkout location
+    - The GitHub repo slug is hardcoded independently in file_fixmes.py's DOC_URL and file_issues.py's REPORT_URL
+      and has already diverged between them
+    - Hardcoded resource file paths scattered across modules instead of a single configuration point
   ARC-E2A:
-    name: global-mutable-state-without-thread-safety
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 6
-    cwe:
-    - CWE-362
-    examples:
-    - model_resolver.py's module-level _PROFILES global with lazy singleton init has no documented or enforced thread-safety
-      guarantee
-    - A global mutable ADAPTERS registry dict is mutated directly by tests and callers with no synchronization
-  ARC-E2B:
-    name: implicit-config-discovery-action-at-a-distance
-    typical_severity: LOW
+    name: durable-state-in-ephemeral-scratch-location
+    typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
     examples:
-    - main() silently auto-discovers .panopticon/groups.json when no --groups argument is given, with no log line
-      indicating the fallback fired
+    - triage-ledger.jsonl and filed-issues.json - durable audit ledgers - live inside the fully gitignored, run-scratch
+      .panopticon/ directory alongside disposable state
+  ARC-E2B:
+    name: global-scope-write-conflicts-with-project-scoped-model
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - Generated host-native agent registration writes to a global, non-project-scoped directory, in tension with
+      the project's otherwise project-scoped configuration model
   ARC-E2C:
     name: implicit-runtime-contract-unenforced
     typical_severity: MEDIUM
@@ -728,59 +677,16 @@ entries:
     - SKILL.md documents that the pipeline MUST run from the repo root where .panopticon/ lives, but nothing in
       code checks or enforces this precondition at runtime
   ARC-E2D:
-    name: durable-state-in-ephemeral-scratch-location
-    typical_severity: MEDIUM
+    name: implicit-config-discovery-action-at-a-distance
+    typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
     examples:
-    - triage-ledger.jsonl and filed-issues.json - durable audit ledgers - live inside the fully gitignored, run-scratch
-      .panopticon/ directory alongside disposable state
-  ARC-E2E:
-    name: global-scope-write-conflicts-with-project-scoped-model
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - Generated host-native agent registration writes to a global, non-project-scoped directory, in tension with
-      the project's otherwise project-scoped configuration model
+    - main() silently auto-discovers .panopticon/groups.json when no --groups argument is given, with no log line
+      indicating the fallback fired
   ARC-E3A:
-    name: cross-host-config-parity-gap
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    examples:
-    - model-profiles.yml's openrouter host profile has no corresponding hardcoded fallback in model_resolver.py,
-      unlike kimi and claude
-    - Tool policy mode has no cross-host validation, so hosts can silently diverge in enforcement behavior
-  ARC-E3B:
-    name: reference-data-catalog-incomplete
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-1059
-    examples:
-    - The cwe_owasp mapping omits 8 of the 34 CWEs listed in the main catalog, silently dropping OWASP derivation
-      for those findings
-  ARC-E3C:
-    name: asymmetric-domain-coverage-across-artifacts
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - There is no architecture-panel equivalent of security-checklists.md, so the architecture lens has less supporting
-      reference material than the security lens
-  ARC-E3D:
     name: orthogonal-config-axes-increase-complexity
     typical_severity: MEDIUM
     status: active
@@ -792,56 +698,40 @@ entries:
     examples:
     - Write-guard enforcement mode (WHERE writes go) and tool-policy mode (enforcement vs. advisory) are independent
       axes whose cross-product is never enumerated or tested
-  ARC-F1A:
-    name: policy-or-verdict-not-enforced-by-code
-    typical_severity: MEDIUM
+  ARC-E3B:
+    name: asymmetric-domain-coverage-across-artifacts
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - There is no architecture-panel equivalent of security-checklists.md, so the architecture lens has less supporting
+      reference material than the security lens
+  ARC-E3C:
+    name: cross-host-config-parity-gap
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    examples:
+    - model-profiles.yml's openrouter host profile has no corresponding hardcoded fallback in model_resolver.py,
+      unlike kimi and claude
+    - Tool policy mode has no cross-host validation, so hosts can silently diverge in enforcement behavior
+  ARC-E3D:
+    name: reference-data-catalog-incomplete
+    typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
     recurrence: 3
     cwe:
-    - CWE-693
+    - CWE-1059
     examples:
-    - Enforcement for hostile-corpus reviews is SHOULD-level prose guidance in a doc, not an automated gate
-    - Tool finding verdict handling is not architecturally enforced anywhere in the pipeline
-    - The 'same flags is a requirement, not a convenience' contract in SKILL.md has no programmatic check
-  ARC-F1B:
-    name: partial-batch-operation-lacks-failure-recovery-path
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-755
-    examples:
-    - reconcile_apply.apply()'s batch loop has no recovery path for a mid-batch GitHub API failure, unlike its sibling
-      function
-  ARC-F1C:
-    name: inconsistent-authorization-gate-across-sibling-scripts
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-862
-    examples:
-    - Only reconcile_apply.py pins --repo and gates on admin permission; triage.py/file_issues.py/file_fixmes.py
-      rely on ambient gh defaults with no equivalent check
-  ARC-F1D:
-    name: audit-accounting-excludes-in-scope-actors
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - CWE-778
-    examples:
-    - meta.tool_policy_mode audit field excludes scout and advisor from enforcement accounting despite their equal
-      exposure to the same policy
-  ARC-F1E:
+    - The cwe_owasp mapping omits 8 of the 34 CWEs listed in the main catalog, silently dropping OWASP derivation
+      for those findings
+  ARC-F1A:
     name: enforcement-relies-on-stale-flag-not-live-verification
     typical_severity: HIGH
     status: active
@@ -856,44 +746,80 @@ entries:
       state
     - The primary plan-emission path never binds the unenforced-ack to plan content, silently defeating the stale-flag
       guard it was meant to backstop
+  ARC-F1B:
+    name: audit-accounting-excludes-in-scope-actors
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    cwe:
+    - CWE-778
+    examples:
+    - meta.tool_policy_mode audit field excludes scout and advisor from enforcement accounting despite their equal
+      exposure to the same policy
+  ARC-F1C:
+    name: inconsistent-authorization-gate-across-sibling-scripts
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    cwe:
+    - CWE-862
+    examples:
+    - Only reconcile_apply.py pins --repo and gates on admin permission; triage.py/file_issues.py/file_fixmes.py
+      rely on ambient gh defaults with no equivalent check
+  ARC-F1D:
+    name: partial-batch-operation-lacks-failure-recovery-path
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    cwe:
+    - CWE-755
+    examples:
+    - reconcile_apply.apply()'s batch loop has no recovery path for a mid-batch GitHub API failure, unlike its sibling
+      function
+  ARC-F1E:
+    name: policy-or-verdict-not-enforced-by-code
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    cwe:
+    - CWE-693
+    examples:
+    - Enforcement for hostile-corpus reviews is SHOULD-level prose guidance in a doc, not an automated gate
+    - Tool finding verdict handling is not architecturally enforced anywhere in the pipeline
+    - The 'same flags is a requirement, not a convenience' contract in SKILL.md has no programmatic check
   ARC-F2A:
-    name: overbroad-exception-handling-masks-errors
-    typical_severity: LOW
+    name: compensating-control-has-scope-blind-spot
+    typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
-    recurrence: 3
+    recurrence: 1
     cwe:
-    - CWE-396
+    - CWE-693
     examples:
-    - Multiple functions catch bare Exception (merge-base lookup, fallback-branch resolution), swallowing intentional
-      and accidental errors alike
+    - The post-fan-out clean-tree check only flags modifications 'outside .panopticon/', exempting the exact directory
+      a compromised unenforced reviewer would use to poison downstream synthesis
   ARC-F2B:
-    name: component-fails-open-on-malformed-input
-    typical_severity: MEDIUM
+    name: enforcement-hook-cannot-scope-to-individual-actor
+    typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
-    recurrence: 3
+    recurrence: 1
     cwe:
-    - CWE-636
+    - CWE-284
     examples:
-    - group_runner.py and ingest_tools.py tolerate non-dict plan entries and malformed input by silently skipping
-      them instead of rejecting
-    - write_guard_hook.py's main() returns 0 (allow) if JSON parsing fails or the allowlist file is missing
+    - A harness spike confirmed the session-wide write-guard hook cannot distinguish which subagent fired it, blocking
+      per-agent tightening as a documented architectural limitation
   ARC-F2C:
-    name: self-assertable-trust-field-mirrors-forbidden-field
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-807
-    examples:
-    - corroborated/corroborated_by are self-assertable by agents even though the semantically-equivalent source/reinforced
-      fields are explicitly stripped as forbidden, allowing spoofed cross-panel corroboration
-  ARC-F2D:
     name: security-control-assumes-undocumented-input-shape
     typical_severity: HIGH
     status: active
@@ -906,43 +832,69 @@ entries:
     - The write-guard hook hardcodes tool_input['file_path'] for Write/Edit/NotebookEdit alike, silently mis-evaluating
       NotebookEdit's differently-shaped payload
     - allowlist_from_plan depends on undocumented plan['out_file'] structure with no schema backing it
+  ARC-F2D:
+    name: component-fails-open-on-malformed-input
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    cwe:
+    - CWE-636
+    examples:
+    - group_runner.py and ingest_tools.py tolerate non-dict plan entries and malformed input by silently skipping
+      them instead of rejecting
+    - write_guard_hook.py's main() returns 0 (allow) if JSON parsing fails or the allowlist file is missing
   ARC-F2E:
-    name: enforcement-hook-cannot-scope-to-individual-actor
-    typical_severity: HIGH
+    name: security-control-fails-open-on-misconfiguration
+    typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
-    recurrence: 1
+    recurrence: 3
     cwe:
-    - CWE-284
+    - CWE-636
+    - CWE-280
     examples:
-    - A harness spike confirmed the session-wide write-guard hook cannot distinguish which subagent fired it, blocking
-      per-agent tightening as a documented architectural limitation
+    - Write-guard fails silently open (no deny, no warning) when the allowlist file is missing, malformed, or looked
+    - Tool-policy enforcement silently degrades to prompt-only ("advisory") when a host agent isn't registered,
+      whic
   ARC-F2F:
-    name: compensating-control-has-scope-blind-spot
-    typical_severity: HIGH
+    name: self-assertable-trust-field-mirrors-forbidden-field
+    typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
-    recurrence: 1
+    recurrence: 3
     cwe:
-    - CWE-693
+    - CWE-807
     examples:
-    - The post-fan-out clean-tree check only flags modifications 'outside .panopticon/', exempting the exact directory
-      a compromised unenforced reviewer would use to poison downstream synthesis
-  ARC-G1A:
-    name: reference-documentation-incomplete
+    - corroborated/corroborated_by are self-assertable by agents even though the semantically-equivalent source/reinforced
+      fields are explicitly stripped as forbidden, allowing spoofed cross-panel corroboration
+  ARC-F2G:
+    name: overbroad-exception-handling-masks-errors
     typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
-    recurrence: 2
+    recurrence: 3
+    cwe:
+    - CWE-396
+    examples:
+    - Multiple functions catch bare Exception (merge-base lookup, fallback-branch resolution), swallowing intentional
+      and accidental errors alike
+  ARC-G1A:
+    name: contributor-instructions-diverge-from-ci
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
     cwe:
     - CWE-1059
     examples:
-    - DEVELOPMENT.md's Architecture section under-describes the Dockerfile's actual tool set
-    - DEVELOPMENT.md's skill/reference/ inventory omits model-profiles.yml despite the versioning contract requiring
-      it to be bumped together
+    - CONTRIBUTING.md's test/lint instructions omit dependency installation steps and diverge from what ci.yml actually
+      runs
   ARC-G1B:
     name: divergent-duplicate-source-of-truth
     typical_severity: MEDIUM
@@ -957,7 +909,20 @@ entries:
       release history
     - Documented 'monthly' panopticon-tools rebuild cadence contradicts the actual daily/weekly CI schedule
   ARC-G1C:
-    name: contributor-instructions-diverge-from-ci
+    name: reference-documentation-incomplete
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    cwe:
+    - CWE-1059
+    examples:
+    - DEVELOPMENT.md's Architecture section under-describes the Dockerfile's actual tool set
+    - DEVELOPMENT.md's skill/reference/ inventory omits model-profiles.yml despite the versioning contract requiring
+      it to be bumped together
+  ARC-G2A:
+    name: superseded-doc-without-deprecation-marker
     typical_severity: MEDIUM
     status: active
     provenance:
@@ -966,9 +931,9 @@ entries:
     cwe:
     - CWE-1059
     examples:
-    - CONTRIBUTING.md's test/lint instructions omit dependency installation steps and diverge from what ci.yml actually
-      runs
-  ARC-G2A:
+    - The spec corpus retains superseded and internally-contradictory architecture documents with no deprecation
+      or status marker distinguishing current from historical
+  ARC-G2B:
     name: design-doc-drifts-from-delivered-scope
     typical_severity: LOW
     status: active
@@ -982,28 +947,7 @@ entries:
       work
     - A planned Phase-5 integration reuses the static-scan fixture pattern for a corpus that fundamentally differs
       from static-scan fixtures
-  ARC-G2B:
-    name: superseded-doc-without-deprecation-marker
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - CWE-1059
-    examples:
-    - The spec corpus retains superseded and internally-contradictory architecture documents with no deprecation
-      or status marker distinguishing current from historical
   ARC-G3A:
-    name: tracked-file-violates-own-gitignore-rule
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - skill/.DS_Store is tracked in git despite .gitignore's own 'OS / editor noise' rule listing .DS_Store
-  ARC-G3B:
     name: orphaned-unused-fixture-file
     typical_severity: LOW
     status: active
@@ -1015,189 +959,12 @@ entries:
     examples:
     - tests/fixtures/semgrep.sarif is a committed, realistic SARIF sample that is not loaded by any test in the
       repository
-  ARC-H1A:
-    name: unrelated-test-classes-grouped-in-single-file
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - test_roslyn_secguard.py contains three unrelated test classes (TestRoslynSecGuardAdapter, TestSafeCopytree,
-      TestScsOnlyFilter) with no semantic grouping
-  ARC-H1B:
-    name: test-fixture-scaffolding-duplicated-across-files
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 4
-    cwe:
-    - CWE-1041
-    examples:
-    - FIXTURE_ROOT is redefined identically across every integration test file (Java, C#, Ruby, Rust) instead of
-      a shared fixture module
-    - An identical _touch fixture helper is copy-pasted verbatim into three separate TestCase classes
-  ARC-H1C:
-    name: unit-and-integration-tests-not-separated
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - tests/tools/ mixes fast unit tests and slower real-tool integration tests in one directory with no structural
-      separation
-  ARC-H1D:
-    name: test-suite-sys-path-import-hack
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 4
-    cwe:
-    - CWE-710
-    examples:
-    - All 18-43 test files inject the skill directory via sys.path.insert(0, ...) at module level instead of relying
-      on an installable package
-  ARC-H2A:
-    name: inconsistent-assertion-style-in-test-suite
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - TestPanelPriority uses bare assert statements instead of self.assertEqual/self.assertIn inside a unittest.TestCase,
-      unlike every other test method in the suite
-  ARC-H2B:
-    name: missing-test-module-documentation
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-1059
-    examples:
-    - Only 2 of 15 assigned test files contain a meaningful module- or class-level docstring
-  ARC-H2C:
-    name: hardcoded-test-constant-duplicated
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-1041
-    examples:
-    - The subprocess timeout value 300 is hardcoded identically as a literal in test assertions across a dozen adapter
-      test files
-  ARC-H2D:
-    name: inconsistent-subprocess-mocking-strategy
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - test_legacy_sarif.py uses patch.object(subprocess, 'run') while every other adapter test file mocks at a different
-      layer
-  ARC-H2E:
-    name: inconsistent-path-resolution-convention-in-tests
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - test_status_is_in_schema_enum opens a bare cwd-relative path ('skill/reference/report-schema.json') instead
-      of the __file__-relative pattern the rest of the suite uses
-  ARC-H2F:
-    name: inconsistent-import-convention-in-test-methods
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-710
-    examples:
-    - test_dependency_check.py imports unittest.mock inside a test method body while every other test file imports
-      it at module level
-  ARC-H3A:
-    name: weak-test-assertion-doesnt-verify-real-behavior
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 5
-    examples:
-    - A test mocks builtins.open globally via mock_open, so it can never detect a wrong report path or misread content
-    - Tests enforce architectural conventions by regex-scanning SKILL.md's prose instead of checking actual code
-      structure
-    - Dockerfile 'bundles core tools' tests only assert case-insensitive substring presence, not that the tools
-      actually run
-  ARC-H3B:
-    name: security-critical-path-only-unit-tested-never-e2e
+  ARC-G3B:
+    name: tracked-file-violates-own-gitignore-rule
     typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
     examples:
-    - The write-guard hook's live enforcement path is only exercised via its in-process decide() function - the
-      harness actually denying an out-of-scope Write call is never tested end-to-end
-  ARC-H3C:
-    name: structural-mistake-silently-excludes-tests-from-run
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - 'TestRunTool is defined after the if __name__ == ''__main__'': unittest.main() guard in test_base.py, so it
-      is silently omitted from execution'
-  ARC-H3D:
-    name: exit-code-remap-path-never-exercised-by-tests
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - BrakemanAdapter's exit-code remap (2/3 -> 0) and its ok_codes=(0,1,2,3) wiring into run_tool are never exercised
-      by any test
-  ARC-H3E:
-    name: long-running-subprocess-test-has-no-timeout
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-400
-    examples:
-    - TestEndToEnd shells out to the real orchestrator.py and synthesize.py entry points via subprocess.run with
-      no timeout, so a hang in either script hangs the whole test suite/CI
-  ARC-H3F:
-    name: test-fixture-not-validated-against-authoritative-source
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    examples:
-    - Hand-built ScopeProfile test fixtures omit schema-required fields and are never validated against scope-profile-schema.json
-    - Model-resolution precedence tests can't distinguish the YAML-config tier from the hardcoded-fallback tier
-      because fixtures don't isolate them
+    - skill/.DS_Store is tracked in git despite .gitignore's own 'OS / editor noise' rule listing .DS_Store

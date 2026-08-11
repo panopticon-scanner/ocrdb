@@ -1,6 +1,4 @@
-# OCRDb domain file - DRAFT 0.1 (pre-ratification)
-# Codes are NOT yet stable: ratification may rename/split/merge/re-letter.
-# The stability contract (SCHEMA.md) activates at the 0.1 release tag.
+# OCRDb domain file - 0.1 (RATIFIED; codes final at the 0.1 tag)
 domain: SEC
 name: security
 areas:
@@ -17,6 +15,7 @@ areas:
       '1': output-encoding-and-report-hardening
       '2': information-disclosure
       '3': secrets-handling
+      '4': privacy-and-data-protection
   C:
     name: identity-access-and-cryptography
     categories:
@@ -41,34 +40,20 @@ areas:
       '1': exception-handling
       '2': resource-management
   G:
-    name: ai-agent-trust-boundary
-    categories:
-      '1': agent-trust-boundary-violations
-      '2': fail-open-controls
-  H:
     name: security-tooling-and-scan-integrity
     categories:
       '1': severity-and-triage-fidelity
       '2': scan-coverage-integrity
       '3': security-testing-and-governance
+  H:
+    name: web-session-and-browser-boundary
+    categories:
+      '1': session-management
+      '2': cross-site-request
+      '3': token-and-federation
+      '4': adversarial-request-processing
 entries:
   SEC-A1A:
-    name: unsafe-subprocess-invocation-pattern
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 96
-    cwe:
-    - CWE-78
-    - CWE-88
-    examples:
-    - subprocess call - check for execution of untrusted input.
-    - Consider possible security implications associated with the subprocess module.
-    - Starting a process with a partial executable path
-    - String Concatenation in Command Argument Construction
-    - Brittle Path Substitution Pattern in Tool Command Construction
-  SEC-A1B:
     name: os-command-injection
     typical_severity: HIGH
     status: active
@@ -84,6 +69,22 @@ entries:
     - Shell command injection via unescaped fixture paths
     - Command injection via unsanitized user input to shell
     - OS command injection via unsanitized shell script construction
+  SEC-A1B:
+    name: unsafe-subprocess-invocation-pattern
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 96
+    cwe:
+    - CWE-78
+    - CWE-88
+    examples:
+    - subprocess call - check for execution of untrusted input.
+    - Consider possible security implications associated with the subprocess module.
+    - Starting a process with a partial executable path
+    - String Concatenation in Command Argument Construction
+    - Brittle Path Substitution Pattern in Tool Command Construction
   SEC-A2A:
     name: eval-of-untrusted-input
     typical_severity: CRITICAL
@@ -124,18 +125,6 @@ entries:
     - SQL injection via string concatenation with user input
     - 'Known vulnerable code pattern: SQL injection via string concatenation'
   SEC-A4A:
-    name: xml-library-import-flagged
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 6
-    cwe:
-    - CWE-611
-    examples:
-    - Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace
-      xml.
-  SEC-A4B:
     name: xxe-vulnerable-xml-parsing
     typical_severity: MEDIUM
     status: active
@@ -150,43 +139,19 @@ entries:
       R
     - XML External Entity (XXE) Injection in XML Parsing
     - SpotBugs report XML parsed with `xml.etree.ElementTree` instead of a hardened parser
-  SEC-B1A:
-    name: missing-content-security-policy-in-generated-report
-    typical_severity: INFO
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - CWE-1021
-    - CWE-693
-    examples:
-    - Self-contained HTML report ships an inline <script> with no Content-Security-Policy
-  SEC-B1B:
-    name: unintended-external-resource-load-in-offline-report
+  SEC-A4B:
+    name: xml-library-import-flagged
     typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
-    recurrence: 1
+    recurrence: 6
     cwe:
-    - CWE-200
+    - CWE-611
     examples:
-    - '"Self-contained" HTML report fetches remote Google Fonts on open, contradicting its offline-safety claim
-      and l'
-  SEC-B1C:
-    name: unsafe-url-scheme-allowed-in-links
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-79
-    - CWE-601
-    examples:
-    - Unrestricted URL Scheme in Reference Links
-  SEC-B1D:
+    - Using xml.etree.ElementTree to parse untrusted XML data is known to be vulnerable to XML attacks. Replace
+      xml.
+  SEC-B1A:
     name: markdown-mention-injection-in-automated-comments
     typical_severity: MEDIUM
     status: active
@@ -198,7 +163,19 @@ entries:
     examples:
     - Scanned-repo file paths flow unescaped into auto-posted GitHub issue comments, enabling markdown/@-mention
       inj
-  SEC-B1E:
+  SEC-B1B:
+    name: unsafe-url-scheme-allowed-in-links
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    cwe:
+    - CWE-79
+    - CWE-601
+    examples:
+    - Unrestricted URL Scheme in Reference Links
+  SEC-B1C:
     name: untrusted-content-unsanitized-in-generated-output
     typical_severity: MEDIUM
     status: active
@@ -215,18 +192,56 @@ entries:
     - Untrusted finding text (title/description/impact/remediation) is aggregated with no content neutralization
       and
     - Repo-controlled file names and messages flow into finding `title`/`location.file`/`description` without contro
-  SEC-B2A:
-    name: verbose-error-message-disclosure
+  SEC-B1D:
+    name: unintended-external-resource-load-in-offline-report
     typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    cwe:
+    - CWE-200
+    examples:
+    - '"Self-contained" HTML report fetches remote Google Fonts on open, contradicting its offline-safety claim
+      and l'
+  SEC-B1E:
+    name: missing-content-security-policy-in-generated-report
+    typical_severity: INFO
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    cwe:
+    - CWE-1021
+    - CWE-693
+    examples:
+    - Self-contained HTML report ships an inline <script> with no Content-Security-Policy
+  SEC-B2A:
+    name: debug-endpoint-secret-exposure
+    typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
     cwe:
-    - CWE-209
+    - CWE-215
+    - CWE-200
     examples:
-    - Attempted read of /etc/shadow combined with verbose internal-error disclosure
+    - Sensitive Token Exposure via Debug Endpoint String Formatting
   SEC-B2B:
+    name: credentials-printed-to-output-or-logs
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 4
+    cwe:
+    - CWE-532
+    examples:
+    - Hardcoded credentials written directly to standard output
+    - run_tool's F-CAL-1 stderr diagnostic prints raw subprocess stderr with no secret redaction
+    - Unfiltered Stderr Output May Leak Sensitive Information
+  SEC-B2C:
     name: incomplete-sensitive-data-redaction
     typical_severity: MEDIUM
     status: active
@@ -240,43 +255,29 @@ entries:
       c
     - Test hardcodes the author's local absolute filesystem path instead of computing it dynamically -- the exact
       an
-  SEC-B2C:
-    name: credentials-printed-to-output-or-logs
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 4
-    cwe:
-    - CWE-532
-    examples:
-    - Hardcoded credentials written directly to standard output
-    - run_tool's F-CAL-1 stderr diagnostic prints raw subprocess stderr with no secret redaction
-    - Unfiltered Stderr Output May Leak Sensitive Information
   SEC-B2D:
-    name: debug-endpoint-secret-exposure
-    typical_severity: HIGH
+    name: verbose-error-message-disclosure
+    typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
     cwe:
-    - CWE-215
-    - CWE-200
+    - CWE-209
     examples:
-    - Sensitive Token Exposure via Debug Endpoint String Formatting
+    - Attempted read of /etc/shadow combined with verbose internal-error disclosure
   SEC-B3A:
-    name: hardcoded-secret-heuristic-flag
-    typical_severity: LOW
+    name: embedded-credential-or-api-key-in-repo
+    typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
-    recurrence: 6
+    recurrence: 4
     cwe:
-    - CWE-259
     - CWE-798
     examples:
-    - 'Possible hardcoded password: ''gate-pass'''
+    - 'Known vulnerable code pattern: Hardcoded secrets in source code'
+    - generic-api-key has detected secret for file /src/.env.
   SEC-B3B:
     name: full-environment-inherited-by-subprocess
     typical_severity: MEDIUM
@@ -289,40 +290,64 @@ entries:
     examples:
     - Shared `run_tool()` subprocess helper inherits the full parent environment for every scanner invocation
   SEC-B3C:
-    name: embedded-credential-or-api-key-in-repo
-    typical_severity: HIGH
+    name: hardcoded-secret-heuristic-flag
+    typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
-    recurrence: 4
+    recurrence: 6
     cwe:
+    - CWE-259
     - CWE-798
     examples:
-    - 'Known vulnerable code pattern: Hardcoded secrets in source code'
-    - generic-api-key has detected secret for file /src/.env.
-  SEC-C1A:
-    name: container-runs-as-root
+    - 'Possible hardcoded password: ''gate-pass'''
+  SEC-B4A:
+    name: pii-in-logs
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - gemini-gap-review
+    cwe:
+    - CWE-532
+  SEC-B4B:
+    name: excessive-data-collection
     typical_severity: LOW
+    status: active
+    provenance:
+    - prior-art
+    cwe:
+    - CWE-359
+  SEC-B4C:
+    name: missing-retention-limit
+    typical_severity: LOW
+    status: active
+    provenance:
+    - prior-art
+  SEC-C1A:
+    name: excessive-container-network-and-filesystem-privilege
+    typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
     recurrence: 1
     cwe:
     - CWE-250
+    - CWE-1008
     examples:
-    - Fixtures image never drops root privileges before running third-party build tooling
+    - Scan container combines full read access to the target repository with unrestricted scan-time network egress
   SEC-C1B:
-    name: ambient-authority-unscoped-mutation
-    typical_severity: MEDIUM
+    name: hardcoded-backdoor-trigger
+    typical_severity: HIGH
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
     cwe:
-    - CWE-284
+    - CWE-506
+    - CWE-489
     examples:
-    - triage.py mutates GitHub issues via ambient `gh` repo context with no explicit repo pinning or permission
-      pref
+    - Hidden backdoor trigger activated by a magic input string
   SEC-C1C:
     name: missing-function-level-authorization
     typical_severity: HIGH
@@ -336,41 +361,29 @@ entries:
     examples:
     - Missing authorization check allows any caller to retrieve admin-only data
   SEC-C1D:
-    name: hardcoded-backdoor-trigger
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-506
-    - CWE-489
-    examples:
-    - Hidden backdoor trigger activated by a magic input string
-  SEC-C1E:
-    name: excessive-container-network-and-filesystem-privilege
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - CWE-250
-    - CWE-1008
-    examples:
-    - Scan container combines full read access to the target repository with unrestricted scan-time network egress
-  SEC-C2A:
-    name: timing-unsafe-credential-comparison
+    name: ambient-authority-unscoped-mutation
     typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
     cwe:
-    - CWE-208
+    - CWE-284
     examples:
-    - Authentication routine uses a non-constant-time comparison and has no brute-force protection
-  SEC-C2B:
+    - triage.py mutates GitHub issues via ambient `gh` repo context with no explicit repo pinning or permission
+      pref
+  SEC-C1E:
+    name: container-runs-as-root
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    cwe:
+    - CWE-250
+    examples:
+    - Fixtures image never drops root privileges before running third-party build tooling
+  SEC-C2A:
     name: missing-brute-force-protection
     typical_severity: MEDIUM
     status: active
@@ -381,19 +394,18 @@ entries:
     - CWE-307
     examples:
     - Authentication routine uses a non-constant-time comparison and has no brute-force protection
-  SEC-C3A:
-    name: non-cryptographic-hash-in-security-context
+  SEC-C2B:
+    name: timing-unsafe-credential-comparison
     typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
     cwe:
-    - CWE-328
-    - CWE-327
+    - CWE-208
     examples:
-    - Ad-hoc, unsalted, non-cryptographic checksum used in place of a real hash function
-  SEC-C3B:
+    - Authentication routine uses a non-constant-time comparison and has no brute-force protection
+  SEC-C3A:
     name: weak-prng-for-security-token
     typical_severity: HIGH
     status: active
@@ -405,18 +417,28 @@ entries:
     examples:
     - Predictable security token generated from a hand-rolled LCG seeded by wall-clock time
     - 'Known vulnerable code pattern: Random() class for token generation'
-  SEC-C4A:
-    name: missing-audit-logging-for-sensitive-action
-    typical_severity: LOW
+  SEC-C3B:
+    name: weak-standard-crypto-algorithm
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    - gemini-gap-review
+    cwe:
+    - CWE-327
+  SEC-C3C:
+    name: non-cryptographic-hash-in-security-context
+    typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
     recurrence: 2
     cwe:
-    - CWE-778
+    - CWE-328
+    - CWE-327
     examples:
-    - Sensitive fund-transfer action executes with no audit logging
-  SEC-C4B:
+    - Ad-hoc, unsalted, non-cryptographic checksum used in place of a real hash function
+  SEC-C4A:
     name: insufficient-log-detail-for-security-events
     typical_severity: LOW
     status: active
@@ -425,6 +447,17 @@ entries:
     cwe:
     - CWE-778
     - CWE-223
+    examples:
+    - Sensitive fund-transfer action executes with no audit logging
+  SEC-C4B:
+    name: missing-audit-logging-for-sensitive-action
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    cwe:
+    - CWE-778
     examples:
     - Sensitive fund-transfer action executes with no audit logging
   SEC-D1A:
@@ -471,6 +504,16 @@ entries:
     - Unguarded `shutil.copytree(target, tmp, dirs_exist_ok=True)` dereferences attacker-controlled symlinks, enabli
     - Unvalidated Directory Copy Operation Before Analysis
   SEC-D2A:
+    name: server-side-request-forgery-to-internal-service
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    cwe:
+    - CWE-918
+    examples:
+    - User-controlled URL dispatch pattern without allow-listing (latent SSRF precursor)
+  SEC-D2B:
     name: unvalidated-url-fetch-target-ssrf-precursor
     typical_severity: LOW
     status: active
@@ -481,29 +524,7 @@ entries:
     - CWE-918
     examples:
     - User-controlled URL dispatch pattern without allow-listing (latent SSRF precursor)
-  SEC-D2B:
-    name: server-side-request-forgery-to-internal-service
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - prior-art
-    cwe:
-    - CWE-918
-    examples:
-    - User-controlled URL dispatch pattern without allow-listing (latent SSRF precursor)
   SEC-E1A:
-    name: missing-lockfile-integrity-hash
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-494
-    - CWE-1357
-    examples:
-    - Legacy lockfileVersion 1 lockfile carries no subresource-integrity hash for its dependency
-  SEC-E1B:
     name: dependabot-missing-cooldown-period
     typical_severity: MEDIUM
     status: active
@@ -515,7 +536,7 @@ entries:
     examples:
     - This Dependabot configuration does not set a cooldown period. Newly published packages can be malicious or
       uns
-  SEC-E1C:
+  SEC-E1B:
     name: known-vulnerable-dependency
     typical_severity: MEDIUM
     status: active
@@ -531,7 +552,43 @@ entries:
     - 'Known vulnerable dependency: serde_yaml 0.8.25 with RUSTSEC-2024-0327'
     - 'Package: lodash Installed Version: 4.17.20 Vulnerability CVE-2021-23337 Severity: HIGH Fixed Version: 4.17.21'
     - 'Known vulnerable dependency: regex 1.4.0 with RUSTSEC-2022-0013'
+  SEC-E1C:
+    name: missing-lockfile-integrity-hash
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 2
+    cwe:
+    - CWE-494
+    - CWE-1357
+    examples:
+    - Legacy lockfileVersion 1 lockfile carries no subresource-integrity hash for its dependency
+  SEC-E1D:
+    name: abandoned-unmaintained-dependency
+    typical_severity: LOW
+    status: active
+    provenance:
+    - prior-art
+    - openssf-align
+    cwe:
+    - CWE-1104
   SEC-E2A:
+    name: unpinned-build-dependency-install
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 7
+    cwe:
+    - CWE-1357
+    - CWE-829
+    examples:
+    - Unversioned pip package installs enable known vulnerability injection
+    - Unversioned cargo-audit installation enables known vulnerability injection
+    - Unversioned npm package installs enable known vulnerability injection
+    - Base Docker image uses version tag without digest, allowing known vulnerabilities in base layers
+  SEC-E2B:
     name: mutable-ci-action-reference
     typical_severity: MEDIUM
     status: active
@@ -548,7 +605,7 @@ entries:
       s
     - Third-party GitHub Actions pinned to mutable tags in a workflow holding write-scoped tokens and attestation
       au
-  SEC-E2B:
+  SEC-E2C:
     name: unpinned-third-party-source-reference
     typical_severity: MEDIUM
     status: active
@@ -563,36 +620,22 @@ entries:
     - Fixture image builds from unpinned mutable git branches of third-party repositories and executes their build
       t
     - Fixture manifest drives supply-chain-unsafe, unpinned third-party code execution during image build
-  SEC-E2C:
-    name: unpinned-build-dependency-install
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 7
-    cwe:
-    - CWE-1357
-    - CWE-829
-    examples:
-    - Unversioned pip package installs enable known vulnerability injection
-    - Unversioned cargo-audit installation enables known vulnerability injection
-    - Unversioned npm package installs enable known vulnerability injection
-    - Base Docker image uses version tag without digest, allowing known vulnerabilities in base layers
   SEC-E3A:
-    name: unverified-remote-script-execution-curl-pipe-shell
-    typical_severity: MEDIUM
+    name: arbitrary-code-execution-via-untrusted-build-file
+    typical_severity: CRITICAL
     status: active
     provenance:
     - corpus-4x
-    recurrence: 8
+    recurrence: 6
     cwe:
-    - CWE-494
+    - CWE-94
     - CWE-829
     examples:
-    - Piping remote script to shell (Rustup installer)
-    - Piping remote script to shell (.NET SDK installer)
-    - Unverified curl-pipe-to-shell installers execute remote code during panopticon-tools image build
-    - Dockerfile.fixtures pipes dotnet-install.sh into bash without version pin or verification
+    - MSBuild Target Injection with Runtime Command Execution
+    - MSBuild <Exec> target performs unrestricted network egress and filesystem write on every build
+    - roslyn-secguard runs `dotnet build` on scanned code, executing arbitrary MSBuild targets/NuGet package content
+    - roslyn-secguard adapter executes untrusted target source via `dotnet build`, violating the tool ecosystem's
+      st
   SEC-E3B:
     name: unverified-binary-download-no-integrity-check
     typical_severity: MEDIUM
@@ -609,35 +652,21 @@ entries:
     - Static-analysis tool binaries fetched from GitHub Releases / Maven Central without checksum or signature verif
     - 'Docker scanner-tool image installs unpinned packages and unverified remote binaries with no integrity checks; '
   SEC-E3C:
-    name: arbitrary-code-execution-via-untrusted-build-file
-    typical_severity: CRITICAL
+    name: unverified-remote-script-execution-curl-pipe-shell
+    typical_severity: MEDIUM
     status: active
     provenance:
     - corpus-4x
-    recurrence: 6
+    recurrence: 8
     cwe:
-    - CWE-94
+    - CWE-494
     - CWE-829
     examples:
-    - MSBuild Target Injection with Runtime Command Execution
-    - MSBuild <Exec> target performs unrestricted network egress and filesystem write on every build
-    - roslyn-secguard runs `dotnet build` on scanned code, executing arbitrary MSBuild targets/NuGet package content
-    - roslyn-secguard adapter executes untrusted target source via `dotnet build`, violating the tool ecosystem's
-      st
+    - Piping remote script to shell (Rustup installer)
+    - Piping remote script to shell (.NET SDK installer)
+    - Unverified curl-pipe-to-shell installers execute remote code during panopticon-tools image build
+    - Dockerfile.fixtures pipes dotnet-install.sh into bash without version pin or verification
   SEC-F1A:
-    name: silent-exception-swallowing
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 15
-    cwe:
-    - CWE-390
-    - CWE-703
-    examples:
-    - Try, Except, Continue detected.
-    - Try, Except, Pass detected.
-  SEC-F1B:
     name: crash-on-malformed-input
     typical_severity: MEDIUM
     status: active
@@ -654,31 +683,20 @@ entries:
     - Unguarded JSON Parsing in NpmAuditAdapter Causes Crash
     - Unhandled panics on attacker-influenced input crash the process (denial of service)
     - '`RoslynSecGuardAdapter.is_applicable()` raises an unhandled exception on a missing/inaccessible target directo'
+  SEC-F1B:
+    name: silent-exception-swallowing
+    typical_severity: LOW
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 15
+    cwe:
+    - CWE-390
+    - CWE-703
+    examples:
+    - Try, Except, Continue detected.
+    - Try, Except, Pass detected.
   SEC-F2A:
-    name: resource-leak-unclosed-handle
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 4
-    cwe:
-    - CWE-772
-    examples:
-    - Unclosed file handle in test code (json.dump write)
-    - Unclosed file handle in production code path
-    - Unclosed file handle in test code (json.load read)
-  SEC-F2B:
-    name: missing-concurrency-lock-on-shared-state
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-362
-    examples:
-    - Filing-ledger read-modify-write has no locking; concurrent/overlapping runs race and can double-file issues
-  SEC-F2C:
     name: unbounded-external-response-read
     typical_severity: MEDIUM
     status: active
@@ -691,122 +709,6 @@ entries:
     examples:
     - Unbounded Response Size in External API Lookup
   SEC-G1A:
-    name: unauthenticated-external-data-rebuilds-trust-mapping
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-345
-    - CWE-290
-    examples:
-    - 'recover-linkage rebuilds the fingerprint-to-issue trust mapping from unauthenticated issue body text, with
-      no '
-    - Ledger recovery trusts unauthenticated GitHub issue-body content to rebuild the fingerprint-to-issue linkage
-  SEC-G1B:
-    name: unstructured-llm-output-trusted-for-control-decision
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    cwe:
-    - CWE-345
-    examples:
-    - Advisor verdict ingestion trusts lenient, unauthenticated free-text LLM output that can silently suppress
-      conf
-  SEC-G1C:
-    name: single-verifier-unilateral-override-authority
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-863
-    examples:
-    - Evidence model gives a single advisor-LLM verdict unilateral, uncorroborated power to null out a tool-confirme
-  SEC-G1D:
-    name: indirect-prompt-injection-untrusted-content-in-agent-context
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 4
-    cwe:
-    - CWE-1427
-    examples:
-    - Reviewer agent prompt templates never tell the model that reviewed file content is untrusted, leaving the
-      pipe
-    - Advisor prompt embeds an unfiltered agent-authored finding JSON, opening an indirect-prompt-injection channel
-  SEC-G1E:
-    name: self-asserted-trust-metadata-spoofing
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 6
-    cwe:
-    - CWE-290
-    - CWE-345
-    examples:
-    - Self-asserted corroborated/corroborated_by fields bypass agent-trust sanitization and forge cross-panel verifi
-    - Self-asserted source/reinforced fields let an agent finding forge tool_confirmed evidence and bypass advisor
-      v
-    - Agent-authored `cvss`/`exploit_scenario` unconditionally overwrite a tool-verified finding's own metadata
-      duri
-    - Self-asserted `corroborated`/`corroborated_by` fields let an untrusted reviewer finding forge verification
-      sta
-    - Self-asserted _group field can misattribute a finding to the wrong review group when the source filename doesn
-  SEC-G2A:
-    name: security-control-fails-open-on-misconfiguration
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 3
-    cwe:
-    - CWE-636
-    - CWE-280
-    examples:
-    - Write-guard fails silently open (no deny, no warning) when the allowlist file is missing, malformed, or looked
-    - Tool-policy enforcement silently degrades to prompt-only ("advisory") when a host agent isn't registered,
-      whic
-  SEC-G2B:
-    name: findings-from-undeclared-source-merged-despite-flagging
-    typical_severity: MEDIUM
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-693
-    examples:
-    - Findings from an undeclared/unexpected findings file are flagged in meta.integrity but still merged into the
-      c
-  SEC-G2C:
-    name: incomplete-mediation-coverage-gap
-    typical_severity: HIGH
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 2
-    cwe:
-    - CWE-863
-    - CWE-284
-    examples:
-    - Write-guard covers only Write/Edit/NotebookEdit tool_name calls; Bash (the exact vector the hook's own project
-  SEC-H1A:
-    name: tool-citation-cwe-mismatch
-    typical_severity: LOW
-    status: active
-    provenance:
-    - corpus-4x
-    recurrence: 1
-    examples:
-    - Brakeman 'Dangerous Eval' maps to CWE-94 while the equivalent JS eval pattern maps to the more precise CWE-95
-  SEC-H1B:
     name: scanner-severity-silently-misreported
     typical_severity: MEDIUM
     status: active
@@ -822,19 +724,26 @@ entries:
       know
     - Shared severity normalizer silently defaults unmapped/un-rated severity strings to INFO across every dependenc
     - Brakeman's `confidence` field is reused as panopticon `severity`, silently downgrading low-confidence critical
-  SEC-H2A:
-    name: unpinned-scan-ruleset
+  SEC-G1B:
+    name: tool-citation-cwe-mismatch
     typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
     recurrence: 1
-    cwe:
-    - CWE-1357
     examples:
-    - Semgrep invocation uses `--config auto` without `--metrics=off`, introducing an unpinned remote ruleset and
-      te
-  SEC-H2B:
+    - Brakeman 'Dangerous Eval' maps to CWE-94 while the equivalent JS eval pattern maps to the more precise CWE-95
+  SEC-G2A:
+    name: security-surface-not-routed-to-review-lens
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 1
+    examples:
+    - scout.md defines secrets_config as a detectable surface but never routes it (or concurrency-surfaced files)
+      to the security panel/lens
+  SEC-G2B:
     name: silent-scan-coverage-loss
     typical_severity: MEDIUM
     status: active
@@ -852,16 +761,30 @@ entries:
       fin
     - bandit noise suppression drops B101 project-wide and all findings under any path that merely looks like a
       test
-  SEC-H3A:
-    name: missing-vulnerability-disclosure-policy
-    typical_severity: INFO
+  SEC-G2C:
+    name: unpinned-scan-ruleset
+    typical_severity: LOW
     status: active
     provenance:
     - corpus-4x
     recurrence: 1
+    cwe:
+    - CWE-1357
     examples:
-    - No SECURITY.md backing the vulnerability-disclosure instruction
-  SEC-H3B:
+    - Semgrep invocation uses `--config auto` without `--metrics=off`, introducing an unpinned remote ruleset and
+      te
+  SEC-G3A:
+    name: stale-security-ownership-rules
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus-4x
+    recurrence: 3
+    examples:
+    - CODEOWNERS mandatory-review rules for CI/security-tooling and reference data reference stale, non-existent
+      pat
+    - CODEOWNERS security-tooling and reference-data rules reference stale, non-existent paths
+  SEC-G3B:
     name: insufficient-negative-test-coverage-for-security-guard
     typical_severity: LOW
     status: active
@@ -879,7 +802,7 @@ entries:
     - Write-guard hook test suite never exercises non-string tool_input.file_path, hiding an uncaught TypeError
       that
     - meta.parts confinement test covers relative traversal only, not an absolute-path escape, for a check the sourc
-  SEC-H3C:
+  SEC-G3C:
     name: security-invariant-enforced-only-via-assert
     typical_severity: LOW
     status: active
@@ -891,14 +814,112 @@ entries:
     examples:
     - Security-ordering invariants in TestPanelPriority are checked with bare `assert`, which `python -O` silently
       s
-  SEC-H3D:
-    name: stale-security-ownership-rules
-    typical_severity: MEDIUM
+  SEC-G3D:
+    name: missing-vulnerability-disclosure-policy
+    typical_severity: INFO
     status: active
     provenance:
     - corpus-4x
-    recurrence: 3
+    recurrence: 1
     examples:
-    - CODEOWNERS mandatory-review rules for CI/security-tooling and reference data reference stale, non-existent
-      pat
-    - CODEOWNERS security-tooling and reference-data rules reference stale, non-existent paths
+    - No SECURITY.md backing the vulnerability-disclosure instruction
+  SEC-H1A:
+    name: session-fixation
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    - asvs-align
+    cwe:
+    - CWE-384
+  SEC-H1B:
+    name: missing-secure-cookie-flags
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - asvs-align
+    cwe:
+    - CWE-614
+  SEC-H1C:
+    name: missing-session-expiry
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    - asvs-align
+    cwe:
+    - CWE-613
+  SEC-H2A:
+    name: csrf-missing-token-protection
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    - owasp-align
+    cwe:
+    - CWE-352
+  SEC-H2B:
+    name: cors-misconfiguration
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    cwe:
+    - CWE-942
+  SEC-H2C:
+    name: open-redirect
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    cwe:
+    - CWE-601
+  SEC-H2D:
+    name: missing-frame-protection-clickjacking
+    typical_severity: LOW
+    status: active
+    provenance:
+    - prior-art
+    cwe:
+    - CWE-1021
+  SEC-H3A:
+    name: jwt-algorithm-confusion
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    cwe:
+    - CWE-347
+  SEC-H3B:
+    name: oauth-redirect-uri-validation-gap
+    typical_severity: HIGH
+    status: active
+    provenance:
+    - prior-art
+    cwe:
+    - CWE-601
+  SEC-H3C:
+    name: jwt-missing-expiry-or-audience-validation
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    cwe:
+    - CWE-613
+  SEC-H4A:
+    name: redos-catastrophic-backtracking
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    cwe:
+    - CWE-1333
+  SEC-H4B:
+    name: unbounded-request-size
+    typical_severity: MEDIUM
+    status: active
+    provenance:
+    - prior-art
+    cwe:
+    - CWE-400
