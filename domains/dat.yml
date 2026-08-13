@@ -399,7 +399,6 @@ entries:
     recurrence: 1
     examples:
     - ORM model metadata drifted from migration DDL with no reconciling migration
-    - Model column not updated after a migration tightened the constraint (tests diverge from prod)
     criteria: >-
       Qualifies when the code's schema view (ORM model metadata) drifts from
       the migration DDL with no reconciling migration — in EITHER direction:
