@@ -14,7 +14,7 @@ SEC-A2D
 - **Category** — a digit (`1`–`9`) within the area.
 - **Issue** — a letter naming a **distinct defect type** (not a severity slot). At seeding time, issue letters within a category are assigned in typical-severity order (a mnemonic aid only — the letter's meaning never changes even if severities are later re-graded).
 - **Versioned citation form** (outside a pinned context): `ocrdb-v0.1-SEC-A2D`.
-- **Domain fallback code**: `<DOM>-X0X` — used by consumers when no specific issue fits. Fallback usage is the catalog-gap signal that feeds curation; `X` is reserved in all three positions and never assigned to real entries.
+- **Domain fallback code**: `<DOM>-X0X` — used by consumers when no specific issue fits. It is a **reserved non-entry form** that deliberately sits OUTSIDE the entry grammar above (`0` is a reserved category digit, `X` a reserved area/issue letter), so a real entry code and the sentinel can never collide. Fallback usage is the catalog-gap signal that feeds curation; `X0X` is never assigned to a real entry. Every declared domain (active and incubating) has a fallback, e.g. `SEC-X0X`, `OPS-X0X`.
 
 ## Entry schema
 

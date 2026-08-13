@@ -253,6 +253,24 @@ class TestValidateCli(unittest.TestCase):
         self.assertIn("357 entries", proc.stdout)
 
 
+class TestFallbackGrammar(unittest.TestCase):
+    def test_fallback_recognizes_all_domains(self):
+        for dom in ("SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT",
+                    "OPS", "ACC", "LNG"):
+            self.assertTrue(validate.is_fallback_code(f"{dom}-X0X"), dom)
+
+    def test_fallback_rejects_non_sentinels(self):
+        for bad in ("SEC-A1A", "SEC-X1X", "SEC-X0A", "ZZZ-X0X", "SEC-X0X-EXTRA"):
+            self.assertFalse(validate.is_fallback_code(bad), bad)
+
+    def test_real_code_and_sentinel_are_disjoint(self):
+        # A real entry code never matches the fallback grammar, and X0X never
+        # matches the strict entry grammar.
+        self.assertTrue(validate.CODE_RE.match("SEC-A2D"))
+        self.assertIsNone(validate.CODE_RE.match("SEC-X0X"))
+        self.assertFalse(validate.is_fallback_code("SEC-A2D"))
+
+
 class TestCatalog(unittest.TestCase):
     def _bundle(self, tmp):
         with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):

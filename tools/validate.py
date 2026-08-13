@@ -28,6 +28,22 @@ except ImportError:  # build tooling fails loudly — no degraded builds
     sys.exit("tools/validate.py requires PyYAML (pip install pyyaml)")
 
 CODE_RE = re.compile(r"^([A-Z]{3})-([A-Z])([1-9])([A-Z])$")
+# Active domains carry real entries; incubating domains are declared in the
+# CHARTER but seed no codes yet. Both may appear in the <DOM>-X0X gap sentinel.
+ACTIVE_DOMAINS = {"SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT"}
+INCUBATING_DOMAINS = {"OPS", "ACC", "LNG"}
+ALL_DOMAINS = ACTIVE_DOMAINS | INCUBATING_DOMAINS
+# The gap sentinel <DOM>-X0X is a RESERVED NON-ENTRY form: `0` is a reserved
+# category digit and `X` a reserved area/issue letter, so it deliberately fails
+# the strict entry CODE_RE. It is recognized here, never validated as an entry.
+FALLBACK_RE = re.compile(r"^(%s)-X0X$" % "|".join(sorted(ALL_DOMAINS)))
+
+
+def is_fallback_code(code):
+    """True iff `code` is a recognized <DOM>-X0X gap sentinel."""
+    return bool(FALLBACK_RE.match(str(code)))
+
+
 CWE_RE = re.compile(r"^CWE-\d+$")
 AUTOMATED_BY_RE = re.compile(r"^[a-z0-9_-]+:[A-Za-z0-9._@/+-]+$")
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
