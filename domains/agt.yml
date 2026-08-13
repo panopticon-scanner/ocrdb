@@ -39,6 +39,18 @@ entries:
     examples:
     - Reviewer agent prompt templates never tell the model that reviewed file content is untrusted
     - Advisor prompt embeds an unfiltered agent-authored finding JSON, opening an indirect-prompt-injection channel
+    criteria: >-
+      Qualifies when indirect prompt injection is DEMONSTRATED — untrusted
+      content reaches the agent context AND provably attempts to steer the
+      agent (an injection payload / instruction-like content aimed at the
+      model), not merely present. The evidentiary bar is shown steering intent
+      or effect. Untrusted content that reaches the context WITHOUT
+      demonstrated steering is the exposure precursor AGT-A1B. Mitigations that
+      neutralise the steering — delimiter/where-escaping, quoting untrusted
+      content, output fencing — demote an instance toward AGT-A1B or justify a
+      consumer severity_modifier (`compensating-control-present`).
+    see_also:
+    - AGT-A1B
   AGT-A1B:
     name: untrusted-content-in-agent-context
     default_severity: MEDIUM
@@ -48,6 +60,13 @@ entries:
     - gap-review
     cwe:
     - CWE-1427
+    criteria: >-
+      Qualifies when untrusted content REACHES the agent's context (a
+      prompt-injection exposure/precursor) but no steering of the agent is
+      demonstrated. When steering is demonstrated (an actual injection attempt
+      or effect), that is AGT-A1A per its evidentiary bar.
+    see_also:
+    - AGT-A1A
   AGT-B1A:
     name: incomplete-mediation-coverage-gap
     default_severity: HIGH

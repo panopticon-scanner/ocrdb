@@ -518,5 +518,53 @@ class TestDispositionVocab(unittest.TestCase):
             {"control-present", "not-applicable", "correct-substrate"})
 
 
+class TestCriteriaConsolidation(unittest.TestCase):
+    CLUSTER_CODES = [
+        "ARC-D3A", "ARC-D3B", "QAL-C1C", "QAL-C1D", "QAL-C2B", "ARC-G1B",
+        "ARC-G2A", "ARC-G2B", "ARC-F1E",                       # cluster 1
+        "SEC-F1B", "ARC-F2G", "COD-B2C",                       # cluster 2
+        "TST-B2A", "TST-B1C", "TST-B1A", "TST-B1E", "TST-G3F", # cluster 3
+        "QAL-H1A", "ARC-A1C",                                  # cluster 4
+        "AGT-A1A", "AGT-A1B",                                  # cluster 5
+    ]
+    RECIPROCAL_PAIRS = [
+        ("ARC-D3A", "ARC-D3B"), ("QAL-C1C", "QAL-C1D"), ("QAL-C2B", "ARC-G1B"),
+        ("ARC-G2A", "ARC-G2B"),
+        ("SEC-F1B", "COD-B2C"), ("ARC-F2G", "COD-B2C"), ("SEC-F1B", "ARC-F2E"),
+        ("COD-B2C", "COD-B1A"),
+        ("TST-G3F", "TST-B2A"), ("TST-G3F", "TST-B1C"), ("TST-G3F", "TST-B1A"),
+        ("TST-G3F", "TST-B1E"), ("TST-B1C", "TST-B1E"),
+        ("QAL-H1A", "ARC-A1C"), ("AGT-A1A", "AGT-A1B"),
+    ]
+
+    def _entries(self):
+        import validate
+        docs = validate.load_domains(os.path.join(ROOT, "domains"))
+        return {c: e for d in docs.values() for c, e in (d.get("entries") or {}).items()}
+
+    def test_cluster_codes_have_criteria(self):
+        e = self._entries()
+        for c in self.CLUSTER_CODES:
+            self.assertTrue((e[c].get("criteria") or "").strip(), f"{c} needs criteria")
+
+    def test_reciprocal_see_also_pairs(self):
+        e = self._entries()
+        for a, b in self.RECIPROCAL_PAIRS:
+            self.assertIn(b, e[a].get("see_also") or [], f"{a} -> {b}")
+            self.assertIn(a, e[b].get("see_also") or [], f"{b} -> {a}")
+
+    def test_no_name_or_severity_drift_vs_release(self):
+        # criteria/see_also only — a cluster code's name+severity must equal the
+        # frozen 0.2.0 release (all cluster codes predate the 0.2.x tiers).
+        released = json.load(open(os.path.join(ROOT, "build", "ocrdb-0.2.0.json")))
+        rel = {c: v for dom in released["domains"].values()
+               for c, v in dom["entries"].items()}
+        e = self._entries()
+        for c in self.CLUSTER_CODES + ["ARC-A3A", "QAL-D1A", "COD-B1A", "ARC-F2E",
+                                       "TST-C2B", "TST-G1B"]:
+            self.assertEqual(e[c]["name"], rel[c]["name"], c)
+            self.assertEqual(e[c]["default_severity"], rel[c]["default_severity"], c)
+
+
 if __name__ == "__main__":
     unittest.main()

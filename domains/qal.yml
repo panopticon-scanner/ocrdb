@@ -274,6 +274,16 @@ entries:
     - CODEOWNERS 'CI / security tooling' and 'Schemas and reference data' sections list paths that no longer exist
       post-restructure
     - 'A module docstring''s Usage: line names the wrong path for the script it documents'
+    criteria: >-
+      Qualifies for a file-path reference (in a comment, doc, or config) that no
+      longer resolves but breaks nothing — inert staleness of a POINTER per the
+      routing principle. A stale VERSION number is the sibling QAL-C1D; a code/build
+      reference whose absence breaks is ARC-D3A; documentation asserting a structural
+      artifact or component the repository lacks (a doc-vs-repo structural gap, not a
+      drifted pointer) is ARC-D3B.
+    see_also:
+    - QAL-C1D
+    - ARC-D3B
   QAL-C1D:
     name: stale-version-number
     default_severity: LOW
@@ -286,6 +296,12 @@ entries:
     examples:
     - pyproject.toml [project].version reads 3.0.0 while the project's actual current version is 4.2.0
     - CHANGELOG.md's only versioned entry doesn't match DEVELOPMENT.md's description of the same version
+    criteria: >-
+      Qualifies for a version number in docs/metadata that no longer matches reality
+      but breaks nothing — inert staleness. A stale file-PATH reference is the sibling
+      QAL-C1C.
+    see_also:
+    - QAL-C1C
   QAL-C2A:
     name: schema-or-example-stricter-than-reality
     default_severity: MEDIUM
@@ -319,6 +335,12 @@ entries:
     examples:
     - SKILL.md's 'Notes' section makes a blanket self-write claim that directly contradicts the Codex and generic-host
       sections of the same file
+    criteria: >-
+      Qualifies when a SINGLE document contradicts itself (one part states X, another
+      not-X). When TWO independent sources of truth disagree (code vs. code, doc vs.
+      code), that is the architecture case ARC-G1B per the routing principle.
+    see_also:
+    - ARC-G1B
   QAL-C2C:
     name: cli-docs-out-of-sync-with-implementation
     default_severity: LOW
@@ -637,6 +659,14 @@ entries:
     character: opportunity
     examples:
     - function flagged for high cyclomatic complexity / too many responsibilities combined into one function
+    criteria: >-
+      Qualifies when a function is too long or too complex for a SINGLE
+      concern (high cyclomatic complexity, deep nesting) — a local complexity
+      problem whose fix simplifies in place. When the function mixes multiple
+      SEPARABLE concerns that belong in different units, that is the
+      structural ARC-A1C.
+    see_also:
+    - ARC-A1C
   QAL-H1B:
     name: excess-nesting-complexity
     default_severity: LOW

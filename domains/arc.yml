@@ -84,6 +84,14 @@ entries:
     - Monolithic main() violates single responsibility principle
     - Rendering function mixes data transformation and HTML generation
     - Complex directory-walking logic combines discovery, filtering, and pattern matching in one routine
+    criteria: >-
+      Qualifies when a function mixes SEPARABLE concerns that belong in
+      different units — a structural/boundary problem whose fix extracts
+      distinct responsibilities into separate modules or functions. When the
+      function has a SINGLE concern but is simply too long or complex, that is
+      QAL-H1A.
+    see_also:
+    - QAL-H1A
   ARC-A2A:
     name: circular-or-load-order-coupling
     default_severity: MEDIUM
@@ -606,6 +614,13 @@ entries:
     examples:
     - skill/reference/codex-runner-instructions.md is referenced by scope assignment but does not exist in the repository
     - skill/reference/findings-envelope-schema.json is referenced but does not exist
+    criteria: >-
+      Qualifies when a file the CODE or BUILD references is absent, so something
+      breaks (an import, include, or build step fails). Per the domain-routing
+      principle this is the breaking case; a file mentioned only in DOCUMENTATION that
+      is absent but breaks nothing is the inert ARC-D3B.
+    see_also:
+    - ARC-D3B
   ARC-D3B:
     name: documented-artifact-not-present-in-repo
     default_severity: MEDIUM
@@ -619,6 +634,18 @@ entries:
     - README's Repository layout table lists a docs/ directory that does not exist in this checkout
     - Documented security-disclosure process tells reporters to file a private advisory, but no SECURITY.md exists
       anywhere in the repo
+    criteria: >-
+      Qualifies when documentation asserts a structural artifact or component the
+      repository should contain — a directory, a process-backing file, an expected
+      deliverable — that is absent, so the documentation and the repository's actual
+      structure disagree (a doc-vs-repo disagreement → the architecture home per the
+      routing principle), even though nothing breaks at build or runtime. A file
+      referenced by CODE or BUILD whose absence breaks something is ARC-D3A; a
+      specific file-PATH pointer that merely drifted out of date (a link or reference
+      that no longer resolves) is the inert QAL-C1C.
+    see_also:
+    - ARC-D3A
+    - QAL-C1C
   ARC-E1A:
     name: hardcoded-absolute-path-in-source
     default_severity: HIGH
@@ -804,6 +831,11 @@ entries:
     - Enforcement for hostile-corpus reviews is SHOULD-level prose guidance in a doc, not an automated gate
     - Tool finding verdict handling is not architecturally enforced anywhere in the pipeline
     - The 'same flags is a requirement, not a convenience' contract in SKILL.md has no programmatic check
+    criteria: >-
+      Qualifies when a stated policy, rule, or verdict is documented or declared but
+      the code does not enforce it (an enforcement gap, not a stale reference).
+      Distinct from a security/enforcement CONTROL that degrades to permit on
+      misconfiguration (ARC-F2E), and from a merely stale doc (QAL-C1x / ARC-G2x).
   ARC-F2A:
     name: compensating-control-has-scope-blind-spot
     default_severity: HIGH
@@ -899,6 +931,7 @@ entries:
     - ARC-F2D
     - COD-B1A
     - SEC-G2B
+    - SEC-F1B
   ARC-F2G:
     name: overbroad-exception-handling-masks-errors
     default_severity: LOW
@@ -911,6 +944,14 @@ entries:
     examples:
     - Multiple functions catch bare Exception (merge-base lookup, fallback-branch resolution), swallowing intentional
       and accidental errors alike
+    criteria: >-
+      Qualifies when the CATCH is structurally overbroad — a bare or blanket
+      handler masking multiple distinct error types (an architecture smell about
+      the handler's shape), regardless of any single missing check. A single
+      unchecked auxiliary failure is COD-B2C; a security-relevant swallow is
+      SEC-F1B.
+    see_also:
+    - COD-B2C
   ARC-G1A:
     name: contributor-instructions-diverge-from-ci
     default_severity: MEDIUM
@@ -936,6 +977,13 @@ entries:
     - CHANGELOG.md and DEVELOPMENT.md's History section are two divergent, non-overlapping sources of truth for
       release history
     - Documented 'monthly' panopticon-tools rebuild cadence contradicts the actual daily/weekly CI schedule
+    criteria: >-
+      Qualifies when two independent sources of truth for the same fact diverge — the
+      same logic/constant re-expressed in two runtimes, or a doc that disagrees with
+      the code it documents (specs disagree → ARC). A single document contradicting
+      itself is QAL-C2B; a design doc merely superseded or drifted is ARC-G2A/ARC-G2B.
+    see_also:
+    - QAL-C2B
   ARC-G1C:
     name: reference-documentation-incomplete
     default_severity: LOW
@@ -961,6 +1009,13 @@ entries:
     examples:
     - The spec corpus retains superseded and internally-contradictory architecture documents with no deprecation
       or status marker distinguishing current from historical
+    criteria: >-
+      Qualifies when a design/spec document has been superseded but carries no
+      deprecation marker, so a reader can't tell it is obsolete. A design doc that has
+      drifted from the delivered scope (still 'current' but wrong) is the sibling
+      ARC-G2B.
+    see_also:
+    - ARC-G2B
   ARC-G2B:
     name: design-doc-drifts-from-delivered-scope
     default_severity: LOW
@@ -975,6 +1030,12 @@ entries:
       work
     - A planned Phase-5 integration reuses the static-scan fixture pattern for a corpus that fundamentally differs
       from static-scan fixtures
+    criteria: >-
+      Qualifies when a design/spec document still presented as current has drifted
+      from what was actually delivered. A document explicitly superseded but left
+      unmarked is the sibling ARC-G2A.
+    see_also:
+    - ARC-G2A
   ARC-G3B:
     name: tracked-file-violates-own-gitignore-rule
     default_severity: LOW

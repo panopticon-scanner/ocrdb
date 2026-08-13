@@ -240,6 +240,14 @@ entries:
     examples:
     - The only regression test for the SEC-101 HTML-injection fix in _render_provenance checks cosmetic normalization
       instead of the injection-blocking property itself
+    criteria: >-
+      Qualifies when the test asserts the WRONG property — it stays green
+      while the behaviour it purports to protect is unverified (e.g.
+      bounds-only assertions on a value whose computation is broken).
+      Distinct from a presence-only assertion (TST-B1C) and a tautology
+      (TST-B2A).
+    see_also:
+    - TST-G3F
   TST-B1B:
     name: substring-instead-of-structural-assertion
     default_severity: MEDIUM
@@ -261,6 +269,14 @@ entries:
     - 'Weak assertion: only checks if findings list is truthy'
     - 'Minimal asset validation coverage: test_assets.py only checks for string presence, not structure or completeness'
     - Ambiguous assertTrue usage with confusing assertion semantics
+    criteria: >-
+      Qualifies when the test asserts a value is present or truthy but never
+      checks its CONTENT (`assertTrue(result)` without asserting what result
+      is). Distinct from asserting the WRONG property (TST-B1A) and from
+      making NO positive assertion at all (TST-B1E).
+    see_also:
+    - TST-B1E
+    - TST-G3F
   TST-B1D:
     name: unverified-critical-mock-argument
     default_severity: MEDIUM
@@ -282,6 +298,13 @@ entries:
     - Security-critical test lacks positive assertion of expected behavior (verifies cwd != target but never asserts
       what cwd IS)
     - test_unresolvable_recurring_finding_is_omitted lacks positive assertion
+    criteria: >-
+      Qualifies when the test exercises code but makes NO positive assertion
+      about the outcome (it only runs the code / asserts it did not raise). A
+      test that asserts presence but not content is TST-B1C.
+    see_also:
+    - TST-B1C
+    - TST-G3F
   TST-B1F:
     name: universal-invariant-only-example-tested
     default_severity: LOW
@@ -297,6 +320,14 @@ entries:
     recurrence: 1
     examples:
     - 'Pointless assertion: self.assertTrue(True) always passes, providing no actual test coverage'
+    criteria: >-
+      Qualifies when the assertion is tautological and cannot fail —
+      `assert(1==1)`, `!(x != x)`, comparing a value to itself — so it
+      verifies nothing structurally. The strongest weak-assertion form; when
+      a test asserts something real but insufficient, use the specific
+      TST-B1x codes; TST-G3F is the residual.
+    see_also:
+    - TST-G3F
   TST-B2B:
     name: environment-branch-vacuous-test
     default_severity: MEDIUM
@@ -404,7 +435,9 @@ entries:
       class — is reimplemented near-identically across multiple test methods or
       cases instead of shared; the duplicated unit carries behavior. Inert fixture
       scaffolding (a fixture-root/path constant or setup boilerplate) duplicated
-      across test FILES is TST-G1B.
+      across test FILES is TST-G1B. (Note: a duplicated behavioural helper can be
+      more consequential than inert scaffolding despite this code's lower default
+      severity — grade the instance on consequence.)
     see_also:
     - TST-G1B
   TST-C3A:
@@ -893,3 +926,14 @@ entries:
       structure
     - Dockerfile 'bundles core tools' tests only assert case-insensitive substring presence, not that the tools
       actually run
+    criteria: >-
+      The residual home for a weak assertion that verifies little of the real
+      behaviour. Grade by CONSEQUENCE, and cite the specific member first
+      when it fits — tautology TST-B2A, presence-only TST-B1C,
+      wrong-property TST-B1A, no-assertion TST-B1E; use G3F only when none
+      of those applies.
+    see_also:
+    - TST-B2A
+    - TST-B1C
+    - TST-B1A
+    - TST-B1E

@@ -111,6 +111,7 @@ entries:
     see_also:
     - ARC-F2D
     - ARC-F2E
+    - COD-B2C
   COD-B1C:
     name: overly-broad-permission-scope-in-shared-guard
     default_severity: MEDIUM
@@ -156,6 +157,17 @@ entries:
     examples:
     - load_report has no error handling around meta.parts continuation files, and its confinement check diverges
       from the primary path
+    criteria: >-
+      The default home for a swallowed or missing error whose consequence is a
+      WRONG or MISSING RESULT — an auxiliary load/call whose failure is not
+      checked, so the program proceeds on bad or absent data. When the swallowed
+      failure is specifically security-relevant it is SEC-F1B; when the defect is
+      an OVERBROAD catch clause masking multiple error types it is ARC-F2G; a
+      config-loader that fails open is COD-B1A.
+    see_also:
+    - SEC-F1B
+    - ARC-F2G
+    - COD-B1A
   COD-B2D:
     name: result-not-revalidated-after-transform
     default_severity: LOW
