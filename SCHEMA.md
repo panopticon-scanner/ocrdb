@@ -76,6 +76,8 @@ The same underlying pattern (duplication, dead code, missing abstraction) is cla
 
 Emitting skills default to `character: opportunity` unless explicitly running in a defect-hunting mode. Where sources disagree (e.g. dead code: YAGNI-defect vs. refactor-opportunity), the entry's `notes` records the contest and ratification picks the default.
 
+`character` is an **entry-level** default (the finding-*type*'s nature); it is distinct from a finding's **instance-level** `disposition` (see *Finding disposition vocabulary*), which a consumer sets per finding. A `character: defect` type can still have a `disposition: control-present` instance.
+
 ## Severity scale
 
 `INFO < LOW < MEDIUM < HIGH < CRITICAL`. `default_severity` is the *typical* grade for the defect type — never a per-instance verdict. Consumers may override per instance under their own disclosed discipline (panopticon: `severity_override {from, to, reason}`, advisor-checked). Trend lines anchor to the catalog default so overrides never bend history.
@@ -102,3 +104,32 @@ Per CWE discipline:
 - `owasp-align` / `asvs-align` / `openssf-align` / `cwe-align` — crosswalk alignment to a named open standard (OWASP Top 10, OWASP ASVS, OpenSSF, CWE respectively). `cwe-align` is reserved for future crosswalk-driven additions.
 
 No other values are permitted. This is a pre-1.0 breaking change from the 0.1 vocabulary, which leaked vendor names (`coderabbit`, `copilot`), internal run/skill identifiers (`pr945`, `skills-class`, `simplify-skill`, `code-simplifier-agent`, `receiving-code-review-skill`), version-qualified corpus tags (`corpus-4x`, `corpus-2.3.0`), and source-specific gap-review tags (`deep-gap-review`, `gemini-gap-review`) into the public catalog; all of these now collapse to the neutral tiers above.
+
+## Severity-modifier vocabulary
+
+`severity_modifier` is a **consumer finding-field**, not an entry field: OCRDb defines the controlled reasons; a consumer records them per instance under its own disclosed discipline (panopticon: `severity_override {from, to, reason}`, advisor-checked). A modifier records the contextual reason an instance's grade departs from the entry's `default_severity`; it never mutates the catalog default, and trend lines still anchor to that default. The controlled set:
+
+- `test-or-fixture-scope` — the finding is in test, fixture, or example code, not a production path.
+- `operator-controlled-input` — the untrusted-input assumption does not hold; the input is operator-, CLI-, env-, or first-party-controlled, not attacker-reachable.
+- `local-or-offline-context` — the deployment is LAN, desktop, single-user, or offline, not internet-facing.
+- `regenerable-or-recoverable-data` — the affected data or artifact is regenerable (a cache, a derived file), so loss is recoverable.
+- `dev-or-ci-tooling` — the artifact is development or CI tooling, not a shipped release artifact.
+- `intentionally-public-value` — the value flagged as secret is public by design (an analytics ingest key, an OAuth public client id).
+- `documented-accepted-risk` — the hazard is a documented, deliberate trade-off (an acknowledged benign race, a ruled architectural decision).
+- `compensating-control-present` — a compensating control reduces the instance's impact (see disposition `control-present`).
+
+## Finding disposition vocabulary
+
+`disposition` is a **consumer finding-field**, not an entry field: it records a specific finding's state relative to the hazard, so a hardened codebase can be credited rather than read as mere absence of findings. It is set per instance by the consumer. The controlled set:
+
+- `defect` — the hazard is present and undefended; the default a finding records.
+- `control-present` — the hazard's code path exists but a compensating or mitigating control is in place (out-of-band integrity, SameSite, sandbox/attestation, fencing tokens, a protocol-mandated constraint).
+- `not-applicable` — the hazard cannot arise here: a framework default handles it, the architecture precludes it, or the domain does not apply to the target (e.g. `AGT` on a non-agentic codebase).
+- `correct-substrate` — the code demonstrates the correct handling of a hazard its code-family is prone to — a positive finding (a "bounded substrate", e.g. a money path that never uses float).
+
+## Instance-disposition rules
+
+- **Both vocabularies are consumer-applied.** OCRDb defines the terms and their meaning; it does not prescribe *when* a consumer assigns them (that is the consumer's disclosed, advisor-checked discipline), and it records no instance state.
+- **`character` vs `disposition`.** `character` is **entry-level** — the finding-type's default nature (`defect | opportunity`). `disposition` is **instance-level** — a consumer's judgment about a specific finding. They are orthogonal: a `character: defect` type can have a `disposition: control-present` instance.
+- **Neither changes `default_severity` or trends.** Severity is a property of the type; a `severity_modifier`-justified override is the consumer's per-instance verdict; trends anchor to the catalog default.
+- **`control-present`, `not-applicable`, and `correct-substrate` are not gate-eligible defects** — they are informational or positive; consumers route them out of the fix queue.
