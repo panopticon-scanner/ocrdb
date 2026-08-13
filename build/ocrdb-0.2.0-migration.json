@@ -1,0 +1,202 @@
+{
+  "from_version": "0.1.0",
+  "mappings": [
+    {
+      "disposition": "folded",
+      "note": "_depth_gte example = dup of TST-C3C \u2192 dropped; fold CWE-710; recurrence max(2,2)=2",
+      "old_code": "ARC-A2E",
+      "survivors": [
+        "TST-C3C"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "eslint retired-adapter example = dup of QAL-E2B ex1 \u2192 dropped; CWE-561 already present; recurrence max(4,2)=4",
+      "old_code": "ARC-A4B",
+      "survivors": [
+        "QAL-E2B"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "pyproject version-drift example = dup of QAL-C1D ex1 \u2192 dropped; fold CWE-1059 (QAL-C1D documentation-category); recurrence max(5,5)=5",
+      "old_code": "ARC-B1B",
+      "survivors": [
+        "QAL-C1D"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "CODEOWNERS example = dup \u2192 dropped; fold CWE-1059 (QAL-C1C is documentation-category, fits); recurrence max(7,3)=7 (no change)",
+      "old_code": "ARC-D3C",
+      "survivors": [
+        "QAL-C1C"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "\"omits 8 of 34 CWEs, silently dropping OWASP derivation\" example = distinct impact framing \u2192 folded; CWE-1059 OMITTED (correctness survivor, noted); recurrence max(2,3)=3 (bumped)",
+      "old_code": "ARC-E3D",
+      "survivors": [
+        "COD-C3B"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "forbidden-field-mirroring example = distinct framing \u2192 folded; fold CWE-807; recurrence 6+3=9 (audit note: fold-in / sum, migration miss)",
+      "old_code": "ARC-F2F",
+      "survivors": [
+        "AGT-C1A"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "semgrep.sarif example = dup of TST-E1B \u2192 dropped; fold CWE-561; recurrence max(6,2)=6",
+      "old_code": "ARC-G3A",
+      "survivors": [
+        "TST-E1B"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "filesystem-TOCTOU example \u2192 folded (COD-F1B had none); CWE-367 already present; recurrence 2 added (COD-F1B had none); provenance += corpus-4x (folding a corpus incident; mirrors COD-F1C pattern)",
+      "old_code": "COD-A1B",
+      "survivors": [
+        "COD-F1B"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "NotebookEdit example = dup of ARC-F2C ex1 \u2192 dropped; no CWE; recurrence max(4,2)=4",
+      "old_code": "COD-B1B",
+      "survivors": [
+        "ARC-F2C"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "example = same two missing files, already in ARC-D3A \u2192 dropped (dup); no CWE; recurrence max(3,1)=3 (no change)",
+      "old_code": "COD-D2A",
+      "survivors": [
+        "ARC-D3A"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "ex1 (_depth_gte) = dup of TST-C3C \u2192 dropped; ex2 (CWE-uppercasing test-name) = TST-C3B hazard, already represented \u2192 dropped; no CWE; recurrence NOT folded (splits across two survivors)",
+      "old_code": "QAL-A1A",
+      "survivors": [
+        "TST-C3C",
+        "TST-C3B"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "REPO_ROOT example = dup of ARC-E1A \u2192 dropped; no CWE; recurrence max(2,2)=2",
+      "old_code": "QAL-A2A",
+      "survivors": [
+        "ARC-E1A"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "sys.path boilerplate example = dup \u2192 dropped; fold CWE-1041 (duplication angle); recurrence max(4,5)=5 (bumped)",
+      "old_code": "QAL-D2A",
+      "survivors": [
+        "TST-G1A"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "FIXTURE_ROOT example = dup of TST-G1B ex1 \u2192 dropped; CWE-1041 already present; recurrence max(4,4)=4",
+      "old_code": "QAL-D2B",
+      "survivors": [
+        "TST-G1B"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "stray test_rust_cs file example = dup of TST-C3D \u2192 dropped; fold CWE-561 + CWE-1041 (duplicate-file angle); recurrence max(2,3)=3 (bumped)",
+      "old_code": "QAL-E2A",
+      "survivors": [
+        "TST-C3D"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "synthesize.py monolith example = same file as TST-C2A (diff snapshot) \u2192 dropped (dup); no CWE; recurrence max(2,1)=2",
+      "old_code": "QAL-F2C",
+      "survivors": [
+        "TST-C2A"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "ex1 (nested-4-level mock.patch idiom) = distinct \u2192 folded into TST-C4B; ex2 (bare-assert / TestPanelPriority) = TST-G2E hazard, already in TST-G2E \u2192 dropped; fold CWE-1099; recurrence NOT folded (splits: mocking\u2192C4B, assertion\u2192G2E)",
+      "old_code": "QAL-F3A",
+      "survivors": [
+        "TST-C4B"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "identical example \u2192 dropped (dup); fold CWE-223 (SEC-C4B carries CWE-778+CWE-223); recurrence: SEC-C4A none, keep 2",
+      "old_code": "SEC-C4A",
+      "survivors": [
+        "SEC-C4B"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "ex2 (pip-audit hardcodes MEDIUM) \u2192 folded into COD-C1B; ex1 (osv-scanner downgrade-to-INFO) + ex3 (shared normalizer defaults-to-INFO) \u2192 folded into COD-C1A; ex4 (Brakeman) = dup of COD-C1A \u2192 dropped; CWE-1059 OMITTED (correctness survivors, doc-CWE does not fit \u2014 noted); recurrence NOT folded (splits across C1A/C1B)",
+      "old_code": "SEC-G1A",
+      "survivors": [
+        "COD-C1A",
+        "COD-C1B"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "CODEOWNERS stale-path examples = dup of QAL-C1C \u2192 dropped; no CWE; recurrence max(7,3)=7 (no change)",
+      "old_code": "SEC-G3A",
+      "survivors": [
+        "QAL-C1C"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "3-unrelated-classes example = distinct instance \u2192 folded into TST-C2A; fold CWE-710; recurrence max(2,2)=2",
+      "old_code": "TST-G1D",
+      "survivors": [
+        "TST-C2A"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "test_status_is_in_schema_enum cwd-path example = dup of TST-D2A ex3 \u2192 dropped; fold CWE-710; recurrence max(5,2)=5",
+      "old_code": "TST-G2B",
+      "survivors": [
+        "TST-D2A"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "subprocess-mocking example = dup of TST-C4B \u2192 dropped; fold CWE-710; recurrence max(3,2)=3",
+      "old_code": "TST-G2C",
+      "survivors": [
+        "TST-C4B"
+      ]
+    },
+    {
+      "disposition": "folded",
+      "note": "verbatim example = dup of TST-C1A \u2192 dropped; no CWE; recurrence max(7,2)=7",
+      "old_code": "TST-G3C",
+      "survivors": [
+        "TST-C1A"
+      ]
+    }
+  ],
+  "mechanism": "clean-rewrite",
+  "schema_version": "1.0",
+  "to_version": "0.2.0"
+}

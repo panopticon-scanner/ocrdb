@@ -326,5 +326,48 @@ class TestCatalog(unittest.TestCase):
                 self.assertNotIn(external, html.lower().replace("initial-scale", ""))
 
 
+class TestMigrationMap(unittest.TestCase):
+    def _codes(self, name):
+        b = json.load(open(os.path.join(ROOT, "build", name)))
+        return {c for dom in b["domains"].values() for c in dom["entries"]}
+
+    def _build(self):
+        import build_migration
+        return build_migration.build_migration(
+            os.path.join(ROOT, "scratch", "0.2-migration.md"),
+            os.path.join(ROOT, "build", "ocrdb-0.1.0.json"),
+            os.path.join(ROOT, "build", "ocrdb-0.2.0.json"),
+            "0.1.0", "0.2.0")
+
+    def test_24_mappings_header_and_crosscheck(self):
+        m = self._build()
+        self.assertEqual(m["schema_version"], "1.0")
+        self.assertEqual(m["from_version"], "0.1.0")
+        self.assertEqual(m["to_version"], "0.2.0")
+        self.assertEqual(len(m["mappings"]), 24)
+        old, new = self._codes("ocrdb-0.1.0.json"), self._codes("ocrdb-0.2.0.json")
+        self.assertEqual({mp["old_code"] for mp in m["mappings"]}, old - new)
+        for mp in m["mappings"]:
+            self.assertNotIn(mp["old_code"], new)
+            self.assertEqual(mp["disposition"],
+                             "folded" if mp["survivors"] else "removed")
+            for s in mp["survivors"]:
+                self.assertIn(s, new)  # every survivor is a real 0.2.0 code
+
+    def test_multi_survivor_rows_captured(self):
+        m = {mp["old_code"]: mp["survivors"] for mp in self._build()["mappings"]}
+        self.assertEqual(sorted(m["SEC-G1A"]), ["COD-C1A", "COD-C1B"])
+        self.assertEqual(sorted(m["QAL-A1A"]), ["TST-C3B", "TST-C3C"])
+
+    def test_see_also_annotation_not_captured_as_survivor(self):
+        m = {mp["old_code"]: mp["survivors"] for mp in self._build()["mappings"]}
+        self.assertEqual(m["QAL-F3A"], ["TST-C4B"])
+
+    def test_committed_artifact_matches_generator(self):
+        committed = json.load(
+            open(os.path.join(ROOT, "build", "ocrdb-0.2.0-migration.json")))
+        self.assertEqual(committed, self._build())
+
+
 if __name__ == "__main__":
     unittest.main()
