@@ -4,6 +4,10 @@ All notable changes to the OCRDb taxonomy. Codes are held stable per release but
 
 ## Unreleased
 
+## [0.2.1] - 2026-08-13
+
+Accumulated 0.2.x refinement since 0.2.0: catalog self-consistency (Tier 0), DAT durable-file expansion (Tier 2), consumer-side disposition vocabularies (Tier 3), and boundary/criteria consolidation. Source grows 357→365 codes (8 additions, all in the Tier 2 DAT expansion); no renames, no severity re-grades. The 0.2.0 release bundle stays the frozen stability anchor.
+
 ### Changed
 - Corrected the domain-file banners from the false "0.1 (RATIFIED; codes final at the 0.1 tag)" to an accurate incubating header.
 - `SCHEMA.md` domain seed now lists all seven active domains (added `AGT`, `DAT`) and the incubating `OPS`/`ACC`/`LNG`.
