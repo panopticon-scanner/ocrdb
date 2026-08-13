@@ -635,11 +635,17 @@ entries:
     - Documented security-disclosure process tells reporters to file a private advisory, but no SECURITY.md exists
       anywhere in the repo
     criteria: >-
-      Qualifies when an artifact a DOCUMENT references is not present in the repo, but
-      nothing breaks at build or runtime (inert). If the missing file is referenced by
-      code/build and breaks something, that is ARC-D3A.
+      Qualifies when documentation asserts a structural artifact or component the
+      repository should contain — a directory, a process-backing file, an expected
+      deliverable — that is absent, so the documentation and the repository's actual
+      structure disagree (a doc-vs-repo disagreement → the architecture home per the
+      routing principle), even though nothing breaks at build or runtime. A file
+      referenced by CODE or BUILD whose absence breaks something is ARC-D3A; a
+      specific file-PATH pointer that merely drifted out of date (a link or reference
+      that no longer resolves) is the inert QAL-C1C.
     see_also:
     - ARC-D3A
+    - QAL-C1C
   ARC-E1A:
     name: hardcoded-absolute-path-in-source
     default_severity: HIGH

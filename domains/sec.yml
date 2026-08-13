@@ -731,8 +731,8 @@ entries:
     - CWE-390
     - CWE-703
     examples:
-    - Try, Except, Continue detected.
-    - Try, Except, Pass detected.
+    - An auth or permission check's verification error is caught and swallowed, so a request that should be rejected proceeds authorized
+    - A signature or token-validation exception is silently discarded, so an invalid signature is treated as valid
     criteria: >-
       Qualifies ONLY when the swallowed exception hides a SECURITY-relevant failure
       (an auth/permission/verification error silently dropped). A generic swallow

@@ -14,6 +14,7 @@ All notable changes to the OCRDb taxonomy. Codes are held stable per release but
 - Sharpened the assertion-efficacy family (TST-B2A/B1C/B1A/B1E, TST-G3F as residual) with grade-by-consequence criteria + reciprocal see_also.
 - Sharpened the duplication/complexity boundary — ARC-A3A vs QAL-D1A (new-module-edge rule) and ARC-A1C (separable concerns) vs QAL-H1A (single-concern complexity) with reciprocal see_also.
 - Added the AGT-A1A vs AGT-A1B tiebreaker — demonstrated-injection vs exposure, with an evidentiary bar and mitigation handling — plus reciprocal see_also.
+- Sharpened the doc-vs-code drift boundary: reframed ARC-D3B as a documentation-vs-repository structural disagreement (routing note's ARC bullet extended to doc-vs-repo-reality; inert-staleness clarified as pointer drift) with a reciprocal ARC-D3B↔QAL-C1C cross-reference, and aligned SEC-F1B's examples with its security-relevant-only criteria.
 
 ### Added
 - Two consumer-side finding-field vocabularies in SCHEMA + `tools/validate.py` — `severity_modifier` reasons (×8) and `disposition` (×4: defect/control-present/not-applicable/correct-substrate) — so instance-level severity context and the present-but-defended / correct-substrate cases have shared terms. Not enforced on catalog entries (consumer fields); clarified that `character` is entry-level and `disposition` instance-level.

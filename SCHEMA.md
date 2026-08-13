@@ -139,7 +139,7 @@ No other values are permitted. This is a pre-1.0 breaking change from the 0.1 vo
 When one observation could be cited under more than one domain, route by *what the finding is about*, not by its phrasing:
 
 - **An instance that breaks a contract or produces a wrong result → the correctness/behavioral home** (COD, or the domain that owns the specific hazard).
-- **Two specifications that disagree with each other** — code vs. code, doc vs. doc, schema vs. producer — **→ the architecture home (ARC).**
-- **Inert staleness** — a reference, path, version, or artifact out of date but breaking nothing — **→ the quality/maintainability home (QAL).**
+- **Two specifications that disagree with each other** — code vs. code, doc vs. doc, schema vs. producer, or documentation vs. the repository's actual structure — **→ the architecture home (ARC).**
+- **Inert staleness** — a reference, path, or version out of date but breaking nothing (a drifted pointer, not a structural absence) — **→ the quality/maintainability home (QAL).**
 
 An entry's `criteria` may reference this principle to disambiguate a near-neighbour in another domain.

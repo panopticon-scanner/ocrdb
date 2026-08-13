@@ -275,12 +275,15 @@ entries:
       post-restructure
     - 'A module docstring''s Usage: line names the wrong path for the script it documents'
     criteria: >-
-      Qualifies for a file-path reference (in a comment, doc, or config) that no longer
-      resolves but breaks nothing — inert staleness per the routing principle. A stale
-      VERSION number is the sibling QAL-C1D; a code/build reference that breaks is
-      ARC-D3A.
+      Qualifies for a file-path reference (in a comment, doc, or config) that no
+      longer resolves but breaks nothing — inert staleness of a POINTER per the
+      routing principle. A stale VERSION number is the sibling QAL-C1D; a code/build
+      reference whose absence breaks is ARC-D3A; documentation asserting a structural
+      artifact or component the repository lacks (a doc-vs-repo structural gap, not a
+      drifted pointer) is ARC-D3B.
     see_also:
     - QAL-C1D
+    - ARC-D3B
   QAL-C1D:
     name: stale-version-number
     default_severity: LOW
