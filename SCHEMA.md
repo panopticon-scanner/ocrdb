@@ -133,3 +133,13 @@ No other values are permitted. This is a pre-1.0 breaking change from the 0.1 vo
 - **`character` vs `disposition`.** `character` is **entry-level** — the finding-type's default nature (`defect | opportunity`). `disposition` is **instance-level** — a consumer's judgment about a specific finding. They are orthogonal: a `character: defect` type can have a `disposition: control-present` instance.
 - **Neither changes `default_severity` or trends.** Severity is a property of the type; a `severity_modifier`-justified override is the consumer's per-instance verdict; trends anchor to the catalog default.
 - **`control-present`, `not-applicable`, and `correct-substrate` are not gate-eligible defects** — they are informational or positive; consumers route them out of the fix queue.
+
+## Domain routing for overlapping hazards
+
+When one observation could be cited under more than one domain, route by *what the finding is about*, not by its phrasing:
+
+- **An instance that breaks a contract or produces a wrong result → the correctness/behavioral home** (COD, or the domain that owns the specific hazard).
+- **Two specifications that disagree with each other** — code vs. code, doc vs. doc, schema vs. producer — **→ the architecture home (ARC).**
+- **Inert staleness** — a reference, path, version, or artifact out of date but breaking nothing — **→ the quality/maintainability home (QAL).**
+
+An entry's `criteria` may reference this principle to disambiguate a near-neighbour in another domain.
