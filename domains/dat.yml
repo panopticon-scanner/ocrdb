@@ -240,6 +240,16 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 2
+    examples:
+    - Composite index absent for status-polling query on hot execution table
+    - Append-only table lacks index on ts/event columns used by ORDER BY + WHERE
+    criteria: >-
+      Qualifies when a frequently-run read path (status polling, an append-only
+      table's ORDER BY/WHERE reads) has no supporting index, forcing sequential
+      scans. 'Hot' means called on a request/execution hot path or over an
+      only-grows table — a rare admin call does not qualify.
   DAT-C1B:
     name: n-plus-one-query
     default_severity: MEDIUM
@@ -247,6 +257,16 @@ entries:
     provenance:
     - prior-art
     - corpus
+    recurrence: 6
+    examples:
+    - Collection count via len(lazy_relationship) instead of SQL COUNT
+    - Per-row .get(pk=...) in serializer loop, no prefetch, on hot endpoint
+    - Per-row update_attribute in find_each instead of update_all
+    criteria: >-
+      Qualifies for per-row queries issued in a loop instead of a set-based
+      query — a count via len(lazy_relationship) instead of SQL COUNT, per-row
+      .get()/update in a serializer or merge loop, a constant lookup re-queried
+      per row.
     notes: moved from QAL-G1D at ratification
   DAT-C1C:
     name: unbounded-result-set
@@ -255,8 +275,22 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 6
     cwe:
     - CWE-770
+    examples:
+    - Query has no LIMIT/pagination; result grows unbounded with entity history
+    - List endpoint returns full rows (incl heavy text column) with no pagination
+    - .all() materializes entire table, filtered/sliced in application code
+    criteria: >-
+      Qualifies when a query has no LIMIT/pagination and its result grows
+      unbounded with data (full list endpoints, .all() materializing a whole
+      table, history that grows per event). Draw the boundary vs QAL-G2A: C1C is
+      a DB query/result-set (the fix is SQL LIMIT/pagination); QAL-G2A is
+      in-memory collection growth. Deliberate, bounded full-table
+      exports/projections do NOT qualify. Non-RDBMS store scans (Redis
+      keyspace, etcd prefix) that pull everything into memory DO qualify.
   DAT-C1D:
     name: select-star-in-production-path
     default_severity: LOW
@@ -264,6 +298,16 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 2
+    examples:
+    - SELECT * across multiple production read helpers, pulls wide/body columns
+    - Join selects entire JSON blob column instead of needed fields (TODO acknowledged)
+    criteria: >-
+      Qualifies for SELECT * (or fetching a whole wide/blob column) on a
+      production read path where only some fields are needed. Often co-occurs
+      with DAT-C1C; cite C1D when over-fetching columns is the defect, C1C when
+      the unbounded row count is.
   DAT-D1A:
     name: isolation-level-mismatch
     default_severity: HIGH
