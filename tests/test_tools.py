@@ -490,5 +490,33 @@ class TestPriorArtBudget(unittest.TestCase):
         self.assertFalse(any("DAT" in i for i in issues), issues)
 
 
+class TestDispositionVocab(unittest.TestCase):
+    def _schema_terms(self, header):
+        import re
+        text = open(os.path.join(ROOT, "SCHEMA.md"), encoding="utf-8").read()
+        start = text.index(header)
+        rest = text[start + len(header):]
+        m = re.search(r"\n## ", rest)          # slice to the next h2 section
+        section = rest[:m.start()] if m else rest
+        return set(re.findall(r"^- `([a-z][a-z-]*)`", section, re.M))
+
+    def test_severity_modifier_vocab_matches_schema(self):
+        self.assertEqual(
+            validate.SEVERITY_MODIFIER_VOCAB,
+            self._schema_terms("## Severity-modifier vocabulary"))
+        self.assertEqual(len(validate.SEVERITY_MODIFIER_VOCAB), 8)
+
+    def test_disposition_vocab_matches_schema(self):
+        self.assertEqual(
+            validate.DISPOSITION_VOCAB,
+            self._schema_terms("## Finding disposition vocabulary"))
+
+    def test_disposition_default_and_nondefect_set(self):
+        self.assertIn("defect", validate.DISPOSITION_VOCAB)
+        self.assertEqual(
+            validate.DISPOSITION_VOCAB - {"defect"},
+            {"control-present", "not-applicable", "correct-substrate"})
+
+
 if __name__ == "__main__":
     unittest.main()

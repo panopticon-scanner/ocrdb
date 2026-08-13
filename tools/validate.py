@@ -58,6 +58,17 @@ CHARACTERS = {"defect", "opportunity"}
 PROVENANCE_VOCAB = {"corpus", "tool-observed", "gap-review", "prior-art",
                     "owasp-align", "asvs-align", "openssf-align", "cwe-align"}
 
+# Consumer-side finding-field vocabularies (Tier 3). These describe a per-INSTANCE
+# judgment a consumer records under its own disclosed discipline (e.g. panopticon's
+# advisor-checked severity_override / finding disposition). They are DELIBERATELY
+# NOT validated against domains/ entries — OCRDb defines the terms, not their use.
+SEVERITY_MODIFIER_VOCAB = {
+    "test-or-fixture-scope", "operator-controlled-input", "local-or-offline-context",
+    "regenerable-or-recoverable-data", "dev-or-ci-tooling", "intentionally-public-value",
+    "documented-accepted-risk", "compensating-control-present"}
+DISPOSITION_VOCAB = {
+    "defect", "control-present", "not-applicable", "correct-substrate"}
+
 
 def load_domains(domains_dir):
     docs = {}
