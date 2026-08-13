@@ -23,7 +23,7 @@ class TestValidateRealDraft(unittest.TestCase):
     def test_draft_has_no_schema_errors(self):
         errors, warnings, codes = validate.validate_schema(_real_docs())
         self.assertEqual(errors, [])
-        self.assertEqual(len(codes), 357)
+        self.assertEqual(len(codes), 365)
 
     def test_single_homing_ratified_no_cross_domain_duplicates(self):
         # Ratified 0.1: single-homing (big rock #0) resolved every cross-domain
@@ -194,7 +194,7 @@ class TestBundleBuild(unittest.TestCase):
                     self.assertEqual(f1.read(), f2.read(), fn)
             bundle = json.load(open(os.path.join(out1, "ocrdb-0.0.0-test.json")))
             n = sum(len(d["entries"]) for d in bundle["domains"].values())
-            self.assertEqual(n, 357)
+            self.assertEqual(n, 365)
             self.assertEqual(bundle["license"], "CC BY-SA 4.0")
 
     def test_sarif_taxa_match_entries_and_levels(self):
@@ -202,7 +202,7 @@ class TestBundleBuild(unittest.TestCase):
         bundle = build_bundle.build_bundle(docs, "0.0.0-test")
         sarif = build_bundle.build_sarif(bundle)
         taxa = sarif["runs"][0]["taxonomies"][0]["taxa"]
-        self.assertEqual(len(taxa), 357)
+        self.assertEqual(len(taxa), 365)
         by_id = {t["id"]: t for t in taxa}
         # SEC-A3A is CRITICAL -> error; QAL-B2A is LOW -> note
         self.assertEqual(by_id["SEC-A3A"]["defaultConfiguration"]["level"], "error")
@@ -250,7 +250,7 @@ class TestValidateCli(unittest.TestCase):
              "--domains-dir", os.path.join(ROOT, "domains")],
             capture_output=True, text=True)
         self.assertEqual(proc.returncode, 0, proc.stderr)
-        self.assertIn("357 entries", proc.stdout)
+        self.assertIn("365 entries", proc.stdout)
 
 
 class TestBundleSchemaVersion(unittest.TestCase):
@@ -305,7 +305,7 @@ class TestCatalog(unittest.TestCase):
             html = open(os.path.join(a, "ocrdb-0.0.0-test.html"), encoding="utf-8").read()
             codes = [c for dom in json.load(open(bundle))["domains"].values()
                      for c in dom["entries"]]
-            self.assertEqual(len(codes), 357)
+            self.assertEqual(len(codes), 365)
             for c in codes:
                 self.assertIn(c, md, c)
                 self.assertIn(c, html, c)
@@ -412,6 +412,28 @@ class TestNewValidateChecks(unittest.TestCase):
                     "SEC-A1A": {"name": "kept", "default_severity": "LOW"}}}}}, fh)
             errs = validate.validate_stability(cur, path)
         self.assertTrue(any("default_severity" in e for e in errs), errs)
+
+
+class TestDatExpansion(unittest.TestCase):
+    def _dat(self):
+        import validate
+        docs = validate.load_domains(os.path.join(ROOT, "domains"))
+        return docs["dat.yml"]["entries"]
+
+    def test_new_codes_present_and_corpus(self):
+        e = self._dat()
+        new = ["DAT-F1A", "DAT-F1B", "DAT-F1C", "DAT-F2A", "DAT-F2B",
+               "DAT-B1E", "DAT-B1F", "DAT-E1D"]
+        for c in new:
+            self.assertIn(c, e, c)
+            self.assertIn("corpus", e[c]["provenance"], c)
+            self.assertTrue(e[c].get("examples"), f"{c} needs >=1 example")
+
+    def test_area_f_declared(self):
+        import validate
+        d = validate.load_domains(os.path.join(ROOT, "domains"))["dat.yml"]
+        self.assertIn("F", d["areas"])
+        self.assertEqual(d["areas"]["F"]["name"], "durable-file-and-local-state")
 
 
 if __name__ == "__main__":
