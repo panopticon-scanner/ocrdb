@@ -1,4 +1,5 @@
 import copy
+import glob
 import io
 import json
 import os
@@ -119,6 +120,32 @@ class TestValidateSyntheticErrors(unittest.TestCase):
         for bad in ("ruff B006", ":B006", "ruff:", 123):
             e["automated_by"] = [bad]
             self.assertTrue(any("automated_by" in x for x in self._errs(d)), bad)
+
+
+class TestGovernanceDocs(unittest.TestCase):
+    def test_domain_banners_not_falsely_ratified(self):
+        for f in glob.glob(os.path.join(ROOT, "domains", "*.yml")):
+            first = open(f, encoding="utf-8").readline()
+            self.assertNotIn("RATIFIED", first, f)
+            self.assertIn("INCUBATING", first, f)
+
+    def test_schema_lists_all_active_and_incubating_domains(self):
+        schema = open(os.path.join(ROOT, "SCHEMA.md"), encoding="utf-8").read()
+        self.assertIn("Active set:", schema)
+        self.assertIn("Incubating (declared, not yet seeded):", schema)
+        for dom in ("SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT",
+                    "OPS", "ACC", "LNG"):
+            self.assertIn(f"`{dom}`", schema, dom)
+
+    def test_schema_carries_r2_severity_rubric(self):
+        schema = open(os.path.join(ROOT, "SCHEMA.md"), encoding="utf-8").read()
+        self.assertIn("exploitable now, data loss, or silently wrong", schema)
+
+    def test_renamed_incubating_domains_everywhere(self):
+        for name in ("CHARTER.md", "CHANGELOG.md", "RATIFICATION.md", "SCHEMA.md"):
+            text = open(os.path.join(ROOT, name), encoding="utf-8").read()
+            self.assertNotIn("A11Y", text, name)
+            self.assertNotIn("I18N", text, name)
 
 
 class TestStabilityContract(unittest.TestCase):

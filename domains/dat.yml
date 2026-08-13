@@ -1,4 +1,4 @@
-# OCRDb domain file - 0.1 (RATIFIED; codes final at the 0.1 tag)
+# OCRDb domain file — INCUBATING (pre-1.0; codes may change until the 1.0 freeze). See CHARTER.md.
 domain: DAT
 name: data-and-persistence
 areas:

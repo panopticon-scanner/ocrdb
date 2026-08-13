@@ -9,7 +9,7 @@ DOMAIN (3 letters) - AREA (letter) CATEGORY (digit) ISSUE (letter)
 SEC-A2D
 ```
 
-- **Domain** — 3-letter, tool-neutral. Seed set: `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability. Domains are a starting set, not a cap.
+- **Domain** — 3-letter, tool-neutral. Active set: `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic, `DAT` data. Incubating (declared, not yet seeded): `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. Domains are a starting set, not a cap.
 - **Area** — a letter (`A`–`Z`) naming a coherent territory within the domain.
 - **Category** — a digit (`1`–`9`) within the area.
 - **Issue** — a letter naming a **distinct defect type** (not a severity slot). At seeding time, issue letters within a category are assigned in typical-severity order (a mnemonic aid only — the letter's meaning never changes even if severities are later re-graded).
@@ -79,6 +79,8 @@ Emitting skills default to `character: opportunity` unless explicitly running in
 ## Severity scale
 
 `INFO < LOW < MEDIUM < HIGH < CRITICAL`. `default_severity` is the *typical* grade for the defect type — never a per-instance verdict. Consumers may override per instance under their own disclosed discipline (panopticon: `severity_override {from, to, reason}`, advisor-checked). Trend lines anchor to the catalog default so overrides never bend history.
+
+**Normative grading rule (R2 bar):** grade `default_severity` against a single bar — *exploitable now, data loss, or silently wrong results at scale*. CRITICAL/HIGH are reserved for hazards meeting the bar; a hazard that is real but does not (dead config, style/metadata drift, hygiene) grades MEDIUM or below. Severity is a property of the defect type, never the instance.
 
 ## Stability contract (activates at 1.0)
 
