@@ -44,6 +44,11 @@ def is_fallback_code(code):
     return bool(FALLBACK_RE.match(str(code)))
 
 
+# Flip to False at the 1.0 release: pre-1.0 the prior-art budget over-run is a
+# WARNING (visible curation signal); at 1.0 it becomes a hard build error.
+INCUBATING = True
+PRIOR_ART_BUDGET = 0.25
+
 CWE_RE = re.compile(r"^CWE-\d+$")
 AUTOMATED_BY_RE = re.compile(r"^[a-z0-9_-]+:[A-Za-z0-9._@/+-]+$")
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
@@ -159,6 +164,28 @@ def validate_schema(docs):
     return errors, warnings, all_codes
 
 
+def prior_art_budget_issues(all_codes):
+    """Per-domain: entries grounded ONLY by prior-art (provenance has prior-art
+    and NEITHER corpus NOR tool-observed) must be <= 25% of the domain. Returns
+    over-budget messages (empty if all within budget)."""
+    from collections import defaultdict
+    total, ungrounded = defaultdict(int), defaultdict(int)
+    for code, e in all_codes.items():
+        dom = code[:3]
+        total[dom] += 1
+        prov = set(e.get("provenance") or [])
+        if "prior-art" in prov and not (prov & {"corpus", "tool-observed"}):
+            ungrounded[dom] += 1
+    out = []
+    for dom in sorted(total):
+        n, u = total[dom], ungrounded[dom]
+        if n and u > PRIOR_ART_BUDGET * n:
+            out.append(f"prior-art budget: {dom} has {u}/{n} ungrounded "
+                       f"prior-art entries ({u / n:.0%} > "
+                       f"{PRIOR_ART_BUDGET:.0%})")
+    return out
+
+
 def domain_parity_errors(docs):
     """Full-catalog invariant: the domains present on disk are exactly
     ACTIVE_DOMAINS. Called from the CLI/build, NOT from validate_schema
@@ -209,6 +236,11 @@ def main(argv=None):
         return 1
     errors, warnings, all_codes = validate_schema(docs)
     errors += domain_parity_errors(docs)
+    budget = prior_art_budget_issues(all_codes)
+    if INCUBATING:
+        warnings += budget
+    else:
+        errors += budget
     if args.baseline:
         errors += validate_stability(all_codes, args.baseline)
     for w in warnings:
