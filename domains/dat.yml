@@ -35,6 +35,13 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: >-
+      Qualifies for a per-row column whose declared type cannot represent or enforce
+      the domain's value set (wrong width/precision, a type that can't hold a
+      documented range). NOT for cross-row invariants (sum-to-zero, uniqueness — see
+      DAT-A1B) nor a missing enum member of a state machine (that is a
+      COD/state-machine defect). No corpus instance yet — prior-art only; enrich when
+      observed.
   DAT-A1B:
     name: missing-constraint-for-invariant
     default_severity: MEDIUM
@@ -42,6 +49,19 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 6
+    examples:
+    - Unique constraint enforced in app code but absent from schema (check-then-insert)
+    - Spec invariant unique(org,slug) has no backing DB constraint
+    - Domain membership invariant left as TODO, FK unenforced
+    - Column type does not enforce documented value-range invariant
+    criteria: >-
+      Qualifies when an application-enforced invariant (uniqueness, range, membership)
+      has no backing DB constraint, so a bypassing write path violates it. When the
+      same check-then-insert locus could be cited as a race, PREFER A1B when the fix
+      is the missing constraint; DAT-D1C when the finding is the exploitable race
+      window.
   DAT-A1C:
     name: missing-foreign-key-relationship
     default_severity: MEDIUM
@@ -49,6 +69,18 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 5
+    examples:
+    - Parent reference stored as bare UUID column with no foreign key
+    - Join/counter table missing FK, orphans survive parent deletion
+    - Spec'd FK implemented as plain column, no referential integrity
+    - 'ORM belongs_to/dependent: :destroy with no DB-level FK or index'
+    criteria: >-
+      Qualifies when a logical parent reference is stored as a bare column with no
+      foreign key, so orphan rows survive parent deletion and referential integrity is
+      unenforced (including ORM belongs_to/dependent declarations with no DB-level
+      FK).
   DAT-A1D:
     name: nullable-column-ambiguous-semantics
     default_severity: LOW
@@ -56,6 +88,17 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 2
+    examples:
+    - Nullable column contradicts 'required' contract; NULL rows silently unqueryable
+    - NULL overloaded as wildcard/global, conflating 'unset' with 'matches all'
+    criteria: >-
+      Qualifies when a nullable column's NULL has no single defined meaning —
+      contradicting a 'required' contract (NULL rows silently unqueryable) or
+      overloading NULL as a wildcard/'matches all' (conflating unset with global).
+      Related mirror-image (a NOT NULL column filled with sentinel placeholders like
+      'unknown') is noted for future coverage.
   DAT-B1A:
     name: destructive-migration-without-backfill
     default_severity: HIGH

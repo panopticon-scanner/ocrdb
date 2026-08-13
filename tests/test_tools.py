@@ -435,6 +435,13 @@ class TestDatExpansion(unittest.TestCase):
         self.assertIn("F", d["areas"])
         self.assertEqual(d["areas"]["F"]["name"], "durable-file-and-local-state")
 
+    def test_area_a_backfilled_from_corpus(self):
+        e = self._dat()
+        grounded = ["DAT-A1B", "DAT-A1C", "DAT-A1D"]
+        for c in grounded:
+            self.assertIn("corpus", e[c]["provenance"], c)
+            self.assertTrue(e[c].get("examples"), f"{c} needs >=1 example")
+
 
 if __name__ == "__main__":
     unittest.main()
