@@ -465,5 +465,30 @@ class TestDatExpansion(unittest.TestCase):
             self.assertTrue(e[c].get("examples"), f"{c} needs >=1 example")
 
 
+class TestPriorArtBudget(unittest.TestCase):
+    def test_ungrounded_prior_art_over_25pct_flags(self):
+        # 4 entries in a domain, 2 ungrounded prior-art (50%) -> over budget
+        codes = {
+            "SEC-A1A": {"provenance": ["prior-art"]},
+            "SEC-A1B": {"provenance": ["prior-art", "gap-review"]},
+            "SEC-A1C": {"provenance": ["prior-art", "corpus"]},   # grounded, excluded
+            "SEC-A1D": {"provenance": ["corpus"]},                 # not prior-art
+        }
+        issues = validate.prior_art_budget_issues(codes)
+        self.assertTrue(any("SEC" in i and "budget" in i for i in issues), issues)
+
+    def test_grounded_prior_art_within_budget(self):
+        codes = {f"SEC-A1{c}": {"provenance": ["prior-art", "corpus"]}
+                 for c in "ABCD"}
+        self.assertEqual(validate.prior_art_budget_issues(codes), [])
+
+    def test_real_catalog_dat_within_budget_after_backfill(self):
+        import validate
+        docs = validate.load_domains(os.path.join(ROOT, "domains"))
+        _, _, all_codes = validate.validate_schema(docs)
+        issues = validate.prior_art_budget_issues(all_codes)
+        self.assertFalse(any("DAT" in i for i in issues), issues)
+
+
 if __name__ == "__main__":
     unittest.main()
