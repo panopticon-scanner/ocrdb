@@ -140,6 +140,9 @@ def validate_schema(docs):
         for ref in e.get("see_also") or []:
             if ref not in all_codes:
                 errors.append(f"{code}: see_also {ref} does not exist")
+            elif code not in (all_codes[ref].get("see_also") or []):
+                errors.append(f"{code}: see_also {ref} not reciprocal "
+                              f"({ref} does not see_also {code})")
     # duplicate names: hard error within a domain, warning across domains
     # (single-homing is enforced by construction post-clean-rewrite; the
     #  cross-domain warning is a mechanical backstop — see module docstring)
@@ -154,6 +157,19 @@ def validate_schema(docs):
             warnings.append(f"cross-domain duplicate name {name!r}: {codes} "
                             f"(big rock #0 single-homing)")
     return errors, warnings, all_codes
+
+
+def domain_parity_errors(docs):
+    """Full-catalog invariant: the domains present on disk are exactly
+    ACTIVE_DOMAINS. Called from the CLI/build, NOT from validate_schema
+    (which also runs on synthetic single-domain fixtures)."""
+    present = {d.get("domain") for d in docs.values()
+               if isinstance(d, dict) and d.get("domain")}
+    if present == ACTIVE_DOMAINS:
+        return []
+    return [f"domain-list parity: on-disk domains {sorted(present)} != "
+            f"ACTIVE_DOMAINS (missing {sorted(ACTIVE_DOMAINS - present)}, "
+            f"unexpected {sorted(present - ACTIVE_DOMAINS)})"]
 
 
 def validate_stability(all_codes, baseline_path):
@@ -172,6 +188,12 @@ def validate_stability(all_codes, baseline_path):
         elif cur.get("name") != be.get("name"):
             errors.append(f"stability: {code} renamed {be.get('name')!r} -> "
                           f"{cur.get('name')!r} (names are immutable)")
+        elif cur.get("default_severity") != be.get("default_severity") \
+                and be.get("default_severity") is not None:
+            errors.append(f"stability: {code} default_severity "
+                          f"{be.get('default_severity')!r} -> "
+                          f"{cur.get('default_severity')!r} "
+                          f"(severity is immutable post-freeze)")
     return errors
 
 
@@ -186,6 +208,7 @@ def main(argv=None):
         print(f"no domain files found under {args.domains_dir}", file=sys.stderr)
         return 1
     errors, warnings, all_codes = validate_schema(docs)
+    errors += domain_parity_errors(docs)
     if args.baseline:
         errors += validate_stability(all_codes, args.baseline)
     for w in warnings:

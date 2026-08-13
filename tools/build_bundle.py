@@ -110,6 +110,7 @@ def main(argv=None):
 
     docs = validate_mod.load_domains(args.domains_dir)
     errors, warnings, all_codes = validate_mod.validate_schema(docs)
+    errors += validate_mod.domain_parity_errors(docs)
     if args.baseline:
         errors += validate_mod.validate_stability(all_codes, args.baseline)
     for w in warnings:

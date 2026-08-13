@@ -369,5 +369,50 @@ class TestMigrationMap(unittest.TestCase):
         self.assertEqual(committed, self._build())
 
 
+class TestNewValidateChecks(unittest.TestCase):
+    def _two_entry_doc(self):
+        return {"x.yml": {
+            "domain": "SEC", "name": "security",
+            "areas": {"A": {"name": "a", "categories": {"1": "c"}}},
+            "entries": {
+                "SEC-A1A": {"name": "e1", "default_severity": "LOW",
+                            "status": "active", "provenance": ["corpus"]},
+                "SEC-A1B": {"name": "e2", "default_severity": "LOW",
+                            "status": "active", "provenance": ["corpus"]}}}}
+
+    def test_real_catalog_passes_symmetry(self):
+        errors, _, _ = validate.validate_schema(_real_docs())
+        self.assertEqual(errors, [], errors)
+
+    def test_see_also_must_be_reciprocal(self):
+        d = self._two_entry_doc()
+        d["x.yml"]["entries"]["SEC-A1A"]["see_also"] = ["SEC-A1B"]  # one-way
+        errs = validate.validate_schema(d)[0]
+        self.assertTrue(any("reciprocal" in e for e in errs), errs)
+        # make it mutual -> clean
+        d["x.yml"]["entries"]["SEC-A1B"]["see_also"] = ["SEC-A1A"]
+        self.assertEqual(validate.validate_schema(d)[0], [])
+
+    def test_domain_parity_clean_on_real_catalog(self):
+        self.assertEqual(validate.domain_parity_errors(_real_docs()), [])
+
+    def test_domain_parity_flags_missing_domain(self):
+        docs = _real_docs()
+        del docs["sec.yml"]  # a whole domain file vanished
+        errs = validate.domain_parity_errors(docs)
+        self.assertTrue(any("domain-list parity" in e and "SEC" in e
+                            for e in errs), errs)
+
+    def test_default_severity_drift_flagged(self):
+        cur = {"SEC-A1A": {"name": "kept", "default_severity": "HIGH"}}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "base.json")
+            with open(path, "w") as fh:
+                json.dump({"domains": {"SEC": {"entries": {
+                    "SEC-A1A": {"name": "kept", "default_severity": "LOW"}}}}}, fh)
+            errs = validate.validate_stability(cur, path)
+        self.assertTrue(any("default_severity" in e for e in errs), errs)
+
+
 if __name__ == "__main__":
     unittest.main()
