@@ -106,13 +106,22 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 8
+    examples:
+    - DELETE/TRUNCATE whole table to satisfy a new NOT NULL column, no backfill
+    - DROP+re-ADD column resets stored values while paired data survives
+    - Unconditional dropIfExists of production auth/token tables
+    - Mass .update() overwrites per-user values with default, no backfill + noop reverse
     criteria: >-
       Qualifies when APPLYING the migration destroys existing production data that
       was not preserved or backfilled — data loss at deploy time. Precedence: when
       apply-time data loss and irreversibility coincide, code B1A (data loss
       outranks rollback impossibility). A migration with no working reverse path
       but no apply-time data loss is DAT-B1C; one that is unsafe to re-run is
-      DAT-B1D.
+      DAT-B1D. Grade by blast radius: a targeted cleanup of known-invalid rows is
+      lower-severity than a whole-table wipe. Destructive RESTORE/backup or
+      non-migration config rewrites are out of scope here (see DAT-F1A).
     see_also:
     - DAT-B1C
     - DAT-B1D
@@ -124,6 +133,17 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 2
+    examples:
+    - Unbatched UPDATE over hot table inside one transaction holds row locks
+    - ADD NOT NULL column with volatile default forces full-table rewrite under ACCESS EXCLUSIVE
+    criteria: >-
+      Qualifies when a migration holds heavy locks on a hot/large table — an
+      unbatched mass UPDATE inside one transaction, or a DDL that forces a
+      full-table rewrite under an exclusive lock (e.g. ADD NOT NULL with a
+      volatile default). Severity assumes production concurrency; a
+      single-writer/embedded target lowers it.
   DAT-B1C:
     name: irreversible-migration-no-rollback
     default_severity: MEDIUM
@@ -131,12 +151,21 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 8
+    examples:
+    - Empty down()/pass downgrade leaves migration unrewindable
+    - Rollback uses invalid SQL (DELETE TABLE), errors on execution
+    - Forward-only migration runner with no reverse steps
+    - Downgrade exists but is lossy — effectively irreversible
     criteria: >-
       Qualifies when the migration has no working reverse path — down() absent, a
       no-op, or untested — regardless of whether apply-time data loss occurs. If
       applying it also destroys un-backfilled production data, code DAT-B1A instead
       (data loss outranks irreversibility); if the defect is that re-running fails
-      or double-applies, that is DAT-B1D.
+      or double-applies, that is DAT-B1D. Also qualifies when a reverse path EXISTS
+      but is unfaithful/lossy (drops columns/timestamps, over-drops rows) — 'has a
+      downgrade, downgrade is wrong' is still effectively irreversible.
     see_also:
     - DAT-B1A
     - DAT-B1D
@@ -148,12 +177,21 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 2
+    examples:
+    - Destructive step runs before idempotency marker is written; retry re-destroys
+    - Data-rewrite migration double-applies on re-run (no current-shape guard)
     criteria: >-
       Qualifies when re-running the migration against an already-applied state
       fails or double-applies (re-run / idempotency safety, e.g. CREATE TABLE
       without IF NOT EXISTS) — often fully reversible and non-destructive, hence
       distinct. Apply-time data destruction is DAT-B1A; an absent or broken
-      rollback path is DAT-B1C.
+      rollback path is DAT-B1C. Weight whether the migration runner already
+      prevents re-application: if a re-run is only reachable by operator error,
+      grade lower; if a destructive step precedes the idempotency marker (retry
+      re-destroys) or a data rewrite double-applies, it qualifies at full
+      severity.
     see_also:
     - DAT-B1A
     - DAT-B1C
