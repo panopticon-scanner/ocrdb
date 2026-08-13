@@ -1,6 +1,6 @@
-# OCRDb Catalog — v0.2.0
+# OCRDb Catalog — v0.2.1
 
-357 finding types across 7 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.2.0.html`.
+365 finding types across 7 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.2.1.html`.
 
 **Severity** INFO · LOW · MEDIUM · HIGH · CRITICAL — the *typical* grade for the defect type, not a per-instance verdict. **character**: `defect` (absent) or `opportunity`.
 
@@ -11,7 +11,7 @@
 | [`AGT`](#agt--agentic-trust) | agentic-trust | 16 |
 | [`ARC`](#arc--architecture) | architecture | 70 |
 | [`COD`](#cod--correctness) | correctness | 55 |
-| [`DAT`](#dat--data-and-persistence) | data-and-persistence | 19 |
+| [`DAT`](#dat--data-and-persistence) | data-and-persistence | 27 |
 | [`QAL`](#qal--quality-maintainability) | quality-maintainability | 51 |
 | [`SEC`](#sec--security) | security | 70 |
 | [`TST`](#tst--testing) | testing | 76 |
@@ -446,6 +446,8 @@
 | `DAT-B1B` | table-lock-heavy-migration | HIGH | — | — |
 | `DAT-B1C` | irreversible-migration-no-rollback | MEDIUM | — | — |
 | `DAT-B1D` | non-idempotent-migration | MEDIUM | — | — |
+| `DAT-B1E` | no-op-or-disabled-migration | MEDIUM | — | — |
+| `DAT-B1F` | migration-error-swallowed-marked-applied | HIGH | — | — |
 
 ### DAT-C · query-patterns
 
@@ -478,6 +480,24 @@
 | `DAT-E1A` | code-schema-drift-without-migration | HIGH | — | — |
 | `DAT-E1B` | orphaned-rows-on-delete | MEDIUM | — | — |
 | `DAT-E1C` | soft-delete-inconsistency | MEDIUM | — | — |
+| `DAT-E1D` | mirror-source-divergence | MEDIUM | — | — |
+
+### DAT-F · durable-file-and-local-state
+
+**DAT-F1 · write-durability-and-atomicity**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `DAT-F1A` | destructive-rewrite-without-backup | HIGH | — | — |
+| `DAT-F1B` | non-atomic-file-write | MEDIUM | — | — |
+| `DAT-F1C` | lost-update-on-unsynchronized-file | MEDIUM | — | — |
+
+**DAT-F2 · format-and-read-safety**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `DAT-F2A` | unversioned-persisted-format | MEDIUM | — | — |
+| `DAT-F2B` | unbounded-persisted-file-read | LOW | CWE-789 | — |
 
 ## QAL — quality-maintainability
 
