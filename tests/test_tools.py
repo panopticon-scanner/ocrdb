@@ -456,6 +456,14 @@ class TestDatExpansion(unittest.TestCase):
             self.assertIn("corpus", e[c]["provenance"], c)
             self.assertTrue(e[c].get("examples"), f"{c} needs >=1 example")
 
+    def test_areas_d_e_backfilled_from_corpus(self):
+        e = self._dat()
+        grounded = ["DAT-D1B", "DAT-D1C", "DAT-D1D",
+                    "DAT-E1A", "DAT-E1B", "DAT-E1C"]
+        for c in grounded:
+            self.assertIn("corpus", e[c]["provenance"], c)
+            self.assertTrue(e[c].get("examples"), f"{c} needs >=1 example")
+
 
 if __name__ == "__main__":
     unittest.main()

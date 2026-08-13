@@ -315,6 +315,13 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: >-
+      Qualifies when a transaction's isolation level is wrong for its
+      invariant (a read-modify-write needing SERIALIZABLE/row locks running
+      at READ COMMITTED). Presupposes explicit multi-statement transactions
+      with a settable isolation level; stores using advisory-lock + single
+      atomic upsert give this no surface. No corpus instance yet — prior-art
+      only; enrich when observed.
   DAT-D1B:
     name: missing-transaction-boundary
     default_severity: HIGH
@@ -322,6 +329,21 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 10
+    examples:
+    - Multi-write merge across repositories with no surrounding transaction
+    - Write runs on outer connection instead of the open transaction handle
+    - Delete-then-recreate without transaction.atomic (IntegrityError swallowed)
+    - Multi-row financial mutation with manual delete-on-error instead of a DB transaction
+    criteria: >-
+      Qualifies when related multi-statement writes that must be all-or-nothing
+      run with no surrounding transaction (or a write runs on the outer
+      connection instead of the open transaction handle), so a mid-sequence
+      failure leaves partial state. Also covers loop-exit/cancellation paths
+      that exit an open transaction without commit/rollback. A single
+      non-transactional external side-effect leg lowers severity (no
+      transactional fix available).
   DAT-D1C:
     name: read-modify-write-race
     default_severity: HIGH
@@ -329,8 +351,23 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 3
     cwe:
     - CWE-362
+    examples:
+    - CAS on a stale/self-read revision instead of the caller's observed version
+    - Read-modify-write toggle without row lock or optimistic locking
+    - Read-decide-write across two separate transactions (once-guard runs twice)
+    criteria: >-
+      Qualifies for a read-modify-write in a DB/KV transaction with no row
+      lock or optimistic-concurrency guard, so concurrent writers race. Scope
+      note: a read-modify-write on a FLAT FILE belongs to DAT-F1C, not here.
+      Also covers a broken/absent CAS (an optimistic WHERE version=? that
+      binds a stale/zero version, or a blind last-writer-wins Update with no
+      ResourceVersion) — same harm class as a transient race. When the same
+      check-then-insert locus lacks a unique constraint, prefer DAT-A1B for
+      the fix and D1C for the exploit.
     see_also:
     - DAT-F1C
   DAT-D1D:
@@ -340,6 +377,17 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 2
+    examples:
+    - Unbounded mass UPDATE in a single transaction holding locks on a hot table
+    - Network I/O and thousands of row writes held inside one open transaction
+    criteria: >-
+      Qualifies when a single transaction is held open across expensive work
+      — an unbounded mass UPDATE, or network I/O and thousands of row writes
+      before one commit — holding locks on a hot table. An unbounded
+      remote-call batch inside one DB transaction routes here (vs C1C for the
+      unbounded set alone).
   DAT-E1A:
     name: code-schema-drift-without-migration
     default_severity: HIGH
@@ -347,6 +395,17 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 1
+    examples:
+    - ORM model metadata drifted from migration DDL with no reconciling migration
+    - Model column not updated after a migration tightened the constraint (tests diverge from prod)
+    criteria: >-
+      Qualifies when the code's schema view (ORM model metadata) drifts from
+      the migration DDL with no reconciling migration — in EITHER direction:
+      code ahead of migrations, or a migration ahead of the model (tests
+      permanently diverging from prod). Drift built live via
+      metadata.create_all is corroborating.
     see_also:
     - DAT-E1D
   DAT-E1B:
@@ -356,6 +415,16 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 2
+    examples:
+    - Multi-step delete leaves index/parent row when a mid-sequence storage step fails
+    - Bulk soft-delete bypasses cascade, orphaning child records
+    criteria: >-
+      Qualifies when a delete leaves rows that should have been removed — a
+      multi-step delete where a mid-sequence failure strands a parent/index
+      row, or a bulk soft-delete that bypasses the cascade/enqueue that
+      removes children.
   DAT-E1C:
     name: soft-delete-inconsistency
     default_severity: MEDIUM
@@ -363,6 +432,20 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    - corpus
+    recurrence: 4
+    examples:
+    - Unique constraint does not exclude soft-deleted rows (full-unique vs partial-unique within one schema)
+    - Soft-delete tombstones one key column but a non-partial unique constraint still collides on re-create
+    - FK ON DELETE CASCADE never fires because the model uses soft delete
+    - Accessor filters for soft-deleted rows, inverted vs its sibling queries
+    criteria: >-
+      Qualifies when soft-delete semantics are applied inconsistently within
+      a schema — the cleanest trigger being a unique constraint that does NOT
+      exclude soft-deleted rows (full-unique vs partial-unique within one
+      soft-delete schema), so recreate-after-delete collides; also an
+      accessor filtering for soft-deleted rows (inverted vs siblings), or an
+      ON DELETE CASCADE that never fires because the model uses soft delete.
   DAT-E1D:
     name: mirror-source-divergence
     default_severity: MEDIUM
