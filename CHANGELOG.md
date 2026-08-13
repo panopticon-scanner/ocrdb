@@ -8,7 +8,7 @@ All notable changes to the OCRDb taxonomy. Codes are held stable per release but
 - Corrected the domain-file banners from the false "0.1 (RATIFIED; codes final at the 0.1 tag)" to an accurate incubating header.
 - `SCHEMA.md` domain seed now lists all seven active domains (added `AGT`, `DAT`) and the incubating `OPS`/`ACC`/`LNG`.
 - Promoted the R2 severity-grading rubric into `SCHEMA.md` (was only in `RATIFICATION.md`).
-- Renamed the incubating domains to match 3-letter domain grammar (`ACC`, `LNG`).
+- Renamed the two incubating domains whose codes exceeded the three-letter domain grammar to `ACC` (accessibility) and `LNG` (language/internationalization).
 
 ## 0.2.0 — 2026-08-11 (clean identity base, breaking)
 
