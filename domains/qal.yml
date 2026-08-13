@@ -656,6 +656,14 @@ entries:
     character: opportunity
     examples:
     - function flagged for high cyclomatic complexity / too many responsibilities combined into one function
+    criteria: >-
+      Qualifies when a function is too long or too complex for a SINGLE
+      concern (high cyclomatic complexity, deep nesting) — a local complexity
+      problem whose fix simplifies in place. When the function mixes multiple
+      SEPARABLE concerns that belong in different units, that is the
+      structural ARC-A1C.
+    see_also:
+    - ARC-A1C
   QAL-H1B:
     name: excess-nesting-complexity
     default_severity: LOW

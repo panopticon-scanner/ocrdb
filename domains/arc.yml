@@ -84,6 +84,14 @@ entries:
     - Monolithic main() violates single responsibility principle
     - Rendering function mixes data transformation and HTML generation
     - Complex directory-walking logic combines discovery, filtering, and pattern matching in one routine
+    criteria: >-
+      Qualifies when a function mixes SEPARABLE concerns that belong in
+      different units — a structural/boundary problem whose fix extracts
+      distinct responsibilities into separate modules or functions. When the
+      function has a SINGLE concern but is simply too long or complex, that is
+      QAL-H1A.
+    see_also:
+    - QAL-H1A
   ARC-A2A:
     name: circular-or-load-order-coupling
     default_severity: MEDIUM
