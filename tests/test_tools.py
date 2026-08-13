@@ -253,6 +253,19 @@ class TestValidateCli(unittest.TestCase):
         self.assertIn("357 entries", proc.stdout)
 
 
+class TestBundleSchemaVersion(unittest.TestCase):
+    def test_bundle_carries_schema_version(self):
+        bundle = build_bundle.build_bundle(_real_docs(), "0.0.0-test")
+        self.assertEqual(bundle["schema_version"], "1.0")
+        # distinct from the catalog version
+        self.assertEqual(bundle["version"], "0.0.0-test")
+
+    def test_committed_020_bundle_has_schema_version(self):
+        b = json.load(open(os.path.join(ROOT, "build", "ocrdb-0.2.0.json")))
+        self.assertEqual(b["schema_version"], "1.0")
+        self.assertEqual(b["version"], "0.2.0")
+
+
 class TestFallbackGrammar(unittest.TestCase):
     def test_fallback_recognizes_all_domains(self):
         for dom in ("SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT",

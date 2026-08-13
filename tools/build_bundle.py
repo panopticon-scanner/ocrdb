@@ -38,6 +38,7 @@ def build_bundle(docs, version):
             "entries": dict(sorted((doc.get("entries") or {}).items())),
         }
     return {"$schema": "ocrdb-bundle",
+            "schema_version": "1.0",
             "version": version,
             "license": "CC BY-SA 4.0",
             "domains": dict(sorted(domains.items()))}
