@@ -4,7 +4,7 @@ codes removed/folded in a clean-rewrite release transition.
 
 Usage:
     python3 tools/build_migration.py \
-        --source scratch/0.2-migration.md \
+        --source migrations/0.1.0-to-0.2.0.md \
         --from build/ocrdb-0.1.0.json --to build/ocrdb-0.2.0.json \
         --from-version 0.1.0 --to-version 0.2.0 \
         --out build/ocrdb-0.2.0-migration.json

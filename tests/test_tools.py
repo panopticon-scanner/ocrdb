@@ -334,7 +334,7 @@ class TestMigrationMap(unittest.TestCase):
     def _build(self):
         import build_migration
         return build_migration.build_migration(
-            os.path.join(ROOT, "scratch", "0.2-migration.md"),
+            os.path.join(ROOT, "migrations", "0.1.0-to-0.2.0.md"),
             os.path.join(ROOT, "build", "ocrdb-0.1.0.json"),
             os.path.join(ROOT, "build", "ocrdb-0.2.0.json"),
             "0.1.0", "0.2.0")
