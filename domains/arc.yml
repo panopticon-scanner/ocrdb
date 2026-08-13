@@ -917,6 +917,7 @@ entries:
     - ARC-F2D
     - COD-B1A
     - SEC-G2B
+    - SEC-F1B
   ARC-F2G:
     name: overbroad-exception-handling-masks-errors
     default_severity: LOW
@@ -929,6 +930,14 @@ entries:
     examples:
     - Multiple functions catch bare Exception (merge-base lookup, fallback-branch resolution), swallowing intentional
       and accidental errors alike
+    criteria: >-
+      Qualifies when the CATCH is structurally overbroad — a bare or blanket
+      handler masking multiple distinct error types (an architecture smell about
+      the handler's shape), regardless of any single missing check. A single
+      unchecked auxiliary failure is COD-B2C; a security-relevant swallow is
+      SEC-F1B.
+    see_also:
+    - COD-B2C
   ARC-G1A:
     name: contributor-instructions-diverge-from-ci
     default_severity: MEDIUM

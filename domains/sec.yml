@@ -733,6 +733,15 @@ entries:
     examples:
     - Try, Except, Continue detected.
     - Try, Except, Pass detected.
+    criteria: >-
+      Qualifies ONLY when the swallowed exception hides a SECURITY-relevant failure
+      (an auth/permission/verification error silently dropped). A generic swallow
+      with no security consequence single-homes at COD-B2C — do not route ordinary
+      error-swallowing here (it inflates the security lens). A security/enforcement
+      CONTROL that degrades to permit is ARC-F2E.
+    see_also:
+    - COD-B2C
+    - ARC-F2E
   SEC-F2A:
     name: unbounded-external-response-read
     default_severity: MEDIUM
