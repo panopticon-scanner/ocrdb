@@ -11,6 +11,7 @@ All notable changes to the OCRDb taxonomy. Codes are held stable per release but
 - Renamed the two incubating domains whose codes exceeded the three-letter domain grammar to `ACC` (accessibility) and `LNG` (language/internationalization).
 - Criteria consolidation (pre-0.3.0): sharpened boundaries + reciprocal see_also across the doc-vs-code drift cluster (ARC-G/D3, QAL-C) and added a normative 'Domain routing for overlapping hazards' rule to SCHEMA.
 - Sharpened the error-swallowing boundaries (SEC-F1B=security-relevant / ARC-F2G=overbroad-catch / COD-B2C=generic wrong-result home) with reciprocal see_also.
+- Sharpened the assertion-efficacy family (TST-B2A/B1C/B1A/B1E, TST-G3F as residual) with grade-by-consequence criteria + reciprocal see_also.
 
 ### Added
 - Two consumer-side finding-field vocabularies in SCHEMA + `tools/validate.py` — `severity_modifier` reasons (×8) and `disposition` (×4: defect/control-present/not-applicable/correct-substrate) — so instance-level severity context and the present-but-defended / correct-substrate cases have shared terms. Not enforced on catalog entries (consumer fields); clarified that `character` is entry-level and `disposition` instance-level.
