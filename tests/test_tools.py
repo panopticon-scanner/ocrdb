@@ -1,4 +1,5 @@
 import copy
+import glob
 import io
 import json
 import os
@@ -121,6 +122,32 @@ class TestValidateSyntheticErrors(unittest.TestCase):
             self.assertTrue(any("automated_by" in x for x in self._errs(d)), bad)
 
 
+class TestGovernanceDocs(unittest.TestCase):
+    def test_domain_banners_not_falsely_ratified(self):
+        for f in glob.glob(os.path.join(ROOT, "domains", "*.yml")):
+            first = open(f, encoding="utf-8").readline()
+            self.assertNotIn("RATIFIED", first, f)
+            self.assertIn("INCUBATING", first, f)
+
+    def test_schema_lists_all_active_and_incubating_domains(self):
+        schema = open(os.path.join(ROOT, "SCHEMA.md"), encoding="utf-8").read()
+        self.assertIn("Active set:", schema)
+        self.assertIn("Incubating (declared, not yet seeded):", schema)
+        for dom in ("SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT",
+                    "OPS", "ACC", "LNG"):
+            self.assertIn(f"`{dom}`", schema, dom)
+
+    def test_schema_carries_r2_severity_rubric(self):
+        schema = open(os.path.join(ROOT, "SCHEMA.md"), encoding="utf-8").read()
+        self.assertIn("exploitable now, data loss, or silently wrong", schema)
+
+    def test_renamed_incubating_domains_everywhere(self):
+        for name in ("CHARTER.md", "CHANGELOG.md", "RATIFICATION.md", "SCHEMA.md"):
+            text = open(os.path.join(ROOT, name), encoding="utf-8").read()
+            self.assertNotIn("A11Y", text, name)
+            self.assertNotIn("I18N", text, name)
+
+
 class TestStabilityContract(unittest.TestCase):
     def _baseline(self, tmp, entries):
         path = os.path.join(tmp, "base.json")
@@ -226,6 +253,37 @@ class TestValidateCli(unittest.TestCase):
         self.assertIn("357 entries", proc.stdout)
 
 
+class TestBundleSchemaVersion(unittest.TestCase):
+    def test_bundle_carries_schema_version(self):
+        bundle = build_bundle.build_bundle(_real_docs(), "0.0.0-test")
+        self.assertEqual(bundle["schema_version"], "1.0")
+        # distinct from the catalog version
+        self.assertEqual(bundle["version"], "0.0.0-test")
+
+    def test_committed_020_bundle_has_schema_version(self):
+        b = json.load(open(os.path.join(ROOT, "build", "ocrdb-0.2.0.json")))
+        self.assertEqual(b["schema_version"], "1.0")
+        self.assertEqual(b["version"], "0.2.0")
+
+
+class TestFallbackGrammar(unittest.TestCase):
+    def test_fallback_recognizes_all_domains(self):
+        for dom in ("SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT",
+                    "OPS", "ACC", "LNG"):
+            self.assertTrue(validate.is_fallback_code(f"{dom}-X0X"), dom)
+
+    def test_fallback_rejects_non_sentinels(self):
+        for bad in ("SEC-A1A", "SEC-X1X", "SEC-X0A", "ZZZ-X0X", "SEC-X0X-EXTRA"):
+            self.assertFalse(validate.is_fallback_code(bad), bad)
+
+    def test_real_code_and_sentinel_are_disjoint(self):
+        # A real entry code never matches the fallback grammar, and X0X never
+        # matches the strict entry grammar.
+        self.assertTrue(validate.CODE_RE.match("SEC-A2D"))
+        self.assertIsNone(validate.CODE_RE.match("SEC-X0X"))
+        self.assertFalse(validate.is_fallback_code("SEC-A2D"))
+
+
 class TestCatalog(unittest.TestCase):
     def _bundle(self, tmp):
         with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
@@ -266,6 +324,94 @@ class TestCatalog(unittest.TestCase):
             html = open(os.path.join(tmp, "ocrdb-0.0.0-test.html"), encoding="utf-8").read()
             for external in ("http://", "https://", "src=", "cdn"):
                 self.assertNotIn(external, html.lower().replace("initial-scale", ""))
+
+
+class TestMigrationMap(unittest.TestCase):
+    def _codes(self, name):
+        b = json.load(open(os.path.join(ROOT, "build", name)))
+        return {c for dom in b["domains"].values() for c in dom["entries"]}
+
+    def _build(self):
+        import build_migration
+        return build_migration.build_migration(
+            os.path.join(ROOT, "migrations", "0.1.0-to-0.2.0.md"),
+            os.path.join(ROOT, "build", "ocrdb-0.1.0.json"),
+            os.path.join(ROOT, "build", "ocrdb-0.2.0.json"),
+            "0.1.0", "0.2.0")
+
+    def test_24_mappings_header_and_crosscheck(self):
+        m = self._build()
+        self.assertEqual(m["schema_version"], "1.0")
+        self.assertEqual(m["from_version"], "0.1.0")
+        self.assertEqual(m["to_version"], "0.2.0")
+        self.assertEqual(len(m["mappings"]), 24)
+        old, new = self._codes("ocrdb-0.1.0.json"), self._codes("ocrdb-0.2.0.json")
+        self.assertEqual({mp["old_code"] for mp in m["mappings"]}, old - new)
+        for mp in m["mappings"]:
+            self.assertNotIn(mp["old_code"], new)
+            self.assertEqual(mp["disposition"],
+                             "folded" if mp["survivors"] else "removed")
+            for s in mp["survivors"]:
+                self.assertIn(s, new)  # every survivor is a real 0.2.0 code
+
+    def test_multi_survivor_rows_captured(self):
+        m = {mp["old_code"]: mp["survivors"] for mp in self._build()["mappings"]}
+        self.assertEqual(sorted(m["SEC-G1A"]), ["COD-C1A", "COD-C1B"])
+        self.assertEqual(sorted(m["QAL-A1A"]), ["TST-C3B", "TST-C3C"])
+
+    def test_see_also_annotation_not_captured_as_survivor(self):
+        m = {mp["old_code"]: mp["survivors"] for mp in self._build()["mappings"]}
+        self.assertEqual(m["QAL-F3A"], ["TST-C4B"])
+
+    def test_committed_artifact_matches_generator(self):
+        committed = json.load(
+            open(os.path.join(ROOT, "build", "ocrdb-0.2.0-migration.json")))
+        self.assertEqual(committed, self._build())
+
+
+class TestNewValidateChecks(unittest.TestCase):
+    def _two_entry_doc(self):
+        return {"x.yml": {
+            "domain": "SEC", "name": "security",
+            "areas": {"A": {"name": "a", "categories": {"1": "c"}}},
+            "entries": {
+                "SEC-A1A": {"name": "e1", "default_severity": "LOW",
+                            "status": "active", "provenance": ["corpus"]},
+                "SEC-A1B": {"name": "e2", "default_severity": "LOW",
+                            "status": "active", "provenance": ["corpus"]}}}}
+
+    def test_real_catalog_passes_symmetry(self):
+        errors, _, _ = validate.validate_schema(_real_docs())
+        self.assertEqual(errors, [], errors)
+
+    def test_see_also_must_be_reciprocal(self):
+        d = self._two_entry_doc()
+        d["x.yml"]["entries"]["SEC-A1A"]["see_also"] = ["SEC-A1B"]  # one-way
+        errs = validate.validate_schema(d)[0]
+        self.assertTrue(any("reciprocal" in e for e in errs), errs)
+        # make it mutual -> clean
+        d["x.yml"]["entries"]["SEC-A1B"]["see_also"] = ["SEC-A1A"]
+        self.assertEqual(validate.validate_schema(d)[0], [])
+
+    def test_domain_parity_clean_on_real_catalog(self):
+        self.assertEqual(validate.domain_parity_errors(_real_docs()), [])
+
+    def test_domain_parity_flags_missing_domain(self):
+        docs = _real_docs()
+        del docs["sec.yml"]  # a whole domain file vanished
+        errs = validate.domain_parity_errors(docs)
+        self.assertTrue(any("domain-list parity" in e and "SEC" in e
+                            for e in errs), errs)
+
+    def test_default_severity_drift_flagged(self):
+        cur = {"SEC-A1A": {"name": "kept", "default_severity": "HIGH"}}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "base.json")
+            with open(path, "w") as fh:
+                json.dump({"domains": {"SEC": {"entries": {
+                    "SEC-A1A": {"name": "kept", "default_severity": "LOW"}}}}}, fh)
+            errs = validate.validate_stability(cur, path)
+        self.assertTrue(any("default_severity" in e for e in errs), errs)
 
 
 if __name__ == "__main__":

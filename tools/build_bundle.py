@@ -38,6 +38,7 @@ def build_bundle(docs, version):
             "entries": dict(sorted((doc.get("entries") or {}).items())),
         }
     return {"$schema": "ocrdb-bundle",
+            "schema_version": "1.0",
             "version": version,
             "license": "CC BY-SA 4.0",
             "domains": dict(sorted(domains.items()))}
@@ -109,6 +110,7 @@ def main(argv=None):
 
     docs = validate_mod.load_domains(args.domains_dir)
     errors, warnings, all_codes = validate_mod.validate_schema(docs)
+    errors += validate_mod.domain_parity_errors(docs)
     if args.baseline:
         errors += validate_mod.validate_stability(all_codes, args.baseline)
     for w in warnings:

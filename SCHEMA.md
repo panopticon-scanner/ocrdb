@@ -9,12 +9,12 @@ DOMAIN (3 letters) - AREA (letter) CATEGORY (digit) ISSUE (letter)
 SEC-A2D
 ```
 
-- **Domain** — 3-letter, tool-neutral. Seed set: `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability. Domains are a starting set, not a cap.
+- **Domain** — 3-letter, tool-neutral. Active set: `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic, `DAT` data. Incubating (declared, not yet seeded): `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. Domains are a starting set, not a cap.
 - **Area** — a letter (`A`–`Z`) naming a coherent territory within the domain.
 - **Category** — a digit (`1`–`9`) within the area.
 - **Issue** — a letter naming a **distinct defect type** (not a severity slot). At seeding time, issue letters within a category are assigned in typical-severity order (a mnemonic aid only — the letter's meaning never changes even if severities are later re-graded).
 - **Versioned citation form** (outside a pinned context): `ocrdb-v0.1-SEC-A2D`.
-- **Domain fallback code**: `<DOM>-X0X` — used by consumers when no specific issue fits. Fallback usage is the catalog-gap signal that feeds curation; `X` is reserved in all three positions and never assigned to real entries.
+- **Domain fallback code**: `<DOM>-X0X` — used by consumers when no specific issue fits. It is a **reserved non-entry form** that deliberately sits OUTSIDE the entry grammar above (`0` is a reserved category digit, `X` a reserved area/issue letter), so a real entry code and the sentinel can never collide. Fallback usage is the catalog-gap signal that feeds curation; `X0X` is never assigned to a real entry. Every declared domain (active and incubating) has a fallback, e.g. `SEC-X0X`, `OPS-X0X`.
 
 ## Entry schema
 
@@ -79,6 +79,8 @@ Emitting skills default to `character: opportunity` unless explicitly running in
 ## Severity scale
 
 `INFO < LOW < MEDIUM < HIGH < CRITICAL`. `default_severity` is the *typical* grade for the defect type — never a per-instance verdict. Consumers may override per instance under their own disclosed discipline (panopticon: `severity_override {from, to, reason}`, advisor-checked). Trend lines anchor to the catalog default so overrides never bend history.
+
+**Normative grading rule (R2 bar):** grade `default_severity` against a single bar — *exploitable now, data loss, or silently wrong results at scale*. CRITICAL/HIGH are reserved for hazards meeting the bar; a hazard that is real but does not (dead config, style/metadata drift, hygiene) grades MEDIUM or below. Severity is a property of the defect type, never the instance.
 
 ## Stability contract (activates at 1.0)
 

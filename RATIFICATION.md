@@ -303,10 +303,10 @@ Source (full entry lists retained in the project's private working-docs): the 20
 - **TST flakiness fills**: unseeded-randomness, wall-clock-dependent (matches Appendix C's time-flakiness), test-order-coupling, universal-invariant-only-example-tested.
 - **DAT domain skeleton** (schema-design, migrations, query-patterns, transactions, data-lifecycle) — the inverse gap: panopticon's `database` panel exists with no domain to map to. Seeding synergy: make the 4.3.x external cost-baseline repo DB-heavy — one run, two deliverables.
 - **AGT domain promotion** (rules big rock #1 = PROMOTE): areas prompt-injection / tool-permission-scoping / output-trust / autonomy-oversight (incl. the two 2.3.0 corpus entries: agent-confabulated-action, secret-materialized-into-agent-output) / resource-cost-safety / data-egress. SEC keeps a cross-ref stub; SEC-G2 splits per big rock #0 (general fail-open resolves with ARC-F2; only agent-mediation G2C moves).
-- **Incubating declarations (charter prose, no codes burned): OPS, A11Y, I18N.** *Reconciliation with Appendix C: the ARC-I resilience proposal (missing-timeout/retry) is WITHDRAWN in favor of parking those entries on the OPS incubation list — single future home, no premature area.*
+- **Incubating declarations (charter prose, no codes burned): OPS, ACC, LNG.** *Reconciliation with Appendix C: the ARC-I resilience proposal (missing-timeout/retry) is WITHDRAWN in favor of parking those entries on the OPS incubation list — single future home, no premature area.*
 
 ### P2 — 0.2+
-OPS/A11Y/I18N content (each after a shaped mining run), PRV promotion decision, performance criteria enrichment.
+OPS/ACC/LNG content (each after a shaped mining run), PRV promotion decision, performance criteria enrichment.
 
 ### Consumer-side implications (recorded for the 5.0 mapping audit; execute per roadmap)
 `database`→DAT mapping (5.0); new `agentic` panel→AGT (5.0–5.1, the niche — prioritize); web-security lens→SEC-I, performance lens→QAL-G, concurrency lens→COD-G (5.1); `automated_by` panel skip-rule (5.0, Track-2 twin); OPS panel with OPS content (0.2+).
