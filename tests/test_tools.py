@@ -467,6 +467,34 @@ class TestCatalog(unittest.TestCase):
             for external in ("http://", "https://", "src=", "cdn"):
                 self.assertNotIn(external, html.lower().replace("initial-scale", ""))
 
+    def test_html_escapes_script_breakout_in_data(self):
+        # A catalog field containing '</script>' must not break out of the
+        # inline <script> DATA block: the sink escapes < > & as \\uXXXX so the
+        # embedded JSON can never close the tag or inject markup (COD003/SEC-101).
+        import build_catalog
+        payload = "</script><img src=x onerror=alert(1)>"
+        bundle = {
+            "version": "0.0.0-test", "license": "test",
+            "domains": {"SEC": {
+                "name": "security",
+                "areas": {"A": {"name": "injection", "categories": {"1": "cmd"}}},
+                "entries": {"SEC-A1A": {
+                    "name": "x-entry", "default_severity": "HIGH",
+                    "examples": [payload],
+                }},
+            }},
+        }
+        out = build_catalog.build_html(bundle)
+        # the raw breakout sequence never appears in the rendered page
+        self.assertNotIn("</script><img", out)
+        # only the template's own single closing </script> survives
+        self.assertEqual(out.count("</script>"), 1)
+        # the payload's '<' / '>' are neutralized as \\u003c / \\u003e
+        self.assertIn("\\u003c/script\\u003e", out)
+        # and the DATA still round-trips to the exact original value
+        blob = out.split("const DATA=", 1)[1].split(";\nconst DOMAINS=", 1)[0]
+        self.assertEqual(json.loads(blob)[0]["examples"], [payload])
+
 
 class TestMigrationMap(unittest.TestCase):
     def _codes(self, name):
