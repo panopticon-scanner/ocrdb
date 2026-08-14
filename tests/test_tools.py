@@ -83,6 +83,55 @@ class TestValidateRealDraft(unittest.TestCase):
             for t in (codes[c].get("see_also") or []):
                 self.assertIn(t, codes, f"{c} see_also {t} missing")
 
+    def test_active_domains_are_ten(self):
+        # Aggregate bundle-level stability guard: the domain set derived from
+        # the real code ids is exactly the 10-domain 0.3.0 roster, no more
+        # (accidental new domain) and no fewer (a domain silently dropped).
+        codes = _codes()
+        doms = {c.split("-")[0] for c in codes}
+        self.assertEqual(doms, {"SEC", "COD", "ARC", "TST", "QAL", "AGT",
+                                "DAT", "OPS", "ACC", "LNG"})
+
+    def test_ops_acc_lng_area_category_names_match_plan(self):
+        # Per-domain areas/categories structural guard for the three newly
+        # seeded domains — not covered by test_{ops,acc,lng}_domain_seeded,
+        # which check entries/status/provenance/severity but not the areas
+        # header. Names must match the plan's File Structure verbatim.
+        docs = _real_docs()
+        expected = {
+            "ops.yml": {
+                "A": ("resilience", "external-call-resilience"),
+                "B": ("lifecycle", "startup-and-shutdown"),
+                "C": ("deployment-config", "startup-configuration"),
+                "D": ("resource-limits", "resource-bounds"),
+                "E": ("observability", "failure-visibility"),
+            },
+            "acc.yml": {
+                "A": ("semantics", "accessible-names"),
+                "B": ("keyboard", "keyboard-operability"),
+                "C": ("forms", "form-labeling"),
+                "D": ("live-regions", "dynamic-announcements"),
+                "E": ("contrast", "perceivable-distinction"),
+                "F": ("motion", "motion-preferences"),
+            },
+            "lng.yml": {
+                "A": ("externalization", "string-externalization"),
+                "B": ("plural-format", "locale-aware-formatting"),
+                "C": ("grammar", "translation-composition"),
+                "D": ("key-drift", "key-management"),
+                "E": ("encoding", "text-encoding"),
+                "F": ("directionality", "directionality"),
+            },
+        }
+        for fn, areas in expected.items():
+            actual = docs[fn]["areas"]
+            self.assertEqual(set(actual), set(areas), fn)
+            for letter, (area_name, cat_name) in areas.items():
+                self.assertEqual(actual[letter]["name"], area_name,
+                                 f"{fn} area {letter}")
+                self.assertEqual(actual[letter]["categories"], {"1": cat_name},
+                                 f"{fn} area {letter} category '1'")
+
 
 class TestValidateSyntheticErrors(unittest.TestCase):
     def _base_doc(self):
