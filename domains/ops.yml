@@ -40,6 +40,8 @@ entries:
     - missing-timeout-on-outbound-http-call
     - unbounded-fetch-without-deadline
     - no-timeout-on-subprocess-invocation
+    see_also:
+    - SEC-F2A
   OPS-A1B:
     name: retry-without-backoff-or-jitter
     default_severity: MEDIUM
@@ -135,3 +137,5 @@ entries:
     examples:
     - panic-recovery-bypasses-logging
     - error-swallowed-without-telemetry
+    see_also:
+    - COD-B2C

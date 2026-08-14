@@ -63,6 +63,21 @@ class TestValidateRealDraft(unittest.TestCase):
                                "LNG-C1A", "LNG-D1A", "LNG-E1A", "LNG-F1A"])
         self.assertEqual(codes["LNG-E1A"].get("cwe"), ["CWE-176"])
 
+    def test_new_cross_domain_see_also_reciprocal(self):
+        codes = _codes()
+
+        def sa(c):
+            return set(codes[c].get("see_also") or [])
+        # confirmed edges
+        self.assertIn("SEC-F2A", sa("OPS-A1A"))
+        self.assertIn("OPS-A1A", sa("SEC-F2A"))
+        self.assertIn("COD-B2C", sa("OPS-E1A"))
+        self.assertIn("OPS-E1A", sa("COD-B2C"))
+        # every see_also target on a new code must be a real code
+        for c in [k for k in codes if k[:3] in ("OPS", "ACC", "LNG")]:
+            for t in (codes[c].get("see_also") or []):
+                self.assertIn(t, codes, f"{c} see_also {t} missing")
+
 
 class TestValidateSyntheticErrors(unittest.TestCase):
     def _base_doc(self):

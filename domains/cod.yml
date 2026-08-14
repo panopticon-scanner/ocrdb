@@ -168,6 +168,7 @@ entries:
     - SEC-F1B
     - ARC-F2G
     - COD-B1A
+    - OPS-E1A
   COD-B2D:
     name: result-not-revalidated-after-transform
     default_severity: LOW
