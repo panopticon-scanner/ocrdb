@@ -14,9 +14,6 @@ import html
 import json
 import os
 
-SEV_ORDER = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]
-SEV_RANK = {s: i for i, s in enumerate(SEV_ORDER)}
-
 
 def _sorted_entries(dom):
     return sorted(dom["entries"].items())
