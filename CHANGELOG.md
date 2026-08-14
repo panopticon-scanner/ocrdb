@@ -2,8 +2,6 @@
 
 All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (incubating); see SCHEMA.md stability contract.
 
-## Unreleased
-
 ## [0.3.0] - 2026-08-14
 
 Seeds and activates the three domains `CHARTER.md` had declared incubating since 0.1: `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. Source grows **365 → 390 codes (25 additions)**, all in the three new domains; no renames, no severity re-grades, no removals — the 365 pre-existing codes are byte-identical on `name`/`default_severity`. The 0.2.0 release bundle stays the frozen stability anchor; this release's stability contract was checked against 0.2.1 (`build_bundle.py --baseline build/ocrdb-0.2.1.json`) and passed clean.

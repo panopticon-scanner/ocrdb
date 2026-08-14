@@ -372,6 +372,18 @@ class TestBundleBuild(unittest.TestCase):
             self.assertEqual(n[code]["name"], e["name"], code)
             self.assertEqual(n[code]["default_severity"], e["default_severity"], code)
 
+    def test_no_area_or_category_name_drift_vs_release(self):
+        # Companion to the entry-level no-drift guard above: the pre-existing
+        # domains' area and category *display names* must also be byte-identical
+        # to the 0.2.1 release. A rename there is real drift the entry-name
+        # check misses (bundle stores areas[L].name + areas[L].categories[d]).
+        import json
+        base = json.load(open(os.path.join(ROOT, "build/ocrdb-0.2.1.json")))
+        new = json.load(open(os.path.join(ROOT, "build/ocrdb-0.3.0.json")))
+        for dom, d in base["domains"].items():  # the 7 pre-existing domains
+            self.assertEqual(new["domains"][dom]["name"], d["name"], dom)
+            self.assertEqual(new["domains"][dom]["areas"], d["areas"], dom)
+
 
 class TestValidateCli(unittest.TestCase):
     def test_cli_passes_on_real_draft(self):

@@ -183,9 +183,13 @@ def validate_schema(docs):
 
 
 def prior_art_budget_issues(all_codes):
-    """Per-domain: entries grounded ONLY by prior-art (provenance has prior-art
-    and NEITHER corpus NOR tool-observed) must be <= 25% of the domain. Returns
-    over-budget messages (empty if all within budget)."""
+    """Per-domain prior-art budget check.
+
+    An entry is "ungrounded" when its provenance lists prior-art but has
+    neither corpus nor tool-observed backing. Each domain must keep those
+    ungrounded entries at or below PRIOR_ART_BUDGET (25%). Returns one
+    message per over-budget domain (empty list if all are within budget).
+    """
     from collections import defaultdict
     total, ungrounded = defaultdict(int), defaultdict(int)
     for code, e in all_codes.items():
