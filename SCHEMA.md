@@ -142,12 +142,10 @@ When one observation could be cited under more than one domain, route by *what t
 - **Two specifications that disagree with each other** — code vs. code, doc vs. doc, schema vs. producer, or documentation vs. the repository's actual structure — **→ the architecture home (ARC).**
 - **Inert staleness** — a reference, path, or version out of date but breaking nothing (a drifted pointer, not a structural absence) — **→ the quality/maintainability home (QAL).**
 
-An entry's `criteria` may reference this principle to disambiguate a near-neighbour in another domain.
-
-### Domain routing for overlapping hazards
-
 When a hazard could plausibly home in two domains, route by:
 - **OPS ↔ SEC** — an externally/maliciously triggered failure homes in SEC; an internal or systemic threshold / self-inflicted failure homes in OPS.
 - **OPS ↔ ARC** — a deliberate architectural fail-open *decision* homes in ARC; runtime operational error-swallowing homes in OPS.
 - **ACC ownership** — ACC exclusively owns user-facing assistive-technology defects; a UI-regression that is an AT defect routes to ACC, not QAL.
 - **LNG ↔ DAT** — LNG owns locale-aware sorting/encoding of user-facing UI text; raw data-layer encoding stays DAT.
+
+An entry's `criteria` may reference this principle to disambiguate a near-neighbour in another domain.

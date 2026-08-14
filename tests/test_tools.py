@@ -189,6 +189,14 @@ class TestGovernanceDocs(unittest.TestCase):
                      "assistive", "locale"):
             self.assertIn(rule, schema.lower())
 
+    def test_charter_reflects_ops_acc_lng_activation(self):
+        # CHARTER<->active parity guard: OPS/ACC/LNG are seeded and active
+        # (0.3.0) — the charter must not still call them "not yet seeded".
+        charter = open(os.path.join(ROOT, "CHARTER.md"), encoding="utf-8").read()
+        self.assertNotIn("not yet seeded", charter)
+        for dom in ("OPS", "ACC", "LNG"):
+            self.assertIn(f"`{dom}`", charter, dom)
+
 
 class TestStabilityContract(unittest.TestCase):
     def _baseline(self, tmp, entries):
