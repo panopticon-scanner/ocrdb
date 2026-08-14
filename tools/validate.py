@@ -122,6 +122,17 @@ def load_domains(domains_dir):
     return docs
 
 
+_CTRL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+
+
+def _has_control_char(value):
+    """True if `value` is a string carrying a C0/DEL control character (tab,
+    newline, carriage return excepted). Free-text catalog display fields flow
+    into the HTML and SARIF generators, so control bytes are rejected at the
+    source (SEC-102, defense in depth with the generators' own escaping)."""
+    return isinstance(value, str) and bool(_CTRL_RE.search(value))
+
+
 def validate_schema(docs):
     errors, warnings = [], []
     all_codes = {}
@@ -140,17 +151,25 @@ def validate_schema(docs):
         entries = doc.get("entries") or {}
         if not doc.get("name"):
             errors.append(f"{fn}: missing domain display 'name'")
+        elif _has_control_char(doc["name"]):
+            errors.append(f"{fn}: domain display 'name' has a control character")
         # Area/category display names feed the catalog generators via direct
         # a['name'] indexing; validate them here so a missing/blank name is a
-        # schema error, not a downstream KeyError at build time (COD001).
+        # schema error, not a downstream KeyError at build time (COD001), and
+        # reject control characters in them (SEC-102).
         for al, a in areas.items():
             if not isinstance(a, dict) or not a.get("name"):
                 errors.append(f"{fn}: area {al} missing display 'name'")
                 continue
+            if _has_control_char(a["name"]):
+                errors.append(f"{fn}: area {al} display 'name' has a control character")
             for ck, cn in (a.get("categories") or {}).items():
                 if not isinstance(cn, str) or not cn:
                     errors.append(f"{fn}: area {al} category {ck} "
                                   "missing display name")
+                elif _has_control_char(cn):
+                    errors.append(f"{fn}: area {al} category {ck} display name "
+                                  "has a control character")
         for code, e in entries.items():
             ctx = f"{fn}:{code}"
             m = CODE_RE.match(code)
@@ -168,6 +187,17 @@ def validate_schema(docs):
             name = e.get("name")
             if not name or not NAME_RE.match(str(name)):
                 errors.append(f"{ctx}: name missing or not kebab-case: {name!r}")
+            # Free-text entry fields reach the HTML/SARIF generators; require
+            # clean strings so no control byte enters the catalog (SEC-102).
+            for i, ex in enumerate(e.get("examples") or []):
+                if not isinstance(ex, str) or _has_control_char(ex):
+                    errors.append(f"{ctx}: examples[{i}] must be clean text "
+                                  "(string, no control characters)")
+            defn = e.get("definition")
+            if defn is not None and (not isinstance(defn, str)
+                                     or _has_control_char(defn)):
+                errors.append(f"{ctx}: definition must be clean text "
+                              "(string, no control characters)")
             if e.get("default_severity") not in SEVERITIES:
                 errors.append(f"{ctx}: default_severity {e.get('default_severity')!r} "
                               f"not in {sorted(SEVERITIES)}")
