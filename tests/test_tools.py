@@ -24,6 +24,11 @@ def _codes():
     return {c: e for d in docs.values() for c, e in (d.get("entries") or {}).items()}
 
 
+def _entries_map(bundle):
+    """code -> entry dict, pulled from a built bundle's domains/entries shape."""
+    return {c: e for dom in bundle["domains"].values() for c, e in dom["entries"].items()}
+
+
 class TestValidateRealDraft(unittest.TestCase):
     def test_draft_has_no_schema_errors(self):
         errors, warnings, codes = validate.validate_schema(_real_docs())
@@ -306,6 +311,17 @@ class TestBundleBuild(unittest.TestCase):
                                         "--out", os.path.join(tmp, "out")])
             self.assertEqual(rc, 1)
             self.assertFalse(os.path.exists(os.path.join(tmp, "out")))
+
+    def test_0_3_0_bundle_is_365_plus_25(self):
+        import json
+        base = json.load(open(os.path.join(ROOT, "build/ocrdb-0.2.1.json")))
+        new = json.load(open(os.path.join(ROOT, "build/ocrdb-0.3.0.json")))
+        b = _entries_map(base); n = _entries_map(new)  # {code: {name, default_severity}}
+        self.assertEqual(len(n), 390)
+        self.assertEqual(len(n) - len(b), 25)
+        for code, e in b.items():  # the 365 must not drift
+            self.assertEqual(n[code]["name"], e["name"], code)
+            self.assertEqual(n[code]["default_severity"], e["default_severity"], code)
 
 
 class TestValidateCli(unittest.TestCase):
