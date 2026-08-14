@@ -49,6 +49,11 @@ entries:
     provenance:
     - corpus
     recurrence: 18
+    criteria: >-
+      Qualifies when a failed operation is retried with no exponential backoff
+      or jitter, so retries amplify a dependency failure into a retry storm /
+      thundering herd (SRE retry practice). The retry-amplification form; a
+      missing bounded timeout is OPS-A1A.
     examples:
     - retry-without-backoff-or-jitter
     - tight-retry-loop-amplifies-dependency-failure
@@ -74,6 +79,12 @@ entries:
     provenance:
     - corpus
     recurrence: 20
+    criteria: >-
+      Qualifies when a liveness/readiness endpoint reports healthy without
+      checking real dependencies or readiness (a static 200, or liveness
+      standing in for readiness), so orchestrators route traffic to an unready
+      instance (health-check semantics; K8s liveness-vs-readiness). Distinct
+      from failing to drain on shutdown (OPS-B1A).
     examples:
     - fake-health-check-always-200
     - liveness-masquerading-as-readiness
@@ -84,6 +95,12 @@ entries:
     provenance:
     - corpus
     recurrence: 39
+    criteria: >-
+      Qualifies when config is consumed at startup without validating required
+      values, types, or ranges, so a missing/malformed setting surfaces as a
+      late runtime failure instead of failing fast at boot (12-Factor III
+      Config; fail-fast). Distinct from an unconditional startup side effect
+      (OPS-C1B).
     examples:
     - unvalidated-startup-configuration
     - missing-required-env-var-fails-late
@@ -94,6 +111,12 @@ entries:
     provenance:
     - corpus
     recurrence: 12
+    criteria: >-
+      Qualifies when startup performs an unconditional, unguarded side effect
+      — a migration, data mutation, or external write on every boot — instead
+      of an explicit idempotent step, so restarts or multiple replicas repeat
+      or race it (deployment safety). Distinct from consuming config without
+      validating it (OPS-C1A).
     examples:
     - container-boot-runs-unconditional-migration
     - startup-mutates-state-without-guard
@@ -119,6 +142,11 @@ entries:
     provenance:
     - corpus
     recurrence: 14
+    criteria: >-
+      Qualifies when a query or list endpoint returns an unbounded result set
+      — no pagination, limit, or cap — so response size and memory scale with
+      the data (SRE overload; API design). The result-set form of unbounded
+      consumption; general unbounded memory/connection/CPU growth is OPS-D1A.
     examples:
     - missing-query-result-limit
     - unpaginated-list-endpoint

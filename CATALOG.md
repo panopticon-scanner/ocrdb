@@ -1,6 +1,6 @@
-# OCRDb Catalog — v0.3.0
+# OCRDb Catalog — v0.3.1
 
-390 finding types across 10 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.3.0.html`.
+390 finding types across 10 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.3.1.html`.
 
 **Severity** INFO · LOW · MEDIUM · HIGH · CRITICAL — the *typical* grade for the defect type, not a per-instance verdict. **character**: `defect` (absent) or `opportunity`.
 

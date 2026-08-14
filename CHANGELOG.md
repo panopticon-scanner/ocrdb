@@ -2,6 +2,13 @@
 
 All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (incubating); see SCHEMA.md stability contract.
 
+## [0.3.1] - 2026-08-14
+
+Criteria pass on the three domains seeded in 0.3.0. Adds a `criteria` disambiguation block — positive qualification plus nearest-neighbor exclusion, in the 0.2.x boundary-consolidation style — to the 18 `OPS`/`ACC`/`LNG` codes that lacked one, so **all 25 seeded codes now carry `criteria`**. No new codes, no renames, no severity re-grades: the 390 codes stay byte-identical on `name`/`default_severity` (stability contract checked against `build/ocrdb-0.3.0.json`, passed clean). This is the first release **built on the 4.x-hardened tooling** — atomic artifact writes, duplicate-key + display-field validation, and script-safe catalog HTML — so the shipped build reflects the corrected build/validate path.
+
+### Changed
+- `OPS`/`ACC`/`LNG` — `criteria` added to the 18 codes that lacked it (OPS-A1B, OPS-B1B, OPS-C1A, OPS-C1B, OPS-D1B; ACC-A1B, ACC-B1B, ACC-C1A, ACC-D1A, ACC-E1A, ACC-F1A; LNG-A1B, LNG-B1A, LNG-B1B, LNG-C1A, LNG-D1A, LNG-E1A, LNG-F1A), each citing the governing standard (WCAG SC / 12-Factor / SRE / i18n / Unicode) and excluding its nearest neighbor by code.
+
 ## [0.3.0] - 2026-08-14
 
 Seeds and activates the three domains `CHARTER.md` had declared incubating since 0.1: `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. Source grows **365 → 390 codes (25 additions)**, all in the three new domains; no renames, no severity re-grades, no removals — the 365 pre-existing codes are byte-identical on `name`/`default_severity`. The 0.2.0 release bundle stays the frozen stability anchor; this release's stability contract was checked against 0.2.1 (`build_bundle.py --baseline build/ocrdb-0.2.1.json`) and passed clean.

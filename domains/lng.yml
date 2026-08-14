@@ -49,6 +49,12 @@ entries:
     provenance:
     - corpus
     recurrence: 22
+    criteria: >-
+      Qualifies when a user-facing string is built by interpolation or
+      concatenation outside the i18n layer, so the composed message is never a
+      single translatable unit (i18n externalization). Distinct from a fully
+      hardcoded literal (LNG-A1A); the grammatical breakage of concatenating
+      already-translated fragments is LNG-C1A.
     examples:
     - user-facing-string-dispatched-outside-template
     - label-built-in-code-not-catalog
@@ -59,6 +65,11 @@ entries:
     provenance:
     - corpus
     recurrence: 25
+    criteria: >-
+      Qualifies when a number, date, time, or currency uses hardcoded
+      separators/patterns instead of locale-aware formatting (CLDR/ICU), so
+      output is wrong or confusing in other locales. Distinct from
+      pluralization (LNG-B1B).
     examples:
     - locale-unaware-date-formatting
     - hardcoded-number-format
@@ -69,6 +80,11 @@ entries:
     provenance:
     - corpus
     recurrence: 15
+    criteria: >-
+      Qualifies when plurals use a naive rule (e.g. n==1 else add 's'),
+      ignoring the target language's CLDR plural categories
+      (zero/one/two/few/many/other), so many locales render grammatically
+      wrong counts. Distinct from number/date formatting (LNG-B1A).
     examples:
     - naive-plural-s-suffix
     - count-based-if-else-plural
@@ -79,6 +95,12 @@ entries:
     provenance:
     - corpus
     recurrence: 19
+    criteria: >-
+      Qualifies when a sentence is built by concatenating separately
+      translated fragments or interpolating values into split strings, so word
+      order, gender, and agreement break in languages that differ from the
+      source (i18n message grammar). Distinct from bypassing i18n entirely
+      (LNG-A1B); here fragments are translated but composed ungrammatically.
     examples:
     - concatenated-translation-fragments
     - sentence-built-by-string-glue
@@ -89,6 +111,12 @@ entries:
     provenance:
     - corpus
     recurrence: 12
+    criteria: >-
+      Qualifies when translation keys drift out of sync with the catalog — a
+      referenced key is missing with no fallback, or a renamed/unused key
+      lingers — so users see a raw key or blank instead of text (i18n catalog
+      integrity). The key-lifecycle form; a string that never entered the
+      catalog is LNG-A1A.
     examples:
     - translation-key-drift
     - missing-locale-fallback
@@ -99,6 +127,12 @@ entries:
     provenance:
     - corpus
     recurrence: 6
+    criteria: >-
+      Qualifies when text is measured, truncated, or indexed by bytes or
+      UTF-16 code units as if they were characters, so
+      multi-byte/surrogate/grapheme text is split mid-character or mis-limited
+      (Unicode handling; CWE-176). The user-facing-text form; raw
+      data-layer/serialization encoding homes in DAT (see routing note).
     cwe:
     - CWE-176
     examples:
@@ -111,6 +145,11 @@ entries:
     provenance:
     - corpus
     recurrence: 6
+    criteria: >-
+      Qualifies when the UI assumes left-to-right layout and direction
+      (hardcoded left/right, no dir attribute or logical CSS properties), so
+      right-to-left languages (Arabic, Hebrew) render mirrored or bidi-broken
+      (Unicode Bidirectional Algorithm; CSS logical properties).
     examples:
     - rtl-layout-support-missing
     - bidi-directionality-assumption
