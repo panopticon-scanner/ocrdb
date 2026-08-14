@@ -1,0 +1,116 @@
+# OCRDb domain file — INCUBATING (pre-1.0; codes may change until the 1.0 freeze). See CHARTER.md.
+domain: LNG
+name: language-and-internationalization
+areas:
+  A:
+    name: externalization
+    categories:
+      '1': string-externalization
+  B:
+    name: plural-format
+    categories:
+      '1': locale-aware-formatting
+  C:
+    name: grammar
+    categories:
+      '1': translation-composition
+  D:
+    name: key-drift
+    categories:
+      '1': key-management
+  E:
+    name: encoding
+    categories:
+      '1': text-encoding
+  F:
+    name: directionality
+    categories:
+      '1': directionality
+entries:
+  LNG-A1A:
+    name: hardcoded-user-facing-string
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 59
+    criteria: >-
+      Qualifies when a user-facing string is embedded in code, bypassing the
+      i18n layer. A user-facing string hardcoded at point-of-use (a prompt,
+      label, or message) cannot be translated and will not adapt to locale
+      settings, violating i18n externalization principles.
+    examples:
+    - hardcoded-user-facing-string
+    - hardcoded-ui-strings-bypassing-i18n
+  LNG-A1B:
+    name: string-assembled-outside-i18n
+    default_severity: LOW
+    status: active
+    provenance:
+    - corpus
+    recurrence: 22
+    examples:
+    - user-facing-string-dispatched-outside-template
+    - label-built-in-code-not-catalog
+  LNG-B1A:
+    name: locale-unaware-number-date-format
+    default_severity: LOW
+    status: active
+    provenance:
+    - corpus
+    recurrence: 25
+    examples:
+    - locale-unaware-date-formatting
+    - hardcoded-number-format
+  LNG-B1B:
+    name: naive-pluralization
+    default_severity: LOW
+    status: active
+    provenance:
+    - corpus
+    recurrence: 15
+    examples:
+    - naive-plural-s-suffix
+    - count-based-if-else-plural
+  LNG-C1A:
+    name: translation-assembled-by-concatenation
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 19
+    examples:
+    - concatenated-translation-fragments
+    - sentence-built-by-string-glue
+  LNG-D1A:
+    name: translation-key-drift-or-missing-fallback
+    default_severity: LOW
+    status: active
+    provenance:
+    - corpus
+    recurrence: 12
+    examples:
+    - translation-key-drift
+    - missing-locale-fallback
+  LNG-E1A:
+    name: byte-vs-codepoint-length-confusion
+    default_severity: LOW
+    status: active
+    provenance:
+    - corpus
+    recurrence: 6
+    cwe:
+    - CWE-176
+    examples:
+    - utf8-byte-length-conflated-with-char-count
+    - unnormalized-utf8-path-handling
+  LNG-F1A:
+    name: missing-rtl-bidi-support
+    default_severity: LOW
+    status: active
+    provenance:
+    - corpus
+    recurrence: 6
+    examples:
+    - rtl-layout-support-missing
+    - bidi-directionality-assumption
