@@ -859,5 +859,104 @@ class TestCatalogIntegrityFixes(unittest.TestCase):
         self.assertFalse(any("examples" in e for e in clean), clean)
 
 
+class TestToolingCoverageGaps(unittest.TestCase):
+    def _entry_docs(self, **entry_extra):
+        e = {"name": "x-name", "default_severity": "HIGH", "status": "active",
+             "provenance": ["corpus"]}
+        e.update(entry_extra)
+        return {"sec.yml": {
+            "domain": "SEC", "name": "security",
+            "areas": {"A": {"name": "x", "categories": {"1": "c"}}},
+            "entries": {"SEC-A1A": e}}}
+
+    def test_build_migration_main_writes_file(self):  # TEST-001
+        import build_migration
+        with tempfile.TemporaryDirectory() as tmp:
+            out = os.path.join(tmp, "mig.json")
+            with redirect_stdout(io.StringIO()):
+                rc = build_migration.main([
+                    "--source", os.path.join(ROOT, "migrations",
+                                             "0.1.0-to-0.2.0.md"),
+                    "--from", os.path.join(ROOT, "build", "ocrdb-0.1.0.json"),
+                    "--to", os.path.join(ROOT, "build", "ocrdb-0.2.0.json"),
+                    "--from-version", "0.1.0", "--to-version", "0.2.0",
+                    "--out", out])
+            self.assertEqual(rc, 0)
+            committed = json.load(open(
+                os.path.join(ROOT, "build", "ocrdb-0.2.0-migration.json")))
+            self.assertEqual(json.load(open(out)), committed)
+
+    def test_baseline_stability_wiring_fires(self):  # TEST-003
+        import build_bundle, validate
+        with tempfile.TemporaryDirectory() as tmp:
+            baseline = os.path.join(tmp, "baseline.json")
+            with open(baseline, "w", encoding="utf-8") as fh:  # code absent now
+                json.dump({"domains": {"SEC": {"entries":
+                          {"SEC-Z9Z": {"name": "phantom-code"}}}}}, fh)
+            doms = os.path.join(ROOT, "domains")
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()) as e1:
+                rc1 = build_bundle.main(["--version", "0.0.0-test",
+                                         "--domains-dir", doms,
+                                         "--baseline", baseline, "--out", tmp])
+            self.assertEqual(rc1, 1)
+            self.assertIn("SEC-Z9Z", e1.getvalue())
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()) as e2:
+                rc2 = validate.main(["--domains-dir", doms, "--baseline", baseline])
+            self.assertEqual(rc2, 1)
+            self.assertIn("SEC-Z9Z", e2.getvalue())
+
+    def test_cross_domain_duplicate_name_warns(self):  # TEST-004
+        import validate
+        area = {"A": {"name": "x", "categories": {"1": "c"}}}
+        common = {"default_severity": "LOW", "status": "active",
+                  "provenance": ["corpus"]}
+        docs = {
+            "sec.yml": {"domain": "SEC", "name": "security", "areas": area,
+                        "entries": {"SEC-A1A": {"name": "shared-name", **common}}},
+            "cod.yml": {"domain": "COD", "name": "correctness", "areas": area,
+                        "entries": {"COD-A1A": {"name": "shared-name", **common}}},
+        }
+        _e, warnings, _c = validate.validate_schema(docs)
+        self.assertTrue(any("cross-domain duplicate name 'shared-name'" in w
+                            for w in warnings), warnings)
+
+    def test_character_cwe_recurrence_validators(self):  # TEST-006
+        import validate
+        self.assertTrue(any("character" in e for e in
+                            validate.validate_schema(
+                                self._entry_docs(character="bogus"))[0]))
+        self.assertTrue(any("cwe" in e for e in
+                            validate.validate_schema(
+                                self._entry_docs(cwe=["notacwe"]))[0]))
+        self.assertTrue(any("recurrence" in e for e in
+                            validate.validate_schema(
+                                self._entry_docs(recurrence=0))[0]))
+        ok = validate.validate_schema(self._entry_docs(
+            character="opportunity", cwe=["CWE-79"], recurrence=3))[0]
+        self.assertFalse(any(("character" in e or "cwe" in e or "recurrence" in e)
+                             for e in ok), ok)
+
+    def test_catalog_html_data_fields_match_bundle(self):  # TEST-007
+        import build_bundle, build_catalog
+        with tempfile.TemporaryDirectory() as tmp:
+            with redirect_stdout(io.StringIO()):
+                build_bundle.main(["--version", "0.0.0-test",
+                                   "--domains-dir", os.path.join(ROOT, "domains"),
+                                   "--out", tmp])
+            bundle = json.load(open(os.path.join(tmp, "ocrdb-0.0.0-test.json")))
+            html = build_catalog.build_html(bundle)
+            blob = html.split("const DATA=", 1)[1].split(";\nconst DOMAINS=", 1)[0]
+            recs = {r["code"]: r for r in json.loads(blob)}
+            allc = {c: e for d in bundle["domains"].values()
+                    for c, e in d["entries"].items()}
+            self.assertEqual(set(recs), set(allc))  # every code rendered once
+            code = next(c for c, e in sorted(allc.items()) if e.get("cwe"))
+            b, r = allc[code], recs[code]
+            self.assertEqual(r["sev"], b["default_severity"], code)
+            self.assertEqual(r["cwe"], b["cwe"], code)
+            self.assertEqual(r["domain"], code[:3], code)
+            self.assertEqual(r["area"], f"{code[:3]}-{code.split('-')[1][0]}", code)
+
+
 if __name__ == "__main__":
     unittest.main()
