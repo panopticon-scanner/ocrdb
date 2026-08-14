@@ -28,12 +28,18 @@ except ImportError:  # build tooling fails loudly — no degraded builds
     sys.exit("tools/validate.py requires PyYAML (pip install pyyaml)")
 
 CODE_RE = re.compile(r"^([A-Z]{3})-([A-Z])([1-9])([A-Z])$")
-# Active domains carry real entries; incubating domains are declared in the
-# CHARTER but seed no codes yet. Both may appear in the <DOM>-X0X gap sentinel.
-ACTIVE_DOMAINS = {"SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT"}
-INCUBATING_DOMAINS = {"OPS", "ACC", "LNG"}
-SEEDED_INCUBATING = {"OPS", "ACC", "LNG"}  # domains seeded during 0.3.0 phase
-ALL_DOMAINS = ACTIVE_DOMAINS | INCUBATING_DOMAINS
+# All ten domains are active and carry real entries (0.3.0: OPS/ACC/LNG
+# activated after seeding — see CHANGELOG). Each has a <DOM>-X0X gap sentinel.
+ACTIVE_DOMAINS = {"SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT",
+                   "OPS", "ACC", "LNG"}
+# Historical bridge from the 0.3.0 seed-before-activate phase (Tasks 1-3):
+# domains seeded but not yet promoted into ACTIVE_DOMAINS. Now empty — OPS/
+# ACC/LNG graduated above. Kept (rather than deleted) because
+# domain_parity_errors below is defined against ACTIVE_DOMAINS |
+# SEEDED_INCUBATING; a future incubating-seed round can repopulate it without
+# touching that invariant.
+SEEDED_INCUBATING = set()
+ALL_DOMAINS = ACTIVE_DOMAINS
 # The gap sentinel <DOM>-X0X is a RESERVED NON-ENTRY form: `0` is a reserved
 # category digit and `X` a reserved area/issue letter, so it deliberately fails
 # the strict entry CODE_RE. It is recognized here, never validated as an entry.

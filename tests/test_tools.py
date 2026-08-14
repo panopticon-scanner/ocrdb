@@ -161,9 +161,12 @@ class TestGovernanceDocs(unittest.TestCase):
             self.assertIn("INCUBATING", first, f)
 
     def test_schema_lists_all_active_and_incubating_domains(self):
+        # 0.3.0: OPS/ACC/LNG activated — the roster is 10 active, 0 declared-
+        # not-seeded. The old "Incubating (declared, not yet seeded):" clause
+        # is gone (see test_schema_activates_ten_domains_and_has_routing_note).
         schema = open(os.path.join(ROOT, "SCHEMA.md"), encoding="utf-8").read()
         self.assertIn("Active set:", schema)
-        self.assertIn("Incubating (declared, not yet seeded):", schema)
+        self.assertNotIn("Incubating (declared, not yet seeded):", schema)
         for dom in ("SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT",
                     "OPS", "ACC", "LNG"):
             self.assertIn(f"`{dom}`", schema, dom)
@@ -177,6 +180,14 @@ class TestGovernanceDocs(unittest.TestCase):
             text = open(os.path.join(ROOT, name), encoding="utf-8").read()
             self.assertNotIn("A11Y", text, name)
             self.assertNotIn("I18N", text, name)
+
+    def test_schema_activates_ten_domains_and_has_routing_note(self):
+        schema = open(os.path.join(ROOT, "SCHEMA.md"), encoding="utf-8").read()
+        self.assertNotIn("Incubating (declared, not yet seeded)", schema)
+        self.assertIn("Domain routing for overlapping hazards", schema)
+        for rule in ("external", "systemic", "fail-open", "error-swallow",
+                     "assistive", "locale"):
+            self.assertIn(rule, schema.lower())
 
 
 class TestStabilityContract(unittest.TestCase):
