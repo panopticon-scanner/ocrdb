@@ -32,6 +32,7 @@ CODE_RE = re.compile(r"^([A-Z]{3})-([A-Z])([1-9])([A-Z])$")
 # CHARTER but seed no codes yet. Both may appear in the <DOM>-X0X gap sentinel.
 ACTIVE_DOMAINS = {"SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT"}
 INCUBATING_DOMAINS = {"OPS", "ACC", "LNG"}
+SEEDED_INCUBATING = {"OPS"}  # domains seeded during 0.3.0 phase
 ALL_DOMAINS = ACTIVE_DOMAINS | INCUBATING_DOMAINS
 # The gap sentinel <DOM>-X0X is a RESERVED NON-ENTRY form: `0` is a reserved
 # category digit and `X` a reserved area/issue letter, so it deliberately fails
@@ -199,15 +200,16 @@ def prior_art_budget_issues(all_codes):
 
 def domain_parity_errors(docs):
     """Full-catalog invariant: the domains present on disk are exactly
-    ACTIVE_DOMAINS. Called from the CLI/build, NOT from validate_schema
+    ACTIVE_DOMAINS + SEEDED_INCUBATING. Called from the CLI/build, NOT from validate_schema
     (which also runs on synthetic single-domain fixtures)."""
     present = {d.get("domain") for d in docs.values()
                if isinstance(d, dict) and d.get("domain")}
-    if present == ACTIVE_DOMAINS:
+    expected = ACTIVE_DOMAINS | SEEDED_INCUBATING
+    if present == expected:
         return []
     return [f"domain-list parity: on-disk domains {sorted(present)} != "
-            f"ACTIVE_DOMAINS (missing {sorted(ACTIVE_DOMAINS - present)}, "
-            f"unexpected {sorted(present - ACTIVE_DOMAINS)})"]
+            f"expected (missing {sorted(expected - present)}, "
+            f"unexpected {sorted(present - expected)})"]
 
 
 def validate_stability(all_codes, baseline_path):

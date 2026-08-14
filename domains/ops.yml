@@ -1,0 +1,137 @@
+# OCRDb domain file — INCUBATING (pre-1.0; codes may change until the 1.0 freeze). See CHARTER.md.
+domain: OPS
+name: production-readiness
+areas:
+  A:
+    name: resilience
+    categories:
+      '1': external-call-resilience
+  B:
+    name: lifecycle
+    categories:
+      '1': startup-and-shutdown
+  C:
+    name: deployment-config
+    categories:
+      '1': startup-configuration
+  D:
+    name: resource-limits
+    categories:
+      '1': resource-bounds
+  E:
+    name: observability
+    categories:
+      '1': failure-visibility
+entries:
+  OPS-A1A:
+    name: missing-timeout-on-external-call
+    default_severity: HIGH
+    status: active
+    provenance:
+    - corpus
+    recurrence: 42
+    criteria: >-
+      Qualifies when an outbound network/IPC/subprocess call has no bounded
+      timeout, so a slow or hung dependency can stall the caller indefinitely
+      (12-Factor "backing services" + SRE resilience). Distinct from a retry
+      hazard (OPS-A1B). Malicious triggering of the stall homes in SEC (see
+      routing note); this is the internal/systemic form.
+    examples:
+    - missing-timeout-on-outbound-http-call
+    - unbounded-fetch-without-deadline
+    - no-timeout-on-subprocess-invocation
+  OPS-A1B:
+    name: retry-without-backoff-or-jitter
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 18
+    examples:
+    - retry-without-backoff-or-jitter
+    - tight-retry-loop-amplifies-dependency-failure
+  OPS-B1A:
+    name: no-graceful-shutdown-drain
+    default_severity: HIGH
+    status: active
+    provenance:
+    - corpus
+    recurrence: 38
+    criteria: >-
+      Qualifies when a service does not drain in-flight work on SIGTERM/stop —
+      requests, jobs, or writes are dropped rather than completed or rejected
+      cleanly (12-Factor IX Disposability). The lifecycle/runtime form; an
+      architectural fail-open decision homes in ARC (see routing note).
+    examples:
+    - no-graceful-shutdown-drain
+    - sigterm-drops-in-flight-requests
+  OPS-B1B:
+    name: fake-or-noop-health-check
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 20
+    examples:
+    - fake-health-check-always-200
+    - liveness-masquerading-as-readiness
+  OPS-C1A:
+    name: unvalidated-startup-configuration
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 39
+    examples:
+    - unvalidated-startup-configuration
+    - missing-required-env-var-fails-late
+  OPS-C1B:
+    name: unconditional-startup-side-effect
+    default_severity: LOW
+    status: active
+    provenance:
+    - corpus
+    recurrence: 12
+    examples:
+    - container-boot-runs-unconditional-migration
+    - startup-mutates-state-without-guard
+  OPS-D1A:
+    name: unbounded-resource-consumption
+    default_severity: HIGH
+    status: active
+    provenance:
+    - corpus
+    recurrence: 27
+    criteria: >-
+      Qualifies when a code path can consume unbounded memory, connections,
+      goroutines/threads, or CPU under load — no cap, quota, or backpressure
+      (SRE overload). Resource leaks in general product code home in COD; this
+      is the operational overload/capacity form.
+    examples:
+    - unbounded-realtime-connection-growth
+    - unbounded-goroutine-fanout
+  OPS-D1B:
+    name: missing-pagination-or-result-cap
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 14
+    examples:
+    - missing-query-result-limit
+    - unpaginated-list-endpoint
+  OPS-E1A:
+    name: silent-failure-without-telemetry
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 22
+    criteria: >-
+      Qualifies when an error is swallowed at runtime with no log, metric, or
+      trace, so the failure is operationally invisible. The runtime
+      error-swallowing form (see routing note); a general correctness
+      error-swallow homes in COD-B2C.
+    examples:
+    - panic-recovery-bypasses-logging
+    - error-swallowed-without-telemetry
