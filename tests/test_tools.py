@@ -93,6 +93,16 @@ class TestValidateRealDraft(unittest.TestCase):
         self.assertEqual(doms, {"SEC", "COD", "ARC", "TST", "QAL", "AGT",
                                 "DAT", "OPS", "ACC", "LNG"})
 
+    def test_new_domain_codes_carry_criteria(self):
+        # 0.3.1 criteria pass: every OPS/ACC/LNG code carries a non-empty
+        # `criteria` disambiguation block (positive qualification + nearest-
+        # neighbor exclusion), so the three seeded domains are fully covered.
+        codes = _codes()
+        missing = [c for c, e in codes.items()
+                   if c.split("-")[0] in ("OPS", "ACC", "LNG")
+                   and not (e.get("criteria") or "").strip()]
+        self.assertEqual(missing, [], f"new-domain codes lacking criteria: {missing}")
+
     def test_ops_acc_lng_area_category_names_match_plan(self):
         # Per-domain areas/categories structural guard for the three newly
         # seeded domains — not covered by test_{ops,acc,lng}_domain_seeded,

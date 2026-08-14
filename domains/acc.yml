@@ -48,6 +48,12 @@ entries:
     provenance:
     - corpus
     recurrence: 20
+    criteria: >-
+      Qualifies when non-text content (image, icon, chart, media) conveys
+      information but exposes no text alternative, so assistive-technology
+      users lose it, violating WCAG 1.1.1 Non-text Content. Distinct from a
+      control missing an accessible name (ACC-A1A); this is informational
+      content, not an operable control.
     examples:
     - image-missing-alt-text
     - non-text-content-missing-text-alternative
@@ -73,6 +79,12 @@ entries:
     provenance:
     - corpus
     recurrence: 18
+    criteria: >-
+      Qualifies when the keyboard focus indicator is removed (e.g.
+      outline:none) with no visible replacement, so keyboard users cannot see
+      which element has focus, violating WCAG 2.4.7 Focus Visible. Distinct
+      from a non-interactive element wired as a control (ACC-B1A); here the
+      control is focusable but focus is invisible.
     examples:
     - focus-indicator-suppressed
     - outline-none-without-replacement
@@ -83,6 +95,12 @@ entries:
     provenance:
     - corpus
     recurrence: 22
+    criteria: >-
+      Qualifies when a form input has no programmatically associated label (no
+      <label for>, aria-label, or aria-labelledby), so assistive technology
+      cannot announce the field's purpose, violating WCAG 1.3.1 and 4.1.2. The
+      form-field form of a missing accessible name; a non-form control missing
+      its name is ACC-A1A.
     examples:
     - form-input-label-not-programmatically-associated
     - placeholder-used-as-label
@@ -93,6 +111,12 @@ entries:
     provenance:
     - corpus
     recurrence: 10
+    criteria: >-
+      Qualifies when a dynamic status change (validation error, toast, async
+      result) updates the DOM without a live region (aria-live /
+      role=status|alert), so screen-reader users are never notified, violating
+      WCAG 4.1.3 Status Messages. Distinct from a static missing name
+      (ACC-A1A); this is unannounced runtime change.
     examples:
     - status-toast-not-announced
     - dynamic-region-missing-aria-live
@@ -103,6 +127,11 @@ entries:
     provenance:
     - corpus
     recurrence: 11
+    criteria: >-
+      Qualifies when color is the only visual means of conveying information,
+      indicating an action, or distinguishing an element (e.g. red-only error
+      text), so users who cannot perceive the color lose the information,
+      violating WCAG 1.4.1 Use of Color.
     examples:
     - selection-state-color-only
     - error-conveyed-by-color-alone
@@ -113,6 +142,10 @@ entries:
     provenance:
     - corpus
     recurrence: 9
+    criteria: >-
+      Qualifies when non-essential animation runs without honoring the user's
+      reduced-motion preference (prefers-reduced-motion), risking discomfort
+      for motion-sensitive users, per WCAG 2.3.3 Animation from Interactions.
     examples:
     - animation-ignores-prefers-reduced-motion
     - autoplay-motion-no-user-control
