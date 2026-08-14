@@ -77,12 +77,48 @@ DISPOSITION_VOCAB = {
     "defect", "control-present", "not-applicable", "correct-substrate"}
 
 
+class _DuplicateKeyError(ValueError):
+    """A domains/*.yml mapping declared the same key twice."""
+
+
+class _NoDupLoader(yaml.SafeLoader):
+    """SafeLoader that rejects duplicate mapping keys instead of silently
+    keeping the last value (PyYAML's default). A duplicated entry code would
+    otherwise drop an entry from the catalog with no error at all (DB-001)."""
+
+
+def _construct_mapping_no_dup(loader, node, deep=False):
+    loader.flatten_mapping(node)
+    mapping = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        if key in mapping:
+            raise _DuplicateKeyError(
+                "duplicate key %r at line %d"
+                % (key, key_node.start_mark.line + 1))
+        mapping[key] = loader.construct_object(value_node, deep=deep)
+    return mapping
+
+
+_NoDupLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _construct_mapping_no_dup)
+
+
 def load_domains(domains_dir):
     docs = {}
     for fn in sorted(os.listdir(domains_dir)):
         if fn.endswith((".yml", ".yaml")):
             with open(os.path.join(domains_dir, fn), encoding="utf-8") as fh:
-                docs[fn] = yaml.safe_load(fh)
+                # _NoDupLoader subclasses yaml.SafeLoader (no arbitrary-type
+                # construction); drive it via get_single_data() -- exactly what
+                # yaml.load does internally -- so the safe loader stays explicit.
+                loader = _NoDupLoader(fh)
+                try:
+                    docs[fn] = loader.get_single_data()
+                except _DuplicateKeyError as e:
+                    raise SystemExit(f"{fn}: {e}")
+                finally:
+                    loader.dispose()
     return docs
 
 
@@ -104,6 +140,17 @@ def validate_schema(docs):
         entries = doc.get("entries") or {}
         if not doc.get("name"):
             errors.append(f"{fn}: missing domain display 'name'")
+        # Area/category display names feed the catalog generators via direct
+        # a['name'] indexing; validate them here so a missing/blank name is a
+        # schema error, not a downstream KeyError at build time (COD001).
+        for al, a in areas.items():
+            if not isinstance(a, dict) or not a.get("name"):
+                errors.append(f"{fn}: area {al} missing display 'name'")
+                continue
+            for ck, cn in (a.get("categories") or {}).items():
+                if not isinstance(cn, str) or not cn:
+                    errors.append(f"{fn}: area {al} category {ck} "
+                                  "missing display name")
         for code, e in entries.items():
             ctx = f"{fn}:{code}"
             m = CODE_RE.match(code)

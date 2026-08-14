@@ -99,6 +99,17 @@ def build_menus(bundle):
     return "\n".join(lines) + "\n"
 
 
+def _atomic_write(path, text):
+    """Write `text` to `path` atomically: a temp file in the same directory
+    then os.replace, so an interrupted build (OOM, timeout, Ctrl-C, ENOSPC)
+    never leaves a truncated, half-written artifact at a published, vendored
+    path (DB-002)."""
+    tmp = f"{path}.tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        fh.write(text)
+    os.replace(tmp, path)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--version", required=True)
@@ -128,14 +139,11 @@ def main(argv=None):
         "sarif": os.path.join(args.out, f"ocrdb-{args.version}.sarif.json"),
         "menus": os.path.join(args.out, f"ocrdb-{args.version}-menus.md"),
     }
-    with open(paths["bundle"], "w", encoding="utf-8") as fh:
-        json.dump(bundle, fh, indent=2, sort_keys=True)
-        fh.write("\n")
-    with open(paths["sarif"], "w", encoding="utf-8") as fh:
-        json.dump(build_sarif(bundle), fh, indent=2, sort_keys=True)
-        fh.write("\n")
-    with open(paths["menus"], "w", encoding="utf-8") as fh:
-        fh.write(build_menus(bundle))
+    _atomic_write(paths["bundle"],
+                  json.dumps(bundle, indent=2, sort_keys=True) + "\n")
+    _atomic_write(paths["sarif"],
+                  json.dumps(build_sarif(bundle), indent=2, sort_keys=True) + "\n")
+    _atomic_write(paths["menus"], build_menus(bundle))
     n = sum(len(d["entries"]) for d in bundle["domains"].values())
     print(f"built {n} entries -> {', '.join(sorted(paths.values()))}")
     return 0

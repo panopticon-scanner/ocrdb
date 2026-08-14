@@ -41,7 +41,12 @@ def parse_removals(source_path):
         for line in fh:
             if not line.lstrip().startswith("|"):
                 continue
-            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            # Split on unescaped pipes only, then unescape \| inside cells, so
+            # a literal pipe in a note/survivor cell (GFM-escaped as \|) can no
+            # longer shift columns and misassign survivor/note data (DB-003).
+            raw = line.strip().strip("|")
+            cells = [c.strip().replace("\\|", "|")
+                     for c in re.split(r"(?<!\\)\|", raw)]
             if len(cells) < 4:
                 continue
             num, removed_cell, survivor_cell, note_cell = cells[:4]
