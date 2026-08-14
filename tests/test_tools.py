@@ -780,5 +780,63 @@ class TestCriteriaConsolidation(unittest.TestCase):
             self.assertEqual(e[c]["default_severity"], rel[c]["default_severity"], c)
 
 
+class TestCatalogIntegrityFixes(unittest.TestCase):
+    def test_duplicate_entry_code_is_rejected(self):  # DB-001
+        import validate
+        with tempfile.TemporaryDirectory() as tmp:
+            with open(os.path.join(tmp, "sec.yml"), "w", encoding="utf-8") as fh:
+                fh.write(
+                    "domain: SEC\nname: security\n"
+                    "areas: {A: {name: injection, categories: {1: cmd}}}\n"
+                    "entries:\n"
+                    "  SEC-A1A: {name: first, default_severity: HIGH,"
+                    " status: active, provenance: [corpus]}\n"
+                    "  SEC-A1A: {name: second, default_severity: LOW,"
+                    " status: active, provenance: [corpus]}\n")
+            with self.assertRaises(SystemExit) as cm:
+                validate.load_domains(tmp)
+            self.assertIn("duplicate key", str(cm.exception))
+            self.assertIn("SEC-A1A", str(cm.exception))
+
+    def test_area_missing_display_name_is_error(self):  # COD001
+        import validate
+        docs = {"sec.yml": {
+            "domain": "SEC", "name": "security",
+            "areas": {"A": {"categories": {"1": "cmd"}}},  # area has no 'name'
+            "entries": {"SEC-A1A": {"name": "x-name", "default_severity": "HIGH",
+                                    "status": "active", "provenance": ["corpus"]}},
+        }}
+        errors = validate.validate_schema(docs)[0]
+        self.assertTrue(any("area A missing display 'name'" in e for e in errors),
+                        errors)
+
+    def test_build_artifacts_written_atomically(self):  # DB-002
+        import build_bundle
+        with tempfile.TemporaryDirectory() as tmp:
+            p = os.path.join(tmp, "x.json")
+            build_bundle._atomic_write(p, "hi\n")
+            self.assertEqual(open(p, encoding="utf-8").read(), "hi\n")
+            self.assertEqual(sorted(os.listdir(tmp)), ["x.json"])  # no temp left
+        with tempfile.TemporaryDirectory() as tmp:
+            with redirect_stdout(io.StringIO()):
+                build_bundle.main(["--version", "0.0.0-test",
+                                   "--domains-dir", os.path.join(ROOT, "domains"),
+                                   "--out", tmp])
+            self.assertEqual(
+                [f for f in os.listdir(tmp) if f.endswith(".tmp")], [])
+
+    def test_escaped_pipe_in_cell_kept_literal(self):  # DB-003
+        import build_migration
+        with tempfile.TemporaryDirectory() as tmp:
+            src = os.path.join(tmp, "removals.md")
+            with open(src, "w", encoding="utf-8") as fh:
+                fh.write("| # | Removed | Survivor | Note |\n|---|---|---|---|\n")
+                fh.write("| 1 | SEC-A1A | SEC-B1B | a \\| b |\n")  # escaped pipe
+            parsed = build_migration.parse_removals(src)
+            self.assertIn("SEC-A1A", parsed)
+            self.assertEqual(parsed["SEC-A1A"]["survivors"], ["SEC-B1B"])
+            self.assertEqual(parsed["SEC-A1A"]["note"], "a | b")  # literal | kept
+
+
 if __name__ == "__main__":
     unittest.main()
