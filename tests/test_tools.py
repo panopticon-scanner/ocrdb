@@ -28,7 +28,7 @@ class TestValidateRealDraft(unittest.TestCase):
     def test_draft_has_no_schema_errors(self):
         errors, warnings, codes = validate.validate_schema(_real_docs())
         self.assertEqual(errors, [])
-        self.assertEqual(len(codes), 374)
+        self.assertEqual(len(codes), 382)
 
     def test_single_homing_ratified_no_cross_domain_duplicates(self):
         # Ratified 0.1: single-homing (big rock #0) resolved every cross-domain
@@ -48,6 +48,13 @@ class TestValidateRealDraft(unittest.TestCase):
             self.assertEqual(e["provenance"], ["corpus"])
             self.assertIn(e["default_severity"],
                           {"CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"})
+
+    def test_acc_domain_seeded(self):
+        codes = _codes()
+        acc = sorted(c for c in codes if c.startswith("ACC-"))
+        self.assertEqual(acc, ["ACC-A1A", "ACC-A1B", "ACC-B1A", "ACC-B1B",
+                               "ACC-C1A", "ACC-D1A", "ACC-E1A", "ACC-F1A"])
+        self.assertEqual(codes["ACC-A1A"]["default_severity"], "HIGH")
 
 
 class TestValidateSyntheticErrors(unittest.TestCase):
@@ -211,7 +218,7 @@ class TestBundleBuild(unittest.TestCase):
                     self.assertEqual(f1.read(), f2.read(), fn)
             bundle = json.load(open(os.path.join(out1, "ocrdb-0.0.0-test.json")))
             n = sum(len(d["entries"]) for d in bundle["domains"].values())
-            self.assertEqual(n, 374)
+            self.assertEqual(n, 382)
             self.assertEqual(bundle["license"], "CC BY-SA 4.0")
 
     def test_sarif_taxa_match_entries_and_levels(self):
@@ -219,7 +226,7 @@ class TestBundleBuild(unittest.TestCase):
         bundle = build_bundle.build_bundle(docs, "0.0.0-test")
         sarif = build_bundle.build_sarif(bundle)
         taxa = sarif["runs"][0]["taxonomies"][0]["taxa"]
-        self.assertEqual(len(taxa), 374)
+        self.assertEqual(len(taxa), 382)
         by_id = {t["id"]: t for t in taxa}
         # SEC-A3A is CRITICAL -> error; QAL-B2A is LOW -> note
         self.assertEqual(by_id["SEC-A3A"]["defaultConfiguration"]["level"], "error")
@@ -267,7 +274,7 @@ class TestValidateCli(unittest.TestCase):
              "--domains-dir", os.path.join(ROOT, "domains")],
             capture_output=True, text=True)
         self.assertEqual(proc.returncode, 0, proc.stderr)
-        self.assertIn("374 entries", proc.stdout)
+        self.assertIn("382 entries", proc.stdout)
 
 
 class TestBundleSchemaVersion(unittest.TestCase):
@@ -322,7 +329,7 @@ class TestCatalog(unittest.TestCase):
             html = open(os.path.join(a, "ocrdb-0.0.0-test.html"), encoding="utf-8").read()
             codes = [c for dom in json.load(open(bundle))["domains"].values()
                      for c in dom["entries"]]
-            self.assertEqual(len(codes), 374)
+            self.assertEqual(len(codes), 382)
             for c in codes:
                 self.assertIn(c, md, c)
                 self.assertIn(c, html, c)

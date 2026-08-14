@@ -32,7 +32,7 @@ CODE_RE = re.compile(r"^([A-Z]{3})-([A-Z])([1-9])([A-Z])$")
 # CHARTER but seed no codes yet. Both may appear in the <DOM>-X0X gap sentinel.
 ACTIVE_DOMAINS = {"SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT"}
 INCUBATING_DOMAINS = {"OPS", "ACC", "LNG"}
-SEEDED_INCUBATING = {"OPS"}  # domains seeded during 0.3.0 phase
+SEEDED_INCUBATING = {"OPS", "ACC"}  # domains seeded during 0.3.0 phase
 ALL_DOMAINS = ACTIVE_DOMAINS | INCUBATING_DOMAINS
 # The gap sentinel <DOM>-X0X is a RESERVED NON-ENTRY form: `0` is a reserved
 # category digit and `X` a reserved area/issue letter, so it deliberately fails

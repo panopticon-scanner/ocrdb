@@ -1,0 +1,118 @@
+# OCRDb domain file — INCUBATING (pre-1.0; codes may change until the 1.0 freeze). See CHARTER.md.
+domain: ACC
+name: accessibility
+areas:
+  A:
+    name: semantics
+    categories:
+      '1': accessible-names
+  B:
+    name: keyboard
+    categories:
+      '1': keyboard-operability
+  C:
+    name: forms
+    categories:
+      '1': form-labeling
+  D:
+    name: live-regions
+    categories:
+      '1': dynamic-announcements
+  E:
+    name: contrast
+    categories:
+      '1': perceivable-distinction
+  F:
+    name: motion
+    categories:
+      '1': motion-preferences
+entries:
+  ACC-A1A:
+    name: icon-only-control-missing-accessible-name
+    default_severity: HIGH
+    status: active
+    provenance:
+    - corpus
+    recurrence: 52
+    criteria: >-
+      Qualifies when a control exposes no programmatic accessible name to
+      assistive technology, violating WCAG 4.1.2 Name, Role, Value.
+      A user relying on a screen reader cannot identify the control's purpose.
+    examples:
+    - icon-only-control-missing-accessible-name
+    - icon-only-button-missing-accessible-name
+  ACC-A1B:
+    name: non-text-content-missing-alternative
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 20
+    examples:
+    - image-missing-alt-text
+    - non-text-content-missing-text-alternative
+  ACC-B1A:
+    name: non-interactive-element-used-as-control
+    default_severity: HIGH
+    status: active
+    provenance:
+    - corpus
+    recurrence: 32
+    criteria: >-
+      Qualifies when a div/span or other non-interactive element is wired as
+      a control without role and keyboard operability, violating WCAG 2.1.1
+      Keyboard. Keyboard and assistive-technology users cannot operate the
+      control.
+    examples:
+    - div-clickable-lacks-role-and-tabindex
+    - non-interactive-element-used-as-control
+  ACC-B1B:
+    name: focus-indicator-suppressed
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 18
+    examples:
+    - focus-indicator-suppressed
+    - outline-none-without-replacement
+  ACC-C1A:
+    name: input-missing-programmatic-label
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 22
+    examples:
+    - form-input-label-not-programmatically-associated
+    - placeholder-used-as-label
+  ACC-D1A:
+    name: dynamic-status-not-announced
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 10
+    examples:
+    - status-toast-not-announced
+    - dynamic-region-missing-aria-live
+  ACC-E1A:
+    name: info-conveyed-by-color-alone
+    default_severity: LOW
+    status: active
+    provenance:
+    - corpus
+    recurrence: 11
+    examples:
+    - selection-state-color-only
+    - error-conveyed-by-color-alone
+  ACC-F1A:
+    name: motion-ignores-reduced-motion-preference
+    default_severity: LOW
+    status: active
+    provenance:
+    - corpus
+    recurrence: 9
+    examples:
+    - animation-ignores-prefers-reduced-motion
+    - autoplay-motion-no-user-control
