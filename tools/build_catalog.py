@@ -224,6 +224,21 @@ render();
 """
 
 
+def _json_for_script(obj, **dumps_kw):
+    """json.dumps output safe to embed inside an inline <script> element.
+
+    Escapes the characters that can terminate the <script> element or break
+    JS parsing -- `<`, `>`, `&`, and the U+2028/U+2029 line separators -- as
+    `\\uXXXX`. These are valid JSON and parse back to the identical values, so
+    the embedded data is unchanged, but no catalog field (name, examples,
+    definition, area names) can close the tag or inject markup (CWE-79/116).
+    """
+    s = json.dumps(obj, **dumps_kw)
+    return (s.replace("<", "\\u003c").replace(">", "\\u003e")
+             .replace("&", "\\u0026")
+             .replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"))
+
+
 def build_html(bundle):
     recs = _catalog_data(bundle)
     domains = [{"code": c, "name": d["name"]} for c, d in bundle["domains"].items()]
@@ -233,8 +248,8 @@ def build_html(bundle):
     out = out.replace("__TOTAL__", str(total))
     out = out.replace("__NDOM__", str(len(domains)))
     out = out.replace("__LICENSE__", html.escape(bundle.get("license", "")))
-    out = out.replace("__DATA__", json.dumps(recs, sort_keys=True, separators=(",", ":")))
-    out = out.replace("__DOMAINS__", json.dumps(domains, separators=(",", ":")))
+    out = out.replace("__DATA__", _json_for_script(recs, sort_keys=True, separators=(",", ":")))
+    out = out.replace("__DOMAINS__", _json_for_script(domains, separators=(",", ":")))
     return out
 
 
