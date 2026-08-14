@@ -837,6 +837,27 @@ class TestCatalogIntegrityFixes(unittest.TestCase):
             self.assertEqual(parsed["SEC-A1A"]["survivors"], ["SEC-B1B"])
             self.assertEqual(parsed["SEC-A1A"]["note"], "a | b")  # literal | kept
 
+    def test_control_char_in_display_field_is_error(self):  # SEC-102
+        import validate
+
+        def docs(examples):
+            return {"sec.yml": {
+                "domain": "SEC", "name": "security",
+                "areas": {"A": {"name": "injection", "categories": {"1": "cmd"}}},
+                "entries": {"SEC-A1A": {
+                    "name": "x-name", "default_severity": "HIGH",
+                    "status": "active", "provenance": ["corpus"],
+                    "examples": examples,
+                }}}}
+
+        errors = validate.validate_schema(docs(["clean", "bad\x07here"]))[0]
+        self.assertTrue(any("examples[1]" in e and "control character" in e
+                            for e in errors), errors)
+        # a legitimate '</script>' in an example stays valid — the generators
+        # escape it at the sink; only control bytes are rejected at the source.
+        clean = validate.validate_schema(docs(["contains </script> literally"]))[0]
+        self.assertFalse(any("examples" in e for e in clean), clean)
+
 
 if __name__ == "__main__":
     unittest.main()
