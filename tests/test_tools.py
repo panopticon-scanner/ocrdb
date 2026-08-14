@@ -3,7 +3,8 @@ import glob
 import io
 import json
 import os
-import subprocess
+# subprocess: test-only, runs the local CLI under test with a fixed trusted argv
+import subprocess  # nosec B404
 import sys
 import tempfile
 import unittest
@@ -387,7 +388,8 @@ class TestBundleBuild(unittest.TestCase):
 
 class TestValidateCli(unittest.TestCase):
     def test_cli_passes_on_real_draft(self):
-        proc = subprocess.run(
+        # B603: argv is fixed and trusted (sys.executable + in-repo paths only)
+        proc = subprocess.run(  # nosec B603
             [sys.executable, os.path.join(ROOT, "tools", "validate.py"),
              "--domains-dir", os.path.join(ROOT, "domains")],
             capture_output=True, text=True)
