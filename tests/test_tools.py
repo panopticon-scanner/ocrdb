@@ -538,6 +538,50 @@ class TestMigrationMap(unittest.TestCase):
             open(os.path.join(ROOT, "build", "ocrdb-0.2.0-migration.json")))
         self.assertEqual(committed, self._build())
 
+    def _synthetic(self, tmp, from_codes, to_codes, table_rows):
+        # Minimal from/to bundles + a removals table, for exercising the
+        # failing paths of build_migration's integrity guards.
+        def bundle(name, codes):
+            p = os.path.join(tmp, name)
+            with open(p, "w", encoding="utf-8") as fh:
+                json.dump({"domains": {"SEC": {"entries":
+                          {c: {} for c in codes}}}}, fh)
+            return p
+        src = os.path.join(tmp, "removals.md")
+        with open(src, "w", encoding="utf-8") as fh:
+            fh.write("| # | Removed | Survivor | Note |\n|---|---|---|---|\n")
+            for r in table_rows:
+                fh.write(r + "\n")
+        return src, bundle("from.json", from_codes), bundle("to.json", to_codes)
+
+    def test_crosscheck_fails_on_source_diff_mismatch(self):
+        # Guard 1: the removed set (bundle diff) must equal the parsed source
+        # set; a drift is a loud SystemExit, not a silently wrong artifact.
+        import build_migration
+        with tempfile.TemporaryDirectory() as tmp:
+            src, frm, to = self._synthetic(
+                tmp, {"SEC-A1A", "SEC-A1B"}, {"SEC-A1B"},
+                ["| 1 | SEC-A2A | SEC-A1B | note |"])  # diff=SEC-A1A, source=SEC-A2A
+            with self.assertRaises(SystemExit) as cm:
+                build_migration.build_migration(src, frm, to, "0.1.0", "0.2.0")
+            msg = str(cm.exception)
+            self.assertIn("cross-check FAILED", msg)
+            self.assertIn("SEC-A1A", msg)  # in-diff-not-source
+            self.assertIn("SEC-A2A", msg)  # in-source-not-diff
+
+    def test_survivor_must_be_real_to_version_code(self):
+        # Guard 2: every survivor must exist in the to-version bundle.
+        import build_migration
+        with tempfile.TemporaryDirectory() as tmp:
+            src, frm, to = self._synthetic(
+                tmp, {"SEC-A1A", "SEC-A1B"}, {"SEC-A1B"},
+                ["| 1 | SEC-A1A | SEC-Z9Z | note |"])  # survivor SEC-Z9Z absent from `to`
+            with self.assertRaises(SystemExit) as cm:
+                build_migration.build_migration(src, frm, to, "0.1.0", "0.2.0")
+            msg = str(cm.exception)
+            self.assertIn("SEC-Z9Z", msg)
+            self.assertIn("is not a real 0.2.0 code", msg)
+
 
 class TestNewValidateChecks(unittest.TestCase):
     def _two_entry_doc(self):
