@@ -1,6 +1,6 @@
-# OCRDb Catalog — v0.2.1
+# OCRDb Catalog — v0.3.0
 
-365 finding types across 7 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.2.1.html`.
+390 finding types across 10 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.3.0.html`.
 
 **Severity** INFO · LOW · MEDIUM · HIGH · CRITICAL — the *typical* grade for the defect type, not a per-instance verdict. **character**: `defect` (absent) or `opportunity`.
 
@@ -8,13 +8,68 @@
 
 | Domain | Name | Entries |
 |---|---|---:|
+| [`ACC`](#acc--accessibility) | accessibility | 8 |
 | [`AGT`](#agt--agentic-trust) | agentic-trust | 16 |
 | [`ARC`](#arc--architecture) | architecture | 70 |
 | [`COD`](#cod--correctness) | correctness | 55 |
 | [`DAT`](#dat--data-and-persistence) | data-and-persistence | 27 |
+| [`LNG`](#lng--language-and-internationalization) | language-and-internationalization | 8 |
+| [`OPS`](#ops--production-readiness) | production-readiness | 9 |
 | [`QAL`](#qal--quality-maintainability) | quality-maintainability | 51 |
 | [`SEC`](#sec--security) | security | 70 |
 | [`TST`](#tst--testing) | testing | 76 |
+
+## ACC — accessibility
+
+### ACC-A · semantics
+
+**ACC-A1 · accessible-names**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `ACC-A1A` | icon-only-control-missing-accessible-name | HIGH | — | — |
+| `ACC-A1B` | non-text-content-missing-alternative | MEDIUM | — | — |
+
+### ACC-B · keyboard
+
+**ACC-B1 · keyboard-operability**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `ACC-B1A` | non-interactive-element-used-as-control | HIGH | — | — |
+| `ACC-B1B` | focus-indicator-suppressed | MEDIUM | — | — |
+
+### ACC-C · forms
+
+**ACC-C1 · form-labeling**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `ACC-C1A` | input-missing-programmatic-label | MEDIUM | — | — |
+
+### ACC-D · live-regions
+
+**ACC-D1 · dynamic-announcements**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `ACC-D1A` | dynamic-status-not-announced | MEDIUM | — | — |
+
+### ACC-E · contrast
+
+**ACC-E1 · perceivable-distinction**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `ACC-E1A` | info-conveyed-by-color-alone | LOW | — | — |
+
+### ACC-F · motion
+
+**ACC-F1 · motion-preferences**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `ACC-F1A` | motion-ignores-reduced-motion-preference | LOW | — | — |
 
 ## AGT — agentic-trust
 
@@ -498,6 +553,104 @@
 |---|---|---|---|---|
 | `DAT-F2A` | unversioned-persisted-format | MEDIUM | — | — |
 | `DAT-F2B` | unbounded-persisted-file-read | LOW | CWE-789 | — |
+
+## LNG — language-and-internationalization
+
+### LNG-A · externalization
+
+**LNG-A1 · string-externalization**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `LNG-A1A` | hardcoded-user-facing-string | MEDIUM | — | — |
+| `LNG-A1B` | string-assembled-outside-i18n | LOW | — | — |
+
+### LNG-B · plural-format
+
+**LNG-B1 · locale-aware-formatting**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `LNG-B1A` | locale-unaware-number-date-format | LOW | — | — |
+| `LNG-B1B` | naive-pluralization | LOW | — | — |
+
+### LNG-C · grammar
+
+**LNG-C1 · translation-composition**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `LNG-C1A` | translation-assembled-by-concatenation | MEDIUM | — | — |
+
+### LNG-D · key-drift
+
+**LNG-D1 · key-management**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `LNG-D1A` | translation-key-drift-or-missing-fallback | LOW | — | — |
+
+### LNG-E · encoding
+
+**LNG-E1 · text-encoding**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `LNG-E1A` | byte-vs-codepoint-length-confusion | LOW | CWE-176 | — |
+
+### LNG-F · directionality
+
+**LNG-F1 · directionality**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `LNG-F1A` | missing-rtl-bidi-support | LOW | — | — |
+
+## OPS — production-readiness
+
+### OPS-A · resilience
+
+**OPS-A1 · external-call-resilience**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `OPS-A1A` | missing-timeout-on-external-call | HIGH | — | — |
+| `OPS-A1B` | retry-without-backoff-or-jitter | MEDIUM | — | — |
+
+### OPS-B · lifecycle
+
+**OPS-B1 · startup-and-shutdown**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `OPS-B1A` | no-graceful-shutdown-drain | HIGH | — | — |
+| `OPS-B1B` | fake-or-noop-health-check | MEDIUM | — | — |
+
+### OPS-C · deployment-config
+
+**OPS-C1 · startup-configuration**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `OPS-C1A` | unvalidated-startup-configuration | MEDIUM | — | — |
+| `OPS-C1B` | unconditional-startup-side-effect | LOW | — | — |
+
+### OPS-D · resource-limits
+
+**OPS-D1 · resource-bounds**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `OPS-D1A` | unbounded-resource-consumption | HIGH | — | — |
+| `OPS-D1B` | missing-pagination-or-result-cap | MEDIUM | — | — |
+
+### OPS-E · observability
+
+**OPS-E1 · failure-visibility**
+
+| Code | Issue | Severity | CWE | Notes |
+|---|---|---|---|---|
+| `OPS-E1A` | silent-failure-without-telemetry | MEDIUM | — | — |
 
 ## QAL — quality-maintainability
 

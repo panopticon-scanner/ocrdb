@@ -2,7 +2,21 @@
 
 All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (incubating); see SCHEMA.md stability contract.
 
-## Unreleased
+## [0.3.0] - 2026-08-14
+
+Seeds and activates the three domains `CHARTER.md` had declared incubating since 0.1: `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. Source grows **365 → 390 codes (25 additions)**, all in the three new domains; no renames, no severity re-grades, no removals — the 365 pre-existing codes are byte-identical on `name`/`default_severity`. The 0.2.0 release bundle stays the frozen stability anchor; this release's stability contract was checked against 0.2.1 (`build_bundle.py --baseline build/ocrdb-0.2.1.json`) and passed clean.
+
+### Added
+- `OPS` production-readiness — 9 codes across 5 areas (external-call resilience, lifecycle/shutdown, deployment-config, resource-limits, observability): missing-timeout-on-external-call, retry-without-backoff-or-jitter, no-graceful-shutdown-drain, fake-or-noop-health-check, unvalidated-startup-configuration, unconditional-startup-side-effect, unbounded-resource-consumption, missing-pagination-or-result-cap, silent-failure-without-telemetry.
+- `ACC` accessibility — 8 codes across 6 areas (semantics, keyboard, forms, live-regions, contrast, motion), WCAG-crosswalked: icon-only-control-missing-accessible-name, non-text-content-missing-alternative, non-interactive-element-used-as-control, focus-indicator-suppressed, input-missing-programmatic-label, dynamic-status-not-announced, info-conveyed-by-color-alone, motion-ignores-reduced-motion-preference.
+- `LNG` language/internationalization — 8 codes across 6 areas (externalization, plural/format, grammar, key-drift, encoding, directionality): hardcoded-user-facing-string, string-assembled-outside-i18n, locale-unaware-number-date-format, naive-pluralization, translation-assembled-by-concatenation, translation-key-drift-or-missing-fallback, byte-vs-codepoint-length-confusion (`CWE-176`), missing-rtl-bidi-support.
+- `SCHEMA.md` active domain set grows to **10** (`OPS`/`ACC`/`LNG` move out of "incubating, declared not yet seeded"); a new **"Domain routing for overlapping hazards"** section adds cross-domain tiebreakers: `OPS`↔`SEC` (externally/maliciously triggered failure → SEC; internal/systemic/self-inflicted → OPS), `OPS`↔`ARC` (deliberate architectural fail-open decision → ARC; runtime operational error-swallowing → OPS), `ACC` exclusive ownership of user-facing assistive-technology defects (never QAL), and `LNG`↔`DAT` (locale-aware formatting of user-facing UI text → LNG; raw data-layer encoding stays DAT).
+- `CHARTER.md` updated to the 10-domain active roster; the old "Incubating (declared, not yet seeded)" clause for `OPS`/`ACC`/`LNG` is retired.
+- Reciprocal cross-domain `see_also`: `OPS-A1A` ↔ `SEC-F2A` (systemic/self-inflicted timeout stall vs. externally-triggered) and `OPS-E1A` ↔ `COD-B2C` (runtime error-swallow-without-telemetry vs. the generic wrong-result home), per the new routing note.
+
+### Deferred (→ 0.3.1)
+- A `criteria` pass (positive-qualification + nearest-neighbor exclusion, per the 0.2.x boundary-consolidation style) across the newly seeded domains — only 7 of the 25 new codes carry `criteria` today; the rest currently lean on the SCHEMA routing note alone for disambiguation.
+- Two candidate cross-domain `see_also` edges surfaced in planning were dropped rather than inventing a counterpart code: `ACC-A1A` has no QAL near-neighbor (QAL area F is code-convention consistency, not UI/accessibility regression), and `LNG-E1A` has no `DAT` near-neighbor (`domains/dat.yml` has no text-encoding code; its "serialization" entries are DB/ORM query serialization). Revisit if either domain gains a matching code.
 
 ## [0.2.1] - 2026-08-13
 

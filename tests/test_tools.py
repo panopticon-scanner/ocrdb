@@ -19,11 +19,21 @@ def _real_docs():
     return validate.load_domains(os.path.join(ROOT, "domains"))
 
 
+def _codes():
+    docs = _real_docs()
+    return {c: e for d in docs.values() for c, e in (d.get("entries") or {}).items()}
+
+
+def _entries_map(bundle):
+    """code -> entry dict, pulled from a built bundle's domains/entries shape."""
+    return {c: e for dom in bundle["domains"].values() for c, e in dom["entries"].items()}
+
+
 class TestValidateRealDraft(unittest.TestCase):
     def test_draft_has_no_schema_errors(self):
         errors, warnings, codes = validate.validate_schema(_real_docs())
         self.assertEqual(errors, [])
-        self.assertEqual(len(codes), 365)
+        self.assertEqual(len(codes), 390)
 
     def test_single_homing_ratified_no_cross_domain_duplicates(self):
         # Ratified 0.1: single-homing (big rock #0) resolved every cross-domain
@@ -31,6 +41,96 @@ class TestValidateRealDraft(unittest.TestCase):
         _, warnings, _ = validate.validate_schema(_real_docs())
         dup = [w for w in warnings if "cross-domain duplicate" in w]
         self.assertEqual(dup, [], dup)
+
+    def test_ops_domain_seeded(self):
+        codes = _codes()
+        ops = {c: e for c, e in codes.items() if c.startswith("OPS-")}
+        self.assertEqual(sorted(ops), [
+            "OPS-A1A", "OPS-A1B", "OPS-B1A", "OPS-B1B", "OPS-C1A",
+            "OPS-C1B", "OPS-D1A", "OPS-D1B", "OPS-E1A"])
+        for e in ops.values():
+            self.assertEqual(e["status"], "active")
+            self.assertEqual(e["provenance"], ["corpus"])
+            self.assertIn(e["default_severity"],
+                          {"CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"})
+
+    def test_acc_domain_seeded(self):
+        codes = _codes()
+        acc = sorted(c for c in codes if c.startswith("ACC-"))
+        self.assertEqual(acc, ["ACC-A1A", "ACC-A1B", "ACC-B1A", "ACC-B1B",
+                               "ACC-C1A", "ACC-D1A", "ACC-E1A", "ACC-F1A"])
+        self.assertEqual(codes["ACC-A1A"]["default_severity"], "HIGH")
+
+    def test_lng_domain_seeded(self):
+        codes = _codes()
+        lng = sorted(c for c in codes if c.startswith("LNG-"))
+        self.assertEqual(lng, ["LNG-A1A", "LNG-A1B", "LNG-B1A", "LNG-B1B",
+                               "LNG-C1A", "LNG-D1A", "LNG-E1A", "LNG-F1A"])
+        self.assertEqual(codes["LNG-E1A"].get("cwe"), ["CWE-176"])
+
+    def test_new_cross_domain_see_also_reciprocal(self):
+        codes = _codes()
+
+        def sa(c):
+            return set(codes[c].get("see_also") or [])
+        # confirmed edges
+        self.assertIn("SEC-F2A", sa("OPS-A1A"))
+        self.assertIn("OPS-A1A", sa("SEC-F2A"))
+        self.assertIn("COD-B2C", sa("OPS-E1A"))
+        self.assertIn("OPS-E1A", sa("COD-B2C"))
+        # every see_also target on a new code must be a real code
+        for c in [k for k in codes if k[:3] in ("OPS", "ACC", "LNG")]:
+            for t in (codes[c].get("see_also") or []):
+                self.assertIn(t, codes, f"{c} see_also {t} missing")
+
+    def test_active_domains_are_ten(self):
+        # Aggregate bundle-level stability guard: the domain set derived from
+        # the real code ids is exactly the 10-domain 0.3.0 roster, no more
+        # (accidental new domain) and no fewer (a domain silently dropped).
+        codes = _codes()
+        doms = {c.split("-")[0] for c in codes}
+        self.assertEqual(doms, {"SEC", "COD", "ARC", "TST", "QAL", "AGT",
+                                "DAT", "OPS", "ACC", "LNG"})
+
+    def test_ops_acc_lng_area_category_names_match_plan(self):
+        # Per-domain areas/categories structural guard for the three newly
+        # seeded domains — not covered by test_{ops,acc,lng}_domain_seeded,
+        # which check entries/status/provenance/severity but not the areas
+        # header. Names must match the plan's File Structure verbatim.
+        docs = _real_docs()
+        expected = {
+            "ops.yml": {
+                "A": ("resilience", "external-call-resilience"),
+                "B": ("lifecycle", "startup-and-shutdown"),
+                "C": ("deployment-config", "startup-configuration"),
+                "D": ("resource-limits", "resource-bounds"),
+                "E": ("observability", "failure-visibility"),
+            },
+            "acc.yml": {
+                "A": ("semantics", "accessible-names"),
+                "B": ("keyboard", "keyboard-operability"),
+                "C": ("forms", "form-labeling"),
+                "D": ("live-regions", "dynamic-announcements"),
+                "E": ("contrast", "perceivable-distinction"),
+                "F": ("motion", "motion-preferences"),
+            },
+            "lng.yml": {
+                "A": ("externalization", "string-externalization"),
+                "B": ("plural-format", "locale-aware-formatting"),
+                "C": ("grammar", "translation-composition"),
+                "D": ("key-drift", "key-management"),
+                "E": ("encoding", "text-encoding"),
+                "F": ("directionality", "directionality"),
+            },
+        }
+        for fn, areas in expected.items():
+            actual = docs[fn]["areas"]
+            self.assertEqual(set(actual), set(areas), fn)
+            for letter, (area_name, cat_name) in areas.items():
+                self.assertEqual(actual[letter]["name"], area_name,
+                                 f"{fn} area {letter}")
+                self.assertEqual(actual[letter]["categories"], {"1": cat_name},
+                                 f"{fn} area {letter} category '1'")
 
 
 class TestValidateSyntheticErrors(unittest.TestCase):
@@ -130,9 +230,12 @@ class TestGovernanceDocs(unittest.TestCase):
             self.assertIn("INCUBATING", first, f)
 
     def test_schema_lists_all_active_and_incubating_domains(self):
+        # 0.3.0: OPS/ACC/LNG activated — the roster is 10 active, 0 declared-
+        # not-seeded. The old "Incubating (declared, not yet seeded):" clause
+        # is gone (see test_schema_activates_ten_domains_and_has_routing_note).
         schema = open(os.path.join(ROOT, "SCHEMA.md"), encoding="utf-8").read()
         self.assertIn("Active set:", schema)
-        self.assertIn("Incubating (declared, not yet seeded):", schema)
+        self.assertNotIn("Incubating (declared, not yet seeded):", schema)
         for dom in ("SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT",
                     "OPS", "ACC", "LNG"):
             self.assertIn(f"`{dom}`", schema, dom)
@@ -146,6 +249,22 @@ class TestGovernanceDocs(unittest.TestCase):
             text = open(os.path.join(ROOT, name), encoding="utf-8").read()
             self.assertNotIn("A11Y", text, name)
             self.assertNotIn("I18N", text, name)
+
+    def test_schema_activates_ten_domains_and_has_routing_note(self):
+        schema = open(os.path.join(ROOT, "SCHEMA.md"), encoding="utf-8").read()
+        self.assertNotIn("Incubating (declared, not yet seeded)", schema)
+        self.assertIn("Domain routing for overlapping hazards", schema)
+        for rule in ("external", "systemic", "fail-open", "error-swallow",
+                     "assistive", "locale"):
+            self.assertIn(rule, schema.lower())
+
+    def test_charter_reflects_ops_acc_lng_activation(self):
+        # CHARTER<->active parity guard: OPS/ACC/LNG are seeded and active
+        # (0.3.0) — the charter must not still call them "not yet seeded".
+        charter = open(os.path.join(ROOT, "CHARTER.md"), encoding="utf-8").read()
+        self.assertNotIn("not yet seeded", charter)
+        for dom in ("OPS", "ACC", "LNG"):
+            self.assertIn(f"`{dom}`", charter, dom)
 
 
 class TestStabilityContract(unittest.TestCase):
@@ -194,7 +313,7 @@ class TestBundleBuild(unittest.TestCase):
                     self.assertEqual(f1.read(), f2.read(), fn)
             bundle = json.load(open(os.path.join(out1, "ocrdb-0.0.0-test.json")))
             n = sum(len(d["entries"]) for d in bundle["domains"].values())
-            self.assertEqual(n, 365)
+            self.assertEqual(n, 390)
             self.assertEqual(bundle["license"], "CC BY-SA 4.0")
 
     def test_sarif_taxa_match_entries_and_levels(self):
@@ -202,7 +321,7 @@ class TestBundleBuild(unittest.TestCase):
         bundle = build_bundle.build_bundle(docs, "0.0.0-test")
         sarif = build_bundle.build_sarif(bundle)
         taxa = sarif["runs"][0]["taxonomies"][0]["taxa"]
-        self.assertEqual(len(taxa), 365)
+        self.assertEqual(len(taxa), 390)
         by_id = {t["id"]: t for t in taxa}
         # SEC-A3A is CRITICAL -> error; QAL-B2A is LOW -> note
         self.assertEqual(by_id["SEC-A3A"]["defaultConfiguration"]["level"], "error")
@@ -242,6 +361,29 @@ class TestBundleBuild(unittest.TestCase):
             self.assertEqual(rc, 1)
             self.assertFalse(os.path.exists(os.path.join(tmp, "out")))
 
+    def test_0_3_0_bundle_is_365_plus_25(self):
+        import json
+        base = json.load(open(os.path.join(ROOT, "build/ocrdb-0.2.1.json")))
+        new = json.load(open(os.path.join(ROOT, "build/ocrdb-0.3.0.json")))
+        b = _entries_map(base); n = _entries_map(new)  # {code: {name, default_severity}}
+        self.assertEqual(len(n), 390)
+        self.assertEqual(len(n) - len(b), 25)
+        for code, e in b.items():  # the 365 must not drift
+            self.assertEqual(n[code]["name"], e["name"], code)
+            self.assertEqual(n[code]["default_severity"], e["default_severity"], code)
+
+    def test_no_area_or_category_name_drift_vs_release(self):
+        # Companion to the entry-level no-drift guard above: the pre-existing
+        # domains' area and category *display names* must also be byte-identical
+        # to the 0.2.1 release. A rename there is real drift the entry-name
+        # check misses (bundle stores areas[L].name + areas[L].categories[d]).
+        import json
+        base = json.load(open(os.path.join(ROOT, "build/ocrdb-0.2.1.json")))
+        new = json.load(open(os.path.join(ROOT, "build/ocrdb-0.3.0.json")))
+        for dom, d in base["domains"].items():  # the 7 pre-existing domains
+            self.assertEqual(new["domains"][dom]["name"], d["name"], dom)
+            self.assertEqual(new["domains"][dom]["areas"], d["areas"], dom)
+
 
 class TestValidateCli(unittest.TestCase):
     def test_cli_passes_on_real_draft(self):
@@ -250,7 +392,7 @@ class TestValidateCli(unittest.TestCase):
              "--domains-dir", os.path.join(ROOT, "domains")],
             capture_output=True, text=True)
         self.assertEqual(proc.returncode, 0, proc.stderr)
-        self.assertIn("365 entries", proc.stdout)
+        self.assertIn("390 entries", proc.stdout)
 
 
 class TestBundleSchemaVersion(unittest.TestCase):
@@ -305,7 +447,7 @@ class TestCatalog(unittest.TestCase):
             html = open(os.path.join(a, "ocrdb-0.0.0-test.html"), encoding="utf-8").read()
             codes = [c for dom in json.load(open(bundle))["domains"].values()
                      for c in dom["entries"]]
-            self.assertEqual(len(codes), 365)
+            self.assertEqual(len(codes), 390)
             for c in codes:
                 self.assertIn(c, md, c)
                 self.assertIn(c, html, c)

@@ -754,6 +754,8 @@ entries:
     - CWE-770
     examples:
     - Unbounded Response Size in External API Lookup
+    see_also:
+    - OPS-A1A
   SEC-G1B:
     name: tool-citation-cwe-mismatch
     default_severity: LOW

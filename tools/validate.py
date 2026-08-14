@@ -28,11 +28,18 @@ except ImportError:  # build tooling fails loudly — no degraded builds
     sys.exit("tools/validate.py requires PyYAML (pip install pyyaml)")
 
 CODE_RE = re.compile(r"^([A-Z]{3})-([A-Z])([1-9])([A-Z])$")
-# Active domains carry real entries; incubating domains are declared in the
-# CHARTER but seed no codes yet. Both may appear in the <DOM>-X0X gap sentinel.
-ACTIVE_DOMAINS = {"SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT"}
-INCUBATING_DOMAINS = {"OPS", "ACC", "LNG"}
-ALL_DOMAINS = ACTIVE_DOMAINS | INCUBATING_DOMAINS
+# All ten domains are active and carry real entries (0.3.0: OPS/ACC/LNG
+# activated after seeding — see CHANGELOG). Each has a <DOM>-X0X gap sentinel.
+ACTIVE_DOMAINS = {"SEC", "COD", "ARC", "TST", "QAL", "AGT", "DAT",
+                   "OPS", "ACC", "LNG"}
+# Historical bridge from the 0.3.0 seed-before-activate phase (Tasks 1-3):
+# domains seeded but not yet promoted into ACTIVE_DOMAINS. Now empty — OPS/
+# ACC/LNG graduated above. Kept (rather than deleted) because
+# domain_parity_errors below is defined against ACTIVE_DOMAINS |
+# SEEDED_INCUBATING; a future incubating-seed round can repopulate it without
+# touching that invariant.
+SEEDED_INCUBATING = set()
+ALL_DOMAINS = ACTIVE_DOMAINS
 # The gap sentinel <DOM>-X0X is a RESERVED NON-ENTRY form: `0` is a reserved
 # category digit and `X` a reserved area/issue letter, so it deliberately fails
 # the strict entry CODE_RE. It is recognized here, never validated as an entry.
@@ -176,9 +183,13 @@ def validate_schema(docs):
 
 
 def prior_art_budget_issues(all_codes):
-    """Per-domain: entries grounded ONLY by prior-art (provenance has prior-art
-    and NEITHER corpus NOR tool-observed) must be <= 25% of the domain. Returns
-    over-budget messages (empty if all within budget)."""
+    """Per-domain prior-art budget check.
+
+    An entry is "ungrounded" when its provenance lists prior-art but has
+    neither corpus nor tool-observed backing. Each domain must keep those
+    ungrounded entries at or below PRIOR_ART_BUDGET (25%). Returns one
+    message per over-budget domain (empty list if all are within budget).
+    """
     from collections import defaultdict
     total, ungrounded = defaultdict(int), defaultdict(int)
     for code, e in all_codes.items():
@@ -199,15 +210,16 @@ def prior_art_budget_issues(all_codes):
 
 def domain_parity_errors(docs):
     """Full-catalog invariant: the domains present on disk are exactly
-    ACTIVE_DOMAINS. Called from the CLI/build, NOT from validate_schema
+    ACTIVE_DOMAINS + SEEDED_INCUBATING. Called from the CLI/build, NOT from validate_schema
     (which also runs on synthetic single-domain fixtures)."""
     present = {d.get("domain") for d in docs.values()
                if isinstance(d, dict) and d.get("domain")}
-    if present == ACTIVE_DOMAINS:
+    expected = ACTIVE_DOMAINS | SEEDED_INCUBATING
+    if present == expected:
         return []
     return [f"domain-list parity: on-disk domains {sorted(present)} != "
-            f"ACTIVE_DOMAINS (missing {sorted(ACTIVE_DOMAINS - present)}, "
-            f"unexpected {sorted(present - ACTIVE_DOMAINS)})"]
+            f"expected (missing {sorted(expected - present)}, "
+            f"unexpected {sorted(present - expected)})"]
 
 
 def validate_stability(all_codes, baseline_path):

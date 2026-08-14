@@ -9,12 +9,12 @@ DOMAIN (3 letters) - AREA (letter) CATEGORY (digit) ISSUE (letter)
 SEC-A2D
 ```
 
-- **Domain** — 3-letter, tool-neutral. Active set: `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic, `DAT` data. Incubating (declared, not yet seeded): `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. Domains are a starting set, not a cap.
+- **Domain** — 3-letter, tool-neutral. Active set: `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic, `DAT` data, `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. Domains are a starting set, not a cap.
 - **Area** — a letter (`A`–`Z`) naming a coherent territory within the domain.
 - **Category** — a digit (`1`–`9`) within the area.
 - **Issue** — a letter naming a **distinct defect type** (not a severity slot). At seeding time, issue letters within a category are assigned in typical-severity order (a mnemonic aid only — the letter's meaning never changes even if severities are later re-graded).
 - **Versioned citation form** (outside a pinned context): `ocrdb-v0.1-SEC-A2D`.
-- **Domain fallback code**: `<DOM>-X0X` — used by consumers when no specific issue fits. It is a **reserved non-entry form** that deliberately sits OUTSIDE the entry grammar above (`0` is a reserved category digit, `X` a reserved area/issue letter), so a real entry code and the sentinel can never collide. Fallback usage is the catalog-gap signal that feeds curation; `X0X` is never assigned to a real entry. Every declared domain (active and incubating) has a fallback, e.g. `SEC-X0X`, `OPS-X0X`.
+- **Domain fallback code**: `<DOM>-X0X` — used by consumers when no specific issue fits. It is a **reserved non-entry form** that deliberately sits OUTSIDE the entry grammar above (`0` is a reserved category digit, `X` a reserved area/issue letter), so a real entry code and the sentinel can never collide. Fallback usage is the catalog-gap signal that feeds curation; `X0X` is never assigned to a real entry. Every declared domain has a fallback, e.g. `SEC-X0X`, `OPS-X0X`.
 
 ## Entry schema
 
@@ -141,5 +141,11 @@ When one observation could be cited under more than one domain, route by *what t
 - **An instance that breaks a contract or produces a wrong result → the correctness/behavioral home** (COD, or the domain that owns the specific hazard).
 - **Two specifications that disagree with each other** — code vs. code, doc vs. doc, schema vs. producer, or documentation vs. the repository's actual structure — **→ the architecture home (ARC).**
 - **Inert staleness** — a reference, path, or version out of date but breaking nothing (a drifted pointer, not a structural absence) — **→ the quality/maintainability home (QAL).**
+
+When a hazard could plausibly home in two domains, route by:
+- **OPS ↔ SEC** — an externally/maliciously triggered failure homes in SEC; an internal or systemic threshold / self-inflicted failure homes in OPS.
+- **OPS ↔ ARC** — a deliberate architectural fail-open *decision* homes in ARC; runtime operational error-swallowing homes in OPS.
+- **ACC ownership** — ACC exclusively owns user-facing assistive-technology defects; a UI-regression that is an AT defect routes to ACC, not QAL.
+- **LNG ↔ DAT** — LNG owns locale-aware sorting/encoding of user-facing UI text; raw data-layer encoding stays DAT.
 
 An entry's `criteria` may reference this principle to disambiguate a near-neighbour in another domain.
