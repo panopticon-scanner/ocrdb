@@ -9,7 +9,7 @@ DOMAIN (3 letters) - AREA (letter) CATEGORY (digit) ISSUE (letter)
 SEC-A2D
 ```
 
-- **Domain** — 3-letter, tool-neutral. Active set: `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic, `DAT` data, `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. Domains are a starting set, not a cap.
+- **Domain** — 3-letter, tool-neutral. Active set: `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic, `DAT` data, `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. The roster is open for evidence-driven additions through 0.5.0 (roadmapped: `MOC`, `CMP`), then hard-frozen until 1.0 — see the domain-roster lifecycle in `CHARTER.md`.
 - **Area** — a letter (`A`–`Z`) naming a coherent territory within the domain.
 - **Category** — a digit (`1`–`9`) within the area.
 - **Issue** — a letter naming a **distinct defect type** (not a severity slot). At seeding time, issue letters within a category are assigned in typical-severity order (a mnemonic aid only — the letter's meaning never changes even if severities are later re-graded).
