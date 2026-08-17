@@ -366,9 +366,13 @@ class TestBundleBuild(unittest.TestCase):
                          "entries:\n  SEC-A1A: {name: x, default_severity: NOPE,"
                          " status: active, provenance: [c]}\n")
             with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                # enforce_release_root=False: this test deliberately builds a
+                # synthetic catalog to prove schema errors abort the build; the
+                # release-root pin (its own test) would otherwise refuse the tmp dir
                 rc = build_bundle.main(["--version", "0.0.0-test",
                                         "--domains-dir", dom_dir,
-                                        "--out", os.path.join(tmp, "out")])
+                                        "--out", os.path.join(tmp, "out")],
+                                       enforce_release_root=False)
             self.assertEqual(rc, 1)
             self.assertFalse(os.path.exists(os.path.join(tmp, "out")))
 
@@ -968,6 +972,77 @@ class TestToolingCoverageGaps(unittest.TestCase):
             self.assertEqual(r["cwe"], b["cwe"], code)
             self.assertEqual(r["domain"], code[:3], code)
             self.assertEqual(r["area"], f"{code[:3]}-{code.split('-')[1][0]}", code)
+
+
+class TestReleaseIngestGuard(unittest.TestCase):
+    """candidate-domain-protocol §4: validate.py and build_bundle.py must refuse
+    to ingest any file outside the repository's own domains/, so a provisional or
+    candidate skeleton in OCRDb YAML shape can never be built into a shipped
+    bundle. Two layers: a release-root pin on both CLIs, and a symlink-escape
+    check in the shared loader."""
+
+    def _fake_catalog(self, dom_dir):
+        """A schema-valid single-domain file, so a failure to refuse would
+        otherwise proceed toward a real build — isolating the guard from schema
+        and parity errors."""
+        os.makedirs(dom_dir, exist_ok=True)
+        with open(os.path.join(dom_dir, "sec.yml"), "w", encoding="utf-8") as fh:
+            fh.write("domain: SEC\nname: security\n"
+                     "areas: {A: {name: x, categories: {1: c}}}\n"
+                     "entries:\n"
+                     "  SEC-A1A: {name: provisional-thing, default_severity: LOW,"
+                     " status: active, provenance: [corpus]}\n")
+
+    def test_build_bundle_refuses_noncanonical_domains_dir(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dom = os.path.join(tmp, "domains")
+            self._fake_catalog(dom)
+            out = os.path.join(tmp, "out")
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as cm:
+                    build_bundle.main(["--version", "9.9.9",
+                                       "--domains-dir", dom, "--out", out])
+            self.assertIn("refusing to ingest", str(cm.exception))
+            self.assertFalse(os.path.exists(out))  # never reached the build
+
+    def test_validate_refuses_noncanonical_domains_dir(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dom = os.path.join(tmp, "domains")
+            self._fake_catalog(dom)
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as cm:
+                    validate.main(["--domains-dir", dom])
+            self.assertIn("refusing to ingest", str(cm.exception))
+
+    def test_canonical_domains_dir_still_builds(self):
+        # regression: the real repository catalog must still build cleanly
+        with tempfile.TemporaryDirectory() as tmp:
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                rc = build_bundle.main(["--version", "9.9.9", "--domains-dir",
+                                        os.path.join(ROOT, "domains"),
+                                        "--out", tmp])
+            self.assertEqual(rc, 0)
+            self.assertTrue(os.path.exists(os.path.join(tmp, "ocrdb-9.9.9.json")))
+
+    def test_dotted_path_resolving_to_canonical_is_accepted(self):
+        # the guard compares real paths, so a path spelled with .. that RESOLVES
+        # to <repo>/domains is accepted (no raise)
+        validate.assert_release_domains_dir(
+            os.path.join(ROOT, "tools", "..", "domains"))
+
+    def test_load_domains_refuses_symlink_escape(self):
+        # a symlink inside the ingest dir pointing OUTSIDE it (a panel file
+        # smuggled in through domains/) is refused loudly, not followed
+        with tempfile.TemporaryDirectory() as tmp:
+            dom = os.path.join(tmp, "domains")
+            os.makedirs(dom)
+            outside = os.path.join(tmp, "evil.yml")
+            with open(outside, "w", encoding="utf-8") as fh:
+                fh.write("domain: MOC\nname: model\nareas: {}\nentries: {}\n")
+            os.symlink(outside, os.path.join(dom, "moc.yml"))
+            with self.assertRaises(SystemExit) as cm:
+                validate.load_domains(dom)
+            self.assertIn("outside", str(cm.exception).lower())
 
 
 if __name__ == "__main__":
