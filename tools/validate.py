@@ -6,6 +6,11 @@ Usage:
 
 Exit codes: 0 = clean (warnings allowed), 1 = schema/stability errors.
 
+Ingest is pinned to the repository's own domains/ (assert_release_domains_dir):
+a --domains-dir resolving anywhere else, or a symlink escaping the dir, is
+refused loudly so a provisional/candidate skeleton can never be built or blessed
+as valid (candidate-domain-protocol §4).
+
 Schema checks are hard errors. Single-homing (RATIFICATION big rock #0)
 is enforced by construction — the catalog is a clean rewrite with no
 cross-domain duplicate names. Cross-domain duplicate names remain a
@@ -104,11 +109,43 @@ _NoDupLoader.add_constructor(
     yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _construct_mapping_no_dup)
 
 
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The release catalog lives at exactly <repo>/domains. Both CLIs (validate.main
+# and build_bundle.main) refuse to ingest from anywhere else, so a provisional or
+# candidate skeleton -- authored in OCRDb's own YAML shape but living in a panel
+# directory, never in domains/ -- can never be built into a shipped bundle
+# (candidate-domain-protocol §4). This ingest-boundary pin is complementary to
+# domain_parity_errors below, which is a content backstop on the domain field.
+CANONICAL_DOMAINS_DIR = os.path.realpath(os.path.join(REPO_ROOT, "domains"))
+
+
+def assert_release_domains_dir(domains_dir):
+    """Refuse, loudly, to ingest a domains dir other than the repository's own
+    <repo>/domains. Called by both CLIs before any file is read. Paths are
+    compared after realpath resolution, so a relative or dotted spelling that
+    resolves to the canonical directory is accepted."""
+    given = os.path.realpath(domains_dir)
+    if given != CANONICAL_DOMAINS_DIR:
+        raise SystemExit(
+            f"refusing to ingest domains from {given!r}: only the repository "
+            f"catalog {CANONICAL_DOMAINS_DIR!r} may be built -- provisional or "
+            f"candidate skeletons must never enter a shipped bundle")
+
+
 def load_domains(domains_dir):
     docs = {}
+    dir_real = os.path.realpath(domains_dir)
     for fn in sorted(os.listdir(domains_dir)):
         if fn.endswith((".yml", ".yaml")):
-            with open(os.path.join(domains_dir, fn), encoding="utf-8") as fh:
+            full = os.path.join(domains_dir, fn)
+            # A file that resolves outside the ingest directory (e.g. a symlink
+            # smuggling a panel skeleton in through domains/) must never be
+            # ingested -- refuse loudly rather than follow it (§4).
+            if os.path.commonpath([dir_real, os.path.realpath(full)]) != dir_real:
+                raise SystemExit(
+                    f"{fn}: resolves outside {domains_dir!r} -- refusing to "
+                    f"ingest a file from outside the catalog directory")
+            with open(full, encoding="utf-8") as fh:
                 # _NoDupLoader subclasses yaml.SafeLoader (no arbitrary-type
                 # construction); drive it via get_single_data() -- exactly what
                 # yaml.load does internally -- so the safe loader stays explicit.
@@ -324,12 +361,17 @@ def validate_stability(all_codes, baseline_path):
     return errors
 
 
-def main(argv=None):
+def main(argv=None, *, enforce_release_root=True):
     ap = argparse.ArgumentParser()
     ap.add_argument("--domains-dir", default="domains")
     ap.add_argument("--baseline", help="previous release bundle JSON for the "
                                        "stability contract")
     args = ap.parse_args(argv)
+    # Refuse to validate a catalog outside the repository's own domains/ (§4).
+    # enforce_release_root is keyword-only and unreachable from argv -- only the
+    # test suite opts out to exercise synthetic fixtures.
+    if enforce_release_root:
+        assert_release_domains_dir(args.domains_dir)
     docs = load_domains(args.domains_dir)
     if not docs:
         print(f"no domain files found under {args.domains_dir}", file=sys.stderr)

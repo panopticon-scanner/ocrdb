@@ -4,6 +4,10 @@
 Usage:
     python3 tools/build_bundle.py --version 0.1.0 [--domains-dir domains] [--out build]
 
+Ingest is pinned to the repository's own domains/ (validate.assert_release_
+domains_dir): a --domains-dir resolving anywhere else is refused loudly, so a
+provisional/candidate skeleton can never enter a shipped bundle (§4).
+
 Validates first (schema errors abort the build), then emits three
 deterministic artifacts (byte-identical across runs — no timestamps):
 
@@ -110,7 +114,7 @@ def _atomic_write(path, text):
     os.replace(tmp, path)
 
 
-def main(argv=None):
+def main(argv=None, *, enforce_release_root=True):
     ap = argparse.ArgumentParser()
     ap.add_argument("--version", required=True)
     ap.add_argument("--domains-dir", default="domains")
@@ -119,6 +123,12 @@ def main(argv=None):
                                        "stability contract")
     args = ap.parse_args(argv)
 
+    # Refuse to build from a catalog outside the repository's own domains/, so a
+    # provisional/candidate skeleton can never enter a shipped bundle (§4).
+    # enforce_release_root is keyword-only and unreachable from argv -- only the
+    # test suite opts out to exercise synthetic fixtures.
+    if enforce_release_root:
+        validate_mod.assert_release_domains_dir(args.domains_dir)
     docs = validate_mod.load_domains(args.domains_dir)
     errors, warnings, all_codes = validate_mod.validate_schema(docs)
     errors += validate_mod.domain_parity_errors(docs)
