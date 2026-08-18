@@ -383,6 +383,8 @@ entries:
     - CWE-285
     examples:
     - Missing authorization check allows any caller to retrieve admin-only data
+    see_also:
+    - SEC-C1F
   SEC-C1D:
     name: ambient-authority-unscoped-mutation
     default_severity: MEDIUM
@@ -405,6 +407,30 @@ entries:
     - CWE-250
     examples:
     - Fixtures image never drops root privileges before running third-party build tooling
+  SEC-C1F:
+    name: missing-object-level-authorization
+    default_severity: HIGH
+    status: active
+    provenance:
+    - proof-backed
+    cwe:
+    - CWE-639
+    - CWE-566
+    examples:
+    - >-
+      BursarBuddy BB-0002: a profile endpoint authenticates the session but never
+      compares the session id to the requested id, so any user reads another
+      user's PII. Proof: proofs/test_bb_0002_profile_idor.py (passing).
+    criteria: >-
+      Qualifies when the caller is authorized for the operation but the code never
+      verifies the caller owns the specific object/record it acts on (OWASP API1
+      BOLA, CWE-639/566) — a per-record ownership comparison is missing. Distinct
+      from SEC-C1C missing-function-level-authorization (CWE-862/285), which is
+      whether the caller may invoke the operation at all; the fixes differ (a
+      per-record ownership check vs a route/function guard). A finding citing both
+      should be split, one to each.
+    see_also:
+    - SEC-C1C
   SEC-C2A:
     name: missing-brute-force-protection
     default_severity: MEDIUM
@@ -443,6 +469,30 @@ entries:
       that cites both.
     see_also:
     - SEC-C2A
+  SEC-C2C:
+    name: user-enumeration-via-response-discrepancy
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - proof-backed
+    cwe:
+    - CWE-203
+    - CWE-204
+    - CWE-205
+    examples:
+    - >-
+      BursarBuddy BB-0003: login returns 404 "No account found with that email"
+      versus 401 "Incorrect password", classifying any address in one request.
+      Proof: proofs/test_bb_0003_user_enumeration.py (passing).
+    - >-
+      BursarBuddy BB-0004: signup returns 409 "That email is already registered"
+      versus 201, the same oracle on a different route. Proof:
+      proofs/test_bb_0004_signup_enumeration.py (passing).
+    criteria: >-
+      Qualifies when an observable response discrepancy (status code, message, or
+      timing) lets an attacker classify whether an identifier (email, username)
+      exists — CWE-203/204/205. The response oracle is the defect, independent of
+      any brute-force protection (SEC-C2A) on the same endpoint.
   SEC-C3A:
     name: weak-prng-for-security-token
     default_severity: HIGH

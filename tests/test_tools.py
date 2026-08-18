@@ -34,7 +34,7 @@ class TestValidateRealDraft(unittest.TestCase):
     def test_draft_has_no_schema_errors(self):
         errors, warnings, codes = validate.validate_schema(_real_docs())
         self.assertEqual(errors, [])
-        self.assertEqual(len(codes), 390)
+        self.assertEqual(len(codes), 392)
 
     def test_single_homing_ratified_no_cross_domain_duplicates(self):
         # Ratified 0.1: single-homing (big rock #0) resolved every cross-domain
@@ -103,6 +103,19 @@ class TestValidateRealDraft(unittest.TestCase):
                    and not (e.get("criteria") or "").strip()]
         self.assertEqual(missing, [], f"new-domain codes lacking criteria: {missing}")
 
+    def test_0_4_0_proof_backed_sec_gaps(self):
+        # 0.4.0: two ground-truth SEC codes from BursarBuddy — provenance
+        # `proof-backed`, each carrying its executable proof as an example and a
+        # criteria boundary; object-level <-> function-level authz is reciprocal.
+        codes = _codes()
+        for c in ("SEC-C1F", "SEC-C2C"):
+            self.assertIn(c, codes, c)
+            self.assertEqual(codes[c]["provenance"], ["proof-backed"], c)
+            self.assertTrue(codes[c].get("examples"), f"{c} must carry the proof example")
+            self.assertTrue((codes[c].get("criteria") or "").strip(), f"{c} needs criteria")
+        self.assertIn("SEC-C1F", codes["SEC-C1C"].get("see_also", []))
+        self.assertIn("SEC-C1C", codes["SEC-C1F"].get("see_also", []))
+
     def test_ops_acc_lng_area_category_names_match_plan(self):
         # Per-domain areas/categories structural guard for the three newly
         # seeded domains — not covered by test_{ops,acc,lng}_domain_seeded,
@@ -127,7 +140,7 @@ class TestValidateRealDraft(unittest.TestCase):
             },
             "lng.yml": {
                 "A": ("externalization", "string-externalization"),
-                "B": ("plural-format", "locale-aware-formatting"),
+                "B": ("locale-formatting", "locale-aware-formatting"),
                 "C": ("grammar", "translation-composition"),
                 "D": ("key-drift", "key-management"),
                 "E": ("encoding", "text-encoding"),
@@ -222,6 +235,19 @@ class TestValidateSyntheticErrors(unittest.TestCase):
         d["x.yml"]["entries"]["SEC-A1A"]["provenance"] = ["coderabbit"]
         self.assertTrue(any("provenance" in e and "vocabulary" in e
                             for e in self._errs(d)), self._errs(d))
+
+    def test_proof_backed_in_vocab_and_requires_examples(self):
+        self.assertIn("proof-backed", validate.PROVENANCE_VOCAB)
+        d = self._base_doc()
+        e = d["x.yml"]["entries"]["SEC-A1A"]
+        e["provenance"] = ["proof-backed"]
+        e.pop("examples", None)
+        self.assertTrue(any("proof-backed" in x and "example" in x
+                            for x in self._errs(d)),
+                        "proof-backed without an example must error")
+        e["examples"] = ["planted BB-0002; proof proofs/test_bb_0002_profile_idor.py"]
+        self.assertFalse(any("proof-backed" in x for x in self._errs(d)),
+                         "proof-backed WITH a proof example must pass")
 
     def test_automated_by_shape(self):
         d = self._base_doc()
@@ -324,7 +350,7 @@ class TestBundleBuild(unittest.TestCase):
                     self.assertEqual(f1.read(), f2.read(), fn)
             bundle = json.load(open(os.path.join(out1, "ocrdb-0.0.0-test.json")))
             n = sum(len(d["entries"]) for d in bundle["domains"].values())
-            self.assertEqual(n, 390)
+            self.assertEqual(n, 392)
             self.assertEqual(bundle["license"], "CC BY-SA 4.0")
 
     def test_sarif_taxa_match_entries_and_levels(self):
@@ -332,7 +358,7 @@ class TestBundleBuild(unittest.TestCase):
         bundle = build_bundle.build_bundle(docs, "0.0.0-test")
         sarif = build_bundle.build_sarif(bundle)
         taxa = sarif["runs"][0]["taxonomies"][0]["taxa"]
-        self.assertEqual(len(taxa), 390)
+        self.assertEqual(len(taxa), 392)
         by_id = {t["id"]: t for t in taxa}
         # SEC-A3A is CRITICAL -> error; QAL-B2A is LOW -> note
         self.assertEqual(by_id["SEC-A3A"]["defaultConfiguration"]["level"], "error")
@@ -408,7 +434,7 @@ class TestValidateCli(unittest.TestCase):
              "--domains-dir", os.path.join(ROOT, "domains")],
             capture_output=True, text=True)
         self.assertEqual(proc.returncode, 0, proc.stderr)
-        self.assertIn("390 entries", proc.stdout)
+        self.assertIn("392 entries", proc.stdout)
 
 
 class TestBundleSchemaVersion(unittest.TestCase):
@@ -463,7 +489,7 @@ class TestCatalog(unittest.TestCase):
             html = open(os.path.join(a, "ocrdb-0.0.0-test.html"), encoding="utf-8").read()
             codes = [c for dom in json.load(open(bundle))["domains"].values()
                      for c in dom["entries"]]
-            self.assertEqual(len(codes), 390)
+            self.assertEqual(len(codes), 392)
             for c in codes:
                 self.assertIn(c, md, c)
                 self.assertIn(c, html, c)
