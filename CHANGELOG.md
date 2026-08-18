@@ -2,6 +2,20 @@
 
 All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (incubating); see SCHEMA.md stability contract.
 
+## [0.4.0] - 2026-08-18
+
+First evidence-graded additions from a ground-truth corpus. Introduces the `proof-backed` provenance value — a finding observed against [BursarBuddy](https://github.com/psyberone/bursarbuddy), a deliberately-vulnerable app where each entry is a *planted* vulnerability with a *passing executable exploit proof*. Distinct from `corpus` (observed in real repos) and `prior-art` (a cited standard): the hazard is proven reachable. `proof-backed` entries are **proof-required** — the validator rejects one that does not carry the proof as an example. **390 → 392 codes.**
+
+### Added
+- `SEC-C1F missing-object-level-authorization` (HIGH, CWE-639/566) — object-level authorization (OWASP API1, BOLA/IDOR), the gap the catalog's *function*-level `SEC-C1C` (API5, CWE-862/285) did not cover. The two are now reciprocal `see_also` and their `criteria` split the boundary: a per-record ownership check vs a route/function guard. Proof: BursarBuddy BB-0002.
+- `SEC-C2C user-enumeration-via-response-discrepancy` (MEDIUM, CWE-203/204/205) — an observable response oracle (status code, message, or timing) that classifies whether an identifier exists, independent of brute-force protection (`SEC-C2A`). Proofs: BursarBuddy BB-0003 (login) and BB-0004 (signup).
+- Provenance value `proof-backed`, plus a validator rule requiring `proof-backed` entries to carry a proof example.
+
+### Changed
+- `LNG` area B renamed `plural-format` → `locale-formatting` (incubating pre-1.0 refinement — the area covers locale-aware formatting beyond pluralization). No code or entry-name changes.
+
+Stability contract checked against `build/ocrdb-0.3.1.json`: the 390 prior codes stay byte-identical on `name`/`default_severity`.
+
 ## [0.3.1] - 2026-08-14
 
 Criteria pass on the three domains seeded in 0.3.0. Adds a `criteria` disambiguation block — positive qualification plus nearest-neighbor exclusion, in the 0.2.x boundary-consolidation style — to the 18 `OPS`/`ACC`/`LNG` codes that lacked one, so **all 25 seeded codes now carry `criteria`**. No new codes, no renames, no severity re-grades: the 390 codes stay byte-identical on `name`/`default_severity` (stability contract checked against `build/ocrdb-0.3.0.json`, passed clean). This is the first release **built on the 4.x-hardened tooling** — atomic artifact writes, duplicate-key + display-field validation, and script-safe catalog HTML — so the shipped build reflects the corrected build/validate path.

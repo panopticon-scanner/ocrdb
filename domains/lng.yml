@@ -7,7 +7,7 @@ areas:
     categories:
       '1': string-externalization
   B:
-    name: plural-format
+    name: locale-formatting
     categories:
       '1': locale-aware-formatting
   C:

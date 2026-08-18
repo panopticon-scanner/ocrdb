@@ -1,6 +1,6 @@
-# OCRDb Catalog — v0.3.1
+# OCRDb Catalog — v0.4.0
 
-390 finding types across 10 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.3.1.html`.
+392 finding types across 10 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.4.0.html`.
 
 **Severity** INFO · LOW · MEDIUM · HIGH · CRITICAL — the *typical* grade for the defect type, not a per-instance verdict. **character**: `defect` (absent) or `opportunity`.
 
@@ -16,7 +16,7 @@
 | [`LNG`](#lng--language-and-internationalization) | language-and-internationalization | 8 |
 | [`OPS`](#ops--production-readiness) | production-readiness | 9 |
 | [`QAL`](#qal--quality-maintainability) | quality-maintainability | 51 |
-| [`SEC`](#sec--security) | security | 70 |
+| [`SEC`](#sec--security) | security | 72 |
 | [`TST`](#tst--testing) | testing | 76 |
 
 ## ACC — accessibility
@@ -565,7 +565,7 @@
 | `LNG-A1A` | hardcoded-user-facing-string | MEDIUM | — | — |
 | `LNG-A1B` | string-assembled-outside-i18n | LOW | — | — |
 
-### LNG-B · plural-format
+### LNG-B · locale-formatting
 
 **LNG-B1 · locale-aware-formatting**
 
@@ -897,6 +897,7 @@
 | `SEC-C1C` | missing-function-level-authorization | HIGH | CWE-862, CWE-285 | — |
 | `SEC-C1D` | ambient-authority-unscoped-mutation | MEDIUM | CWE-284 | — |
 | `SEC-C1E` | container-runs-as-root | LOW | CWE-250 | — |
+| `SEC-C1F` | missing-object-level-authorization | HIGH | CWE-639, CWE-566 | — |
 
 **SEC-C2 · authentication**
 
@@ -904,6 +905,7 @@
 |---|---|---|---|---|
 | `SEC-C2A` | missing-brute-force-protection | MEDIUM | CWE-307 | — |
 | `SEC-C2B` | timing-unsafe-credential-comparison | MEDIUM | CWE-208 | — |
+| `SEC-C2C` | user-enumeration-via-response-discrepancy | MEDIUM | CWE-203, CWE-204, CWE-205 | — |
 
 **SEC-C3 · cryptography**
 

@@ -68,7 +68,12 @@ SEVERITIES = {"INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"}
 STATUSES = {"active", "deprecated"}
 CHARACTERS = {"defect", "opportunity"}
 PROVENANCE_VOCAB = {"corpus", "tool-observed", "gap-review", "prior-art",
-                    "owasp-align", "asvs-align", "openssf-align", "cwe-align"}
+                    "owasp-align", "asvs-align", "openssf-align", "cwe-align",
+                    "proof-backed"}
+# proof-backed = a ground-truth-corpus finding with an executable exploit proof
+# (e.g. a planted BursarBuddy vulnerability). Distinct from `corpus` (observed in
+# real repos) and `prior-art` (a cited standard): the hazard is proven reachable.
+# Such entries MUST carry the proof as an example (enforced in validate_schema).
 
 # Consumer-side finding-field vocabularies (Tier 3). These describe a per-INSTANCE
 # judgment a consumer records under its own disclosed discipline (e.g. panopticon's
@@ -246,6 +251,13 @@ def validate_schema(docs):
             for p in prov if isinstance(prov, list) else []:
                 if p not in PROVENANCE_VOCAB:
                     errors.append(f"{ctx}: provenance {p!r} not in vocabulary")
+            # proof-backed entries must carry the proof as an example (0.4.0):
+            # "intentionally thin, but proof-required" — the ground-truth citation
+            # is only credible if the reachable proof travels with it.
+            if "proof-backed" in (prov if isinstance(prov, list) else []) \
+                    and not e.get("examples"):
+                errors.append(f"{ctx}: proof-backed provenance requires at least "
+                              f"one example (cite the executable proof)")
             if e.get("status") == "deprecated" and not e.get("superseded_by"):
                 errors.append(f"{ctx}: deprecated without superseded_by")
             if e.get("status") != "deprecated" and e.get("superseded_by"):
