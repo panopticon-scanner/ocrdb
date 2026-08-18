@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: How OCRDb works (start here)
+    url: https://github.com/panopticon-scanner/ocrdb/blob/main/CONTRIBUTING.md
+    about: The code lifecycle, provenance rules, and the entry format before you file.
+  - name: Report a security issue (private)
+    url: https://github.com/panopticon-scanner/ocrdb/security/advisories/new
+    about: For vulnerabilities in the tooling. Do not open a public issue.
