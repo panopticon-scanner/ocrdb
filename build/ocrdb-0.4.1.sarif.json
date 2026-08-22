@@ -1,0 +1,3948 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "results": [],
+      "taxonomies": [
+        {
+          "informationUri": "https://github.com/panopticon-scanner/ocrdb",
+          "name": "OCRDb",
+          "organization": "OCRDb",
+          "shortDescription": {
+            "text": "Open Code Review Database"
+          },
+          "taxa": [
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ACC-A1A",
+              "name": "icon-only-control-missing-accessible-name",
+              "shortDescription": {
+                "text": "icon only control missing accessible name"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ACC-A1B",
+              "name": "non-text-content-missing-alternative",
+              "shortDescription": {
+                "text": "non text content missing alternative"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ACC-B1A",
+              "name": "non-interactive-element-used-as-control",
+              "shortDescription": {
+                "text": "non interactive element used as control"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ACC-B1B",
+              "name": "focus-indicator-suppressed",
+              "shortDescription": {
+                "text": "focus indicator suppressed"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ACC-C1A",
+              "name": "input-missing-programmatic-label",
+              "shortDescription": {
+                "text": "input missing programmatic label"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ACC-D1A",
+              "name": "dynamic-status-not-announced",
+              "shortDescription": {
+                "text": "dynamic status not announced"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ACC-E1A",
+              "name": "info-conveyed-by-color-alone",
+              "shortDescription": {
+                "text": "info conveyed by color alone"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ACC-F1A",
+              "name": "motion-ignores-reduced-motion-preference",
+              "shortDescription": {
+                "text": "motion ignores reduced motion preference"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "AGT-A1A",
+              "name": "indirect-prompt-injection-untrusted-content-in-agent-context",
+              "shortDescription": {
+                "text": "indirect prompt injection untrusted content in agent context"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "AGT-A1B",
+              "name": "untrusted-content-in-agent-context",
+              "shortDescription": {
+                "text": "untrusted content in agent context"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "AGT-B1A",
+              "name": "incomplete-mediation-coverage-gap",
+              "shortDescription": {
+                "text": "incomplete mediation coverage gap"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "AGT-B1B",
+              "name": "missing-approval-gate-for-destructive-action",
+              "shortDescription": {
+                "text": "missing approval gate for destructive action"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "AGT-B1C",
+              "name": "unscoped-write-authority",
+              "shortDescription": {
+                "text": "unscoped write authority"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "AGT-B1D",
+              "name": "overbroad-tool-grant",
+              "shortDescription": {
+                "text": "overbroad tool grant"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "AGT-C1A",
+              "name": "self-asserted-trust-metadata-spoofing",
+              "shortDescription": {
+                "text": "self asserted trust metadata spoofing"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "AGT-C1B",
+              "name": "findings-from-undeclared-source-merged-despite-flagging",
+              "shortDescription": {
+                "text": "findings from undeclared source merged despite flagging"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "AGT-C1C",
+              "name": "unauthenticated-external-data-rebuilds-trust-mapping",
+              "shortDescription": {
+                "text": "unauthenticated external data rebuilds trust mapping"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "AGT-C1D",
+              "name": "unstructured-llm-output-trusted-for-control-decision",
+              "shortDescription": {
+                "text": "unstructured llm output trusted for control decision"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "AGT-D1A",
+              "name": "agent-confabulated-action",
+              "shortDescription": {
+                "text": "agent confabulated action"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "AGT-D1B",
+              "name": "secret-materialized-into-agent-output",
+              "shortDescription": {
+                "text": "secret materialized into agent output"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "AGT-D1C",
+              "name": "single-verifier-unilateral-override-authority",
+              "shortDescription": {
+                "text": "single verifier unilateral override authority"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "AGT-E1A",
+              "name": "unbounded-agent-loop",
+              "shortDescription": {
+                "text": "unbounded agent loop"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "AGT-E1B",
+              "name": "unbounded-tool-call-budget",
+              "shortDescription": {
+                "text": "unbounded tool call budget"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "AGT-F1A",
+              "name": "sensitive-data-sent-to-model-provider",
+              "shortDescription": {
+                "text": "sensitive data sent to model provider"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-A1A",
+              "name": "fragmented-logic-no-single-owner",
+              "shortDescription": {
+                "text": "fragmented logic no single owner"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-A1B",
+              "name": "mixed-responsibility-module",
+              "shortDescription": {
+                "text": "mixed responsibility module"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-A1C",
+              "name": "monolithic-function-mixed-concerns",
+              "shortDescription": {
+                "text": "monolithic function mixed concerns"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-A2A",
+              "name": "circular-or-load-order-coupling",
+              "shortDescription": {
+                "text": "circular or load order coupling"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-A2B",
+              "name": "hidden-contract-via-informal-parsing",
+              "shortDescription": {
+                "text": "hidden contract via informal parsing"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-A2C",
+              "name": "unpackaged-module-resolution-hack",
+              "shortDescription": {
+                "text": "unpackaged module resolution hack"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-A2D",
+              "name": "leaky-module-interface",
+              "shortDescription": {
+                "text": "leaky module interface"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-A3A",
+              "name": "duplicated-business-logic-without-shared-module",
+              "shortDescription": {
+                "text": "duplicated business logic without shared module"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-A3B",
+              "name": "duplicated-configuration-or-mapping-table",
+              "shortDescription": {
+                "text": "duplicated configuration or mapping table"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-A4A",
+              "name": "adapter-implementation-inconsistency",
+              "shortDescription": {
+                "text": "adapter implementation inconsistency"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-A4C",
+              "name": "shadow-registry-without-enforced-parity",
+              "shortDescription": {
+                "text": "shadow registry without enforced parity"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-A4D",
+              "name": "silent-failure-on-unrecognized-extension",
+              "shortDescription": {
+                "text": "silent failure on unrecognized extension"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-A5A",
+              "name": "non-canonical-constant-duplication",
+              "shortDescription": {
+                "text": "non canonical constant duplication"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-A5B",
+              "name": "redundant-derived-structure",
+              "shortDescription": {
+                "text": "redundant derived structure"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-B1A",
+              "name": "missing-dependency-manifest-declarations",
+              "shortDescription": {
+                "text": "missing dependency manifest declarations"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-B1C",
+              "name": "stale-project-metadata-urls",
+              "shortDescription": {
+                "text": "stale project metadata urls"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-B1D",
+              "name": "incomplete-build-system-declaration",
+              "shortDescription": {
+                "text": "incomplete build system declaration"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-B1E",
+              "name": "self-contradictory-lint-configuration",
+              "shortDescription": {
+                "text": "self contradictory lint configuration"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-B1F",
+              "name": "nonstandard-install-mechanism-bypasses-package-manager",
+              "shortDescription": {
+                "text": "nonstandard install mechanism bypasses package manager"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-B3A",
+              "name": "divergent-execution-path-across-environments",
+              "shortDescription": {
+                "text": "divergent execution path across environments"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-B3B",
+              "name": "monolithic-multi-toolchain-image",
+              "shortDescription": {
+                "text": "monolithic multi toolchain image"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-B3C",
+              "name": "circular-build-dependency",
+              "shortDescription": {
+                "text": "circular build dependency"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ARC-C1A",
+              "name": "ci-gate-bypasses-domain-verdict-model",
+              "shortDescription": {
+                "text": "ci gate bypasses domain verdict model"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-C1B",
+              "name": "ci-trigger-path-filter-incomplete",
+              "shortDescription": {
+                "text": "ci trigger path filter incomplete"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-C1C",
+              "name": "untested-integration-path-in-ci",
+              "shortDescription": {
+                "text": "untested integration path in ci"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-C1D",
+              "name": "ci-lint-gate-scope-gap",
+              "shortDescription": {
+                "text": "ci lint gate scope gap"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-C1E",
+              "name": "inconsistent-workflow-permissions-scoping",
+              "shortDescription": {
+                "text": "inconsistent workflow permissions scoping"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-C2A",
+              "name": "silent-fallback-masks-pipeline-failure",
+              "shortDescription": {
+                "text": "silent fallback masks pipeline failure"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-C2B",
+              "name": "swallowed-ci-step-failure",
+              "shortDescription": {
+                "text": "swallowed ci step failure"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ARC-D1A",
+              "name": "lossy-round-trip-between-producer-and-recovery-path",
+              "shortDescription": {
+                "text": "lossy round trip between producer and recovery path"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ARC-D1B",
+              "name": "report-contract-out-of-sync-with-schema",
+              "shortDescription": {
+                "text": "report contract out of sync with schema"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-D1C",
+              "name": "fingerprint-identity-instability",
+              "shortDescription": {
+                "text": "fingerprint identity instability"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-D1D",
+              "name": "id-format-schema-mismatch",
+              "shortDescription": {
+                "text": "id format schema mismatch"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-D1E",
+              "name": "redundant-independent-derivation-of-shared-fact",
+              "shortDescription": {
+                "text": "redundant independent derivation of shared fact"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-D1F",
+              "name": "unversioned-inter-phase-data-contract",
+              "shortDescription": {
+                "text": "unversioned inter phase data contract"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ARC-D2A",
+              "name": "cli-interface-contract-drift",
+              "shortDescription": {
+                "text": "cli interface contract drift"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-D2B",
+              "name": "inconsistent-handling-of-equivalent-edge-case-inputs",
+              "shortDescription": {
+                "text": "inconsistent handling of equivalent edge case inputs"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-D2C",
+              "name": "missing-coordination-contract-between-agents",
+              "shortDescription": {
+                "text": "missing coordination contract between agents"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-D2D",
+              "name": "orphaned-schema-field-never-populated",
+              "shortDescription": {
+                "text": "orphaned schema field never populated"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-D2E",
+              "name": "required-field-never-emitted-by-producer",
+              "shortDescription": {
+                "text": "required field never emitted by producer"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-D2F",
+              "name": "undefined-or-ambiguous-spec-terminology",
+              "shortDescription": {
+                "text": "undefined or ambiguous spec terminology"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ARC-D3A",
+              "name": "missing-referenced-file",
+              "shortDescription": {
+                "text": "missing referenced file"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-D3B",
+              "name": "documented-artifact-not-present-in-repo",
+              "shortDescription": {
+                "text": "documented artifact not present in repo"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ARC-E1A",
+              "name": "hardcoded-absolute-path-in-source",
+              "shortDescription": {
+                "text": "hardcoded absolute path in source"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ARC-E1B",
+              "name": "hardcoded-environment-specific-artifact-path",
+              "shortDescription": {
+                "text": "hardcoded environment specific artifact path"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-E1C",
+              "name": "hardcoded-identifier-scattered-across-modules",
+              "shortDescription": {
+                "text": "hardcoded identifier scattered across modules"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-E2A",
+              "name": "durable-state-in-ephemeral-scratch-location",
+              "shortDescription": {
+                "text": "durable state in ephemeral scratch location"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-E2B",
+              "name": "global-scope-write-conflicts-with-project-scoped-model",
+              "shortDescription": {
+                "text": "global scope write conflicts with project scoped model"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-E2C",
+              "name": "implicit-runtime-contract-unenforced",
+              "shortDescription": {
+                "text": "implicit runtime contract unenforced"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-E2D",
+              "name": "implicit-config-discovery-action-at-a-distance",
+              "shortDescription": {
+                "text": "implicit config discovery action at a distance"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-E3A",
+              "name": "orthogonal-config-axes-increase-complexity",
+              "shortDescription": {
+                "text": "orthogonal config axes increase complexity"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-E3B",
+              "name": "asymmetric-domain-coverage-across-artifacts",
+              "shortDescription": {
+                "text": "asymmetric domain coverage across artifacts"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-E3C",
+              "name": "cross-host-config-parity-gap",
+              "shortDescription": {
+                "text": "cross host config parity gap"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ARC-F1A",
+              "name": "enforcement-relies-on-stale-flag-not-live-verification",
+              "shortDescription": {
+                "text": "enforcement relies on stale flag not live verification"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-F1B",
+              "name": "audit-accounting-excludes-in-scope-actors",
+              "shortDescription": {
+                "text": "audit accounting excludes in scope actors"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-F1C",
+              "name": "inconsistent-authorization-gate-across-sibling-scripts",
+              "shortDescription": {
+                "text": "inconsistent authorization gate across sibling scripts"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-F1D",
+              "name": "partial-batch-operation-lacks-failure-recovery-path",
+              "shortDescription": {
+                "text": "partial batch operation lacks failure recovery path"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-F1E",
+              "name": "policy-or-verdict-not-enforced-by-code",
+              "shortDescription": {
+                "text": "policy or verdict not enforced by code"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ARC-F2A",
+              "name": "compensating-control-has-scope-blind-spot",
+              "shortDescription": {
+                "text": "compensating control has scope blind spot"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ARC-F2B",
+              "name": "enforcement-hook-cannot-scope-to-individual-actor",
+              "shortDescription": {
+                "text": "enforcement hook cannot scope to individual actor"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "ARC-F2C",
+              "name": "security-control-assumes-undocumented-input-shape",
+              "shortDescription": {
+                "text": "security control assumes undocumented input shape"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-F2D",
+              "name": "component-fails-open-on-malformed-input",
+              "shortDescription": {
+                "text": "component fails open on malformed input"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-F2E",
+              "name": "security-control-fails-open-on-misconfiguration",
+              "shortDescription": {
+                "text": "security control fails open on misconfiguration"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-F2G",
+              "name": "overbroad-exception-handling-masks-errors",
+              "shortDescription": {
+                "text": "overbroad exception handling masks errors"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-G1A",
+              "name": "contributor-instructions-diverge-from-ci",
+              "shortDescription": {
+                "text": "contributor instructions diverge from ci"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-G1B",
+              "name": "divergent-duplicate-source-of-truth",
+              "shortDescription": {
+                "text": "divergent duplicate source of truth"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-G1C",
+              "name": "reference-documentation-incomplete",
+              "shortDescription": {
+                "text": "reference documentation incomplete"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "ARC-G2A",
+              "name": "superseded-doc-without-deprecation-marker",
+              "shortDescription": {
+                "text": "superseded doc without deprecation marker"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-G2B",
+              "name": "design-doc-drifts-from-delivered-scope",
+              "shortDescription": {
+                "text": "design doc drifts from delivered scope"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "ARC-G3B",
+              "name": "tracked-file-violates-own-gitignore-rule",
+              "shortDescription": {
+                "text": "tracked file violates own gitignore rule"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-A1A",
+              "name": "unclosed-file-handle-leak",
+              "shortDescription": {
+                "text": "unclosed file handle leak"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-A2A",
+              "name": "unbounded-buffer-write",
+              "shortDescription": {
+                "text": "unbounded buffer write"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-A2B",
+              "name": "off-by-one-argument-index-error",
+              "shortDescription": {
+                "text": "off by one argument index error"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-A2C",
+              "name": "unchecked-index-or-empty-sequence-access",
+              "shortDescription": {
+                "text": "unchecked index or empty sequence access"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-B1A",
+              "name": "fail-open-on-missing-or-corrupt-config",
+              "shortDescription": {
+                "text": "fail open on missing or corrupt config"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-B1C",
+              "name": "overly-broad-permission-scope-in-shared-guard",
+              "shortDescription": {
+                "text": "overly broad permission scope in shared guard"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-B2A",
+              "name": "unguarded-null-crashes-downstream",
+              "shortDescription": {
+                "text": "unguarded null crashes downstream"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "COD-B2B",
+              "name": "error-message-misattributes-root-cause",
+              "shortDescription": {
+                "text": "error message misattributes root cause"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "COD-B2C",
+              "name": "missing-error-handling-around-auxiliary-load",
+              "shortDescription": {
+                "text": "missing error handling around auxiliary load"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "COD-B2D",
+              "name": "result-not-revalidated-after-transform",
+              "shortDescription": {
+                "text": "result not revalidated after transform"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "COD-B2E",
+              "name": "silent-truncation-without-warning",
+              "shortDescription": {
+                "text": "silent truncation without warning"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-C1A",
+              "name": "analyzer-confidence-conflated-with-severity",
+              "shortDescription": {
+                "text": "analyzer confidence conflated with severity"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-C1B",
+              "name": "severity-hardcoded-ignoring-tool-value",
+              "shortDescription": {
+                "text": "severity hardcoded ignoring tool value"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-C2A",
+              "name": "incorrect-source-file-selection-heuristic",
+              "shortDescription": {
+                "text": "incorrect source file selection heuristic"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-C2B",
+              "name": "instance-state-not-propagated-through-lifecycle",
+              "shortDescription": {
+                "text": "instance state not propagated through lifecycle"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-C2C",
+              "name": "regex-rejects-valid-input-variant",
+              "shortDescription": {
+                "text": "regex rejects valid input variant"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-C2D",
+              "name": "unnormalized-identifier-causes-lookup-mismatch",
+              "shortDescription": {
+                "text": "unnormalized identifier causes lookup mismatch"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-C3A",
+              "name": "required-output-field-missing-or-empty",
+              "shortDescription": {
+                "text": "required output field missing or empty"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-C3B",
+              "name": "incomplete-lookup-catalog-silent-fallback-gap",
+              "shortDescription": {
+                "text": "incomplete lookup catalog silent fallback gap"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "COD-C3C",
+              "name": "nonstandard-key-silently-dropped-downstream",
+              "shortDescription": {
+                "text": "nonstandard key silently dropped downstream"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-D1A",
+              "name": "schema-enum-incomplete-vs-actual-values",
+              "shortDescription": {
+                "text": "schema enum incomplete vs actual values"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-D1B",
+              "name": "schema-pattern-stricter-than-producer-output",
+              "shortDescription": {
+                "text": "schema pattern stricter than producer output"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-D1C",
+              "name": "inconsistent-record-shape-across-array",
+              "shortDescription": {
+                "text": "inconsistent record shape across array"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-D1D",
+              "name": "schema-omits-documented-required-fields",
+              "shortDescription": {
+                "text": "schema omits documented required fields"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-D2B",
+              "name": "documented-feature-or-flag-not-implemented",
+              "shortDescription": {
+                "text": "documented feature or flag not implemented"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-D2C",
+              "name": "self-contradicting-specification-documents",
+              "shortDescription": {
+                "text": "self contradicting specification documents"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-D2D",
+              "name": "implemented-capability-missing-from-docs",
+              "shortDescription": {
+                "text": "implemented capability missing from docs"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-D3A",
+              "name": "external-api-invoked-with-wrong-parameter-shape",
+              "shortDescription": {
+                "text": "external api invoked with wrong parameter shape"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-D3B",
+              "name": "adapter-violates-declared-protocol-interface",
+              "shortDescription": {
+                "text": "adapter violates declared protocol interface"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-D3C",
+              "name": "inconsistent-field-type-across-boundary",
+              "shortDescription": {
+                "text": "inconsistent field type across boundary"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-E1A",
+              "name": "dedup-logic-drops-entry-sharing-coarse-key",
+              "shortDescription": {
+                "text": "dedup logic drops entry sharing coarse key"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "COD-E1B",
+              "name": "loop-exits-before-exhausting-valid-entries",
+              "shortDescription": {
+                "text": "loop exits before exhausting valid entries"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-E2A",
+              "name": "unreachable-code-due-to-guard-placed-before-definition",
+              "shortDescription": {
+                "text": "unreachable code due to guard placed before definition"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-E2B",
+              "name": "path-resolved-against-wrong-base-directory",
+              "shortDescription": {
+                "text": "path resolved against wrong base directory"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-F1A",
+              "name": "atomicity-violation-compound-operation",
+              "shortDescription": {
+                "text": "atomicity violation compound operation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-F1B",
+              "name": "check-then-act-race",
+              "shortDescription": {
+                "text": "check then act race"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-F1C",
+              "name": "shared-mutable-state-without-synchronization",
+              "shortDescription": {
+                "text": "shared mutable state without synchronization"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-F2A",
+              "name": "deadlock-lock-ordering",
+              "shortDescription": {
+                "text": "deadlock lock ordering"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-F2B",
+              "name": "blocking-call-in-async-context",
+              "shortDescription": {
+                "text": "blocking call in async context"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-F3A",
+              "name": "stale-cache-read-without-invalidation",
+              "shortDescription": {
+                "text": "stale cache read without invalidation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-F3B",
+              "name": "thread-unsafe-lazy-initialization",
+              "shortDescription": {
+                "text": "thread unsafe lazy initialization"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-F3C",
+              "name": "unawaited-async-result",
+              "shortDescription": {
+                "text": "unawaited async result"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-F3D",
+              "name": "unsafe-signal-handler",
+              "shortDescription": {
+                "text": "unsafe signal handler"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-G1A",
+              "name": "dst-unsafe-time-arithmetic",
+              "shortDescription": {
+                "text": "dst unsafe time arithmetic"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-G1B",
+              "name": "epoch-unit-confusion-ms-vs-s",
+              "shortDescription": {
+                "text": "epoch unit confusion ms vs s"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-G1C",
+              "name": "naive-aware-datetime-mixing",
+              "shortDescription": {
+                "text": "naive aware datetime mixing"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "COD-G1D",
+              "name": "wall-clock-used-for-elapsed-time",
+              "shortDescription": {
+                "text": "wall clock used for elapsed time"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "COD-G2A",
+              "name": "monetary-value-in-float",
+              "shortDescription": {
+                "text": "monetary value in float"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-G2B",
+              "name": "integer-overflow-or-truncation",
+              "shortDescription": {
+                "text": "integer overflow or truncation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-G2C",
+              "name": "precision-loss-in-numeric-conversion",
+              "shortDescription": {
+                "text": "precision loss in numeric conversion"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "COD-G2D",
+              "name": "float-equality-comparison",
+              "shortDescription": {
+                "text": "float equality comparison"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-G3A",
+              "name": "bytes-string-conflation",
+              "shortDescription": {
+                "text": "bytes string conflation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-G3B",
+              "name": "default-encoding-assumption",
+              "shortDescription": {
+                "text": "default encoding assumption"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "COD-G3C",
+              "name": "unit-confusion-in-quantity",
+              "shortDescription": {
+                "text": "unit confusion in quantity"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "COD-G3D",
+              "name": "unicode-normalization-mismatch",
+              "shortDescription": {
+                "text": "unicode normalization mismatch"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-A1A",
+              "name": "inappropriate-type-for-domain",
+              "shortDescription": {
+                "text": "inappropriate type for domain"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-A1B",
+              "name": "missing-constraint-for-invariant",
+              "shortDescription": {
+                "text": "missing constraint for invariant"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-A1C",
+              "name": "missing-foreign-key-relationship",
+              "shortDescription": {
+                "text": "missing foreign key relationship"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "DAT-A1D",
+              "name": "nullable-column-ambiguous-semantics",
+              "shortDescription": {
+                "text": "nullable column ambiguous semantics"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "DAT-B1A",
+              "name": "destructive-migration-without-backfill",
+              "shortDescription": {
+                "text": "destructive migration without backfill"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "DAT-B1B",
+              "name": "table-lock-heavy-migration",
+              "shortDescription": {
+                "text": "table lock heavy migration"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-B1C",
+              "name": "irreversible-migration-no-rollback",
+              "shortDescription": {
+                "text": "irreversible migration no rollback"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-B1D",
+              "name": "non-idempotent-migration",
+              "shortDescription": {
+                "text": "non idempotent migration"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-B1E",
+              "name": "no-op-or-disabled-migration",
+              "shortDescription": {
+                "text": "no op or disabled migration"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "DAT-B1F",
+              "name": "migration-error-swallowed-marked-applied",
+              "shortDescription": {
+                "text": "migration error swallowed marked applied"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-C1A",
+              "name": "missing-index-for-hot-query",
+              "shortDescription": {
+                "text": "missing index for hot query"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-C1B",
+              "name": "n-plus-one-query",
+              "shortDescription": {
+                "text": "n plus one query"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-C1C",
+              "name": "unbounded-result-set",
+              "shortDescription": {
+                "text": "unbounded result set"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "DAT-C1D",
+              "name": "select-star-in-production-path",
+              "shortDescription": {
+                "text": "select star in production path"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "DAT-D1A",
+              "name": "isolation-level-mismatch",
+              "shortDescription": {
+                "text": "isolation level mismatch"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "DAT-D1B",
+              "name": "missing-transaction-boundary",
+              "shortDescription": {
+                "text": "missing transaction boundary"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "DAT-D1C",
+              "name": "read-modify-write-race",
+              "shortDescription": {
+                "text": "read modify write race"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-D1D",
+              "name": "long-running-transaction",
+              "shortDescription": {
+                "text": "long running transaction"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "DAT-E1A",
+              "name": "code-schema-drift-without-migration",
+              "shortDescription": {
+                "text": "code schema drift without migration"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-E1B",
+              "name": "orphaned-rows-on-delete",
+              "shortDescription": {
+                "text": "orphaned rows on delete"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-E1C",
+              "name": "soft-delete-inconsistency",
+              "shortDescription": {
+                "text": "soft delete inconsistency"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-E1D",
+              "name": "mirror-source-divergence",
+              "shortDescription": {
+                "text": "mirror source divergence"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "DAT-F1A",
+              "name": "destructive-rewrite-without-backup",
+              "shortDescription": {
+                "text": "destructive rewrite without backup"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-F1B",
+              "name": "non-atomic-file-write",
+              "shortDescription": {
+                "text": "non atomic file write"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-F1C",
+              "name": "lost-update-on-unsynchronized-file",
+              "shortDescription": {
+                "text": "lost update on unsynchronized file"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "DAT-F2A",
+              "name": "unversioned-persisted-format",
+              "shortDescription": {
+                "text": "unversioned persisted format"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "DAT-F2B",
+              "name": "unbounded-persisted-file-read",
+              "shortDescription": {
+                "text": "unbounded persisted file read"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "LNG-A1A",
+              "name": "hardcoded-user-facing-string",
+              "shortDescription": {
+                "text": "hardcoded user facing string"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "LNG-A1B",
+              "name": "string-assembled-outside-i18n",
+              "shortDescription": {
+                "text": "string assembled outside i18n"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "LNG-B1A",
+              "name": "locale-unaware-number-date-format",
+              "shortDescription": {
+                "text": "locale unaware number date format"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "LNG-B1B",
+              "name": "naive-pluralization",
+              "shortDescription": {
+                "text": "naive pluralization"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "LNG-C1A",
+              "name": "translation-assembled-by-concatenation",
+              "shortDescription": {
+                "text": "translation assembled by concatenation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "LNG-D1A",
+              "name": "translation-key-drift-or-missing-fallback",
+              "shortDescription": {
+                "text": "translation key drift or missing fallback"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "LNG-E1A",
+              "name": "byte-vs-codepoint-length-confusion",
+              "shortDescription": {
+                "text": "byte vs codepoint length confusion"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "LNG-F1A",
+              "name": "missing-rtl-bidi-support",
+              "shortDescription": {
+                "text": "missing rtl bidi support"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "OPS-A1A",
+              "name": "missing-timeout-on-external-call",
+              "shortDescription": {
+                "text": "missing timeout on external call"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "OPS-A1B",
+              "name": "retry-without-backoff-or-jitter",
+              "shortDescription": {
+                "text": "retry without backoff or jitter"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "OPS-B1A",
+              "name": "no-graceful-shutdown-drain",
+              "shortDescription": {
+                "text": "no graceful shutdown drain"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "OPS-B1B",
+              "name": "fake-or-noop-health-check",
+              "shortDescription": {
+                "text": "fake or noop health check"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "OPS-C1A",
+              "name": "unvalidated-startup-configuration",
+              "shortDescription": {
+                "text": "unvalidated startup configuration"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "OPS-C1B",
+              "name": "unconditional-startup-side-effect",
+              "shortDescription": {
+                "text": "unconditional startup side effect"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "OPS-D1A",
+              "name": "unbounded-resource-consumption",
+              "shortDescription": {
+                "text": "unbounded resource consumption"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "OPS-D1B",
+              "name": "missing-pagination-or-result-cap",
+              "shortDescription": {
+                "text": "missing pagination or result cap"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "OPS-E1A",
+              "name": "silent-failure-without-telemetry",
+              "shortDescription": {
+                "text": "silent failure without telemetry"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-A1B",
+              "name": "inconsistent-naming-convention",
+              "shortDescription": {
+                "text": "inconsistent naming convention"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-A1C",
+              "name": "name-collision-with-domain-concept",
+              "shortDescription": {
+                "text": "name collision with domain concept"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-A2B",
+              "name": "confusing-expression-precedence",
+              "shortDescription": {
+                "text": "confusing expression precedence"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-A2C",
+              "name": "magic-number-or-fragile-hardcoded-index",
+              "shortDescription": {
+                "text": "magic number or fragile hardcoded index"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-A2D",
+              "name": "comment-noise",
+              "shortDescription": {
+                "text": "comment noise"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-B1A",
+              "name": "combined-imports-single-line",
+              "shortDescription": {
+                "text": "combined imports single line"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-B1B",
+              "name": "mid-file-or-inline-import-placement",
+              "shortDescription": {
+                "text": "mid file or inline import placement"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-B1C",
+              "name": "redundant-shadowing-import",
+              "shortDescription": {
+                "text": "redundant shadowing import"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-B2A",
+              "name": "line-too-long",
+              "shortDescription": {
+                "text": "line too long"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-B2B",
+              "name": "misaligned-or-awkward-continuation",
+              "shortDescription": {
+                "text": "misaligned or awkward continuation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-B2C",
+              "name": "missing-blank-line-separation",
+              "shortDescription": {
+                "text": "missing blank line separation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-B2D",
+              "name": "inconsistent-literal-whitespace",
+              "shortDescription": {
+                "text": "inconsistent literal whitespace"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-B3A",
+              "name": "inconsistent-diagnostic-prefix-convention",
+              "shortDescription": {
+                "text": "inconsistent diagnostic prefix convention"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-B3B",
+              "name": "mixed-fstring-percent-formatting",
+              "shortDescription": {
+                "text": "mixed fstring percent formatting"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-B3C",
+              "name": "string-concatenation-instead-of-fstring",
+              "shortDescription": {
+                "text": "string concatenation instead of fstring"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "QAL-C1A",
+              "name": "stale-external-url-reference",
+              "shortDescription": {
+                "text": "stale external url reference"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-C1B",
+              "name": "inconsistent-ordering-in-docs",
+              "shortDescription": {
+                "text": "inconsistent ordering in docs"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-C1C",
+              "name": "stale-file-path-reference",
+              "shortDescription": {
+                "text": "stale file path reference"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-C1D",
+              "name": "stale-version-number",
+              "shortDescription": {
+                "text": "stale version number"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "QAL-C2A",
+              "name": "schema-or-example-stricter-than-reality",
+              "shortDescription": {
+                "text": "schema or example stricter than reality"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "QAL-C2B",
+              "name": "self-contradictory-documentation",
+              "shortDescription": {
+                "text": "self contradictory documentation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-C2C",
+              "name": "cli-docs-out-of-sync-with-implementation",
+              "shortDescription": {
+                "text": "cli docs out of sync with implementation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-C2D",
+              "name": "docstring-inaccurate-error-contract",
+              "shortDescription": {
+                "text": "docstring inaccurate error contract"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-C2E",
+              "name": "typo-in-shipped-text",
+              "shortDescription": {
+                "text": "typo in shipped text"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-C2F",
+              "name": "undocumented-configuration-behavior",
+              "shortDescription": {
+                "text": "undocumented configuration behavior"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "QAL-D1A",
+              "name": "duplicated-business-logic-block",
+              "shortDescription": {
+                "text": "duplicated business logic block"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "QAL-D1B",
+              "name": "duplicated-constant-definition",
+              "shortDescription": {
+                "text": "duplicated constant definition"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "QAL-D1C",
+              "name": "duplicated-helper-function",
+              "shortDescription": {
+                "text": "duplicated helper function"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-E1A",
+              "name": "dead-configuration-setting",
+              "shortDescription": {
+                "text": "dead configuration setting"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-E1B",
+              "name": "unused-duplicate-validator-left-in-code",
+              "shortDescription": {
+                "text": "unused duplicate validator left in code"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "QAL-E2B",
+              "name": "retired-component-still-registered",
+              "shortDescription": {
+                "text": "retired component still registered"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-E2C",
+              "name": "orphaned-asset-rules",
+              "shortDescription": {
+                "text": "orphaned asset rules"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-E3A",
+              "name": "dead-code-unused-function",
+              "shortDescription": {
+                "text": "dead code unused function"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "QAL-F1A",
+              "name": "implicit-sys-path-or-import-dependency",
+              "shortDescription": {
+                "text": "implicit sys path or import dependency"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "QAL-F1B",
+              "name": "inconsistent-import-style-across-modules",
+              "shortDescription": {
+                "text": "inconsistent import style across modules"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-F2A",
+              "name": "logic-embedded-in-non-standard-location",
+              "shortDescription": {
+                "text": "logic embedded in non standard location"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-F2B",
+              "name": "main-guard-or-block-misplaced-mid-file",
+              "shortDescription": {
+                "text": "main guard or block misplaced mid file"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-F3B",
+              "name": "inconsistent-noqa-annotation-usage",
+              "shortDescription": {
+                "text": "inconsistent noqa annotation usage"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-F3C",
+              "name": "inconsistent-per-host-field-naming",
+              "shortDescription": {
+                "text": "inconsistent per host field naming"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-F3D",
+              "name": "partial-type-hint-adoption",
+              "shortDescription": {
+                "text": "partial type hint adoption"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-G1A",
+              "name": "loop-invariant-not-hoisted",
+              "shortDescription": {
+                "text": "loop invariant not hoisted"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-G1B",
+              "name": "missing-memoization",
+              "shortDescription": {
+                "text": "missing memoization"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-G1C",
+              "name": "repeated-filesystem-stat",
+              "shortDescription": {
+                "text": "repeated filesystem stat"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "QAL-G2A",
+              "name": "unbounded-collection-load",
+              "shortDescription": {
+                "text": "unbounded collection load"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "QAL-H1A",
+              "name": "overly-complex-function",
+              "shortDescription": {
+                "text": "overly complex function"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-H1B",
+              "name": "excess-nesting-complexity",
+              "shortDescription": {
+                "text": "excess nesting complexity"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "QAL-H2A",
+              "name": "harmful-oversimplification",
+              "shortDescription": {
+                "text": "harmful oversimplification"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-H2B",
+              "name": "correctness-entangled-duplication-deferred",
+              "shortDescription": {
+                "text": "correctness entangled duplication deferred"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-H2C",
+              "name": "needless-abstraction",
+              "shortDescription": {
+                "text": "needless abstraction"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-I1A",
+              "name": "missing-trace-context-propagation",
+              "shortDescription": {
+                "text": "missing trace context propagation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "QAL-I1B",
+              "name": "vague-log-message-without-context",
+              "shortDescription": {
+                "text": "vague log message without context"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-A1A",
+              "name": "os-command-injection",
+              "shortDescription": {
+                "text": "os command injection"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-A1B",
+              "name": "unsafe-subprocess-invocation-pattern",
+              "shortDescription": {
+                "text": "unsafe subprocess invocation pattern"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-A2A",
+              "name": "eval-of-untrusted-input",
+              "shortDescription": {
+                "text": "eval of untrusted input"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-A2B",
+              "name": "insecure-deserialization-of-untrusted-data",
+              "shortDescription": {
+                "text": "insecure deserialization of untrusted data"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-A3A",
+              "name": "sql-injection-via-string-concatenation",
+              "shortDescription": {
+                "text": "sql injection via string concatenation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-A4A",
+              "name": "xxe-vulnerable-xml-parsing",
+              "shortDescription": {
+                "text": "xxe vulnerable xml parsing"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-A4B",
+              "name": "xml-library-import-flagged",
+              "shortDescription": {
+                "text": "xml library import flagged"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-B1A",
+              "name": "markdown-mention-injection-in-automated-comments",
+              "shortDescription": {
+                "text": "markdown mention injection in automated comments"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-B1B",
+              "name": "unsafe-url-scheme-allowed-in-links",
+              "shortDescription": {
+                "text": "unsafe url scheme allowed in links"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-B1C",
+              "name": "untrusted-content-unsanitized-in-generated-output",
+              "shortDescription": {
+                "text": "untrusted content unsanitized in generated output"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-B1D",
+              "name": "unintended-external-resource-load-in-offline-report",
+              "shortDescription": {
+                "text": "unintended external resource load in offline report"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-B1E",
+              "name": "missing-content-security-policy-in-generated-report",
+              "shortDescription": {
+                "text": "missing content security policy in generated report"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-B2A",
+              "name": "debug-endpoint-secret-exposure",
+              "shortDescription": {
+                "text": "debug endpoint secret exposure"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-B2B",
+              "name": "credentials-printed-to-output-or-logs",
+              "shortDescription": {
+                "text": "credentials printed to output or logs"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-B2C",
+              "name": "incomplete-sensitive-data-redaction",
+              "shortDescription": {
+                "text": "incomplete sensitive data redaction"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-B2D",
+              "name": "verbose-error-message-disclosure",
+              "shortDescription": {
+                "text": "verbose error message disclosure"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-B3A",
+              "name": "embedded-credential-or-api-key-in-repo",
+              "shortDescription": {
+                "text": "embedded credential or api key in repo"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-B3B",
+              "name": "full-environment-inherited-by-subprocess",
+              "shortDescription": {
+                "text": "full environment inherited by subprocess"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-B3C",
+              "name": "hardcoded-secret-heuristic-flag",
+              "shortDescription": {
+                "text": "hardcoded secret heuristic flag"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-B4A",
+              "name": "pii-in-logs",
+              "shortDescription": {
+                "text": "pii in logs"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-B4B",
+              "name": "excessive-data-collection",
+              "shortDescription": {
+                "text": "excessive data collection"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-B4C",
+              "name": "missing-retention-limit",
+              "shortDescription": {
+                "text": "missing retention limit"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-C1A",
+              "name": "excessive-container-network-and-filesystem-privilege",
+              "shortDescription": {
+                "text": "excessive container network and filesystem privilege"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-C1B",
+              "name": "hardcoded-backdoor-trigger",
+              "shortDescription": {
+                "text": "hardcoded backdoor trigger"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-C1C",
+              "name": "missing-function-level-authorization",
+              "shortDescription": {
+                "text": "missing function level authorization"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-C1D",
+              "name": "ambient-authority-unscoped-mutation",
+              "shortDescription": {
+                "text": "ambient authority unscoped mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-C1E",
+              "name": "container-runs-as-root",
+              "shortDescription": {
+                "text": "container runs as root"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-C1F",
+              "name": "missing-object-level-authorization",
+              "shortDescription": {
+                "text": "missing object level authorization"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-C2A",
+              "name": "missing-brute-force-protection",
+              "shortDescription": {
+                "text": "missing brute force protection"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-C2B",
+              "name": "timing-unsafe-credential-comparison",
+              "shortDescription": {
+                "text": "timing unsafe credential comparison"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-C2C",
+              "name": "user-enumeration-via-response-discrepancy",
+              "shortDescription": {
+                "text": "user enumeration via response discrepancy"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-C3A",
+              "name": "weak-prng-for-security-token",
+              "shortDescription": {
+                "text": "weak prng for security token"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-C3B",
+              "name": "weak-standard-crypto-algorithm",
+              "shortDescription": {
+                "text": "weak standard crypto algorithm"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-C3C",
+              "name": "non-cryptographic-hash-in-security-context",
+              "shortDescription": {
+                "text": "non cryptographic hash in security context"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-C4B",
+              "name": "missing-audit-logging-for-sensitive-action",
+              "shortDescription": {
+                "text": "missing audit logging for sensitive action"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-D1A",
+              "name": "path-traversal-via-unvalidated-input",
+              "shortDescription": {
+                "text": "path traversal via unvalidated input"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-D1B",
+              "name": "uncontrolled-search-path-element",
+              "shortDescription": {
+                "text": "uncontrolled search path element"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-D1C",
+              "name": "unsafe-symlink-following-on-copy",
+              "shortDescription": {
+                "text": "unsafe symlink following on copy"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-D2A",
+              "name": "server-side-request-forgery-to-internal-service",
+              "shortDescription": {
+                "text": "server side request forgery to internal service"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-D2B",
+              "name": "unvalidated-url-fetch-target-ssrf-precursor",
+              "shortDescription": {
+                "text": "unvalidated url fetch target ssrf precursor"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-E1A",
+              "name": "dependabot-missing-cooldown-period",
+              "shortDescription": {
+                "text": "dependabot missing cooldown period"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-E1B",
+              "name": "known-vulnerable-dependency",
+              "shortDescription": {
+                "text": "known vulnerable dependency"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-E1C",
+              "name": "missing-lockfile-integrity-hash",
+              "shortDescription": {
+                "text": "missing lockfile integrity hash"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-E1D",
+              "name": "abandoned-unmaintained-dependency",
+              "shortDescription": {
+                "text": "abandoned unmaintained dependency"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-E2A",
+              "name": "unpinned-build-dependency-install",
+              "shortDescription": {
+                "text": "unpinned build dependency install"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-E2B",
+              "name": "mutable-ci-action-reference",
+              "shortDescription": {
+                "text": "mutable ci action reference"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-E2C",
+              "name": "unpinned-third-party-source-reference",
+              "shortDescription": {
+                "text": "unpinned third party source reference"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-E3A",
+              "name": "arbitrary-code-execution-via-untrusted-build-file",
+              "shortDescription": {
+                "text": "arbitrary code execution via untrusted build file"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-E3B",
+              "name": "unverified-binary-download-no-integrity-check",
+              "shortDescription": {
+                "text": "unverified binary download no integrity check"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-E3C",
+              "name": "unverified-remote-script-execution-curl-pipe-shell",
+              "shortDescription": {
+                "text": "unverified remote script execution curl pipe shell"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-F1A",
+              "name": "crash-on-malformed-input",
+              "shortDescription": {
+                "text": "crash on malformed input"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-F1B",
+              "name": "silent-exception-swallowing",
+              "shortDescription": {
+                "text": "silent exception swallowing"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-F2A",
+              "name": "unbounded-external-response-read",
+              "shortDescription": {
+                "text": "unbounded external response read"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-G1B",
+              "name": "tool-citation-cwe-mismatch",
+              "shortDescription": {
+                "text": "tool citation cwe mismatch"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-G2A",
+              "name": "security-surface-not-routed-to-review-lens",
+              "shortDescription": {
+                "text": "security surface not routed to review lens"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-G2B",
+              "name": "silent-scan-coverage-loss",
+              "shortDescription": {
+                "text": "silent scan coverage loss"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-G2C",
+              "name": "unpinned-scan-ruleset",
+              "shortDescription": {
+                "text": "unpinned scan ruleset"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-G3B",
+              "name": "insufficient-negative-test-coverage-for-security-guard",
+              "shortDescription": {
+                "text": "insufficient negative test coverage for security guard"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-G3C",
+              "name": "security-invariant-enforced-only-via-assert",
+              "shortDescription": {
+                "text": "security invariant enforced only via assert"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-G3D",
+              "name": "missing-vulnerability-disclosure-policy",
+              "shortDescription": {
+                "text": "missing vulnerability disclosure policy"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-H1A",
+              "name": "session-fixation",
+              "shortDescription": {
+                "text": "session fixation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-H1B",
+              "name": "missing-secure-cookie-flags",
+              "shortDescription": {
+                "text": "missing secure cookie flags"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-H1C",
+              "name": "missing-session-expiry",
+              "shortDescription": {
+                "text": "missing session expiry"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-H2A",
+              "name": "csrf-missing-token-protection",
+              "shortDescription": {
+                "text": "csrf missing token protection"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-H2B",
+              "name": "cors-misconfiguration",
+              "shortDescription": {
+                "text": "cors misconfiguration"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-H2C",
+              "name": "open-redirect",
+              "shortDescription": {
+                "text": "open redirect"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "SEC-H2D",
+              "name": "missing-frame-protection-clickjacking",
+              "shortDescription": {
+                "text": "missing frame protection clickjacking"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-H3A",
+              "name": "jwt-algorithm-confusion",
+              "shortDescription": {
+                "text": "jwt algorithm confusion"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "SEC-H3B",
+              "name": "oauth-redirect-uri-validation-gap",
+              "shortDescription": {
+                "text": "oauth redirect uri validation gap"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-H3C",
+              "name": "jwt-missing-expiry-or-audience-validation",
+              "shortDescription": {
+                "text": "jwt missing expiry or audience validation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-H4A",
+              "name": "redos-catastrophic-backtracking",
+              "shortDescription": {
+                "text": "redos catastrophic backtracking"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "SEC-H4B",
+              "name": "unbounded-request-size",
+              "shortDescription": {
+                "text": "unbounded request size"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "TST-A1A",
+              "name": "zero-coverage-script",
+              "shortDescription": {
+                "text": "zero coverage script"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-A1B",
+              "name": "uncovered-function-or-method",
+              "shortDescription": {
+                "text": "uncovered function or method"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-A1C",
+              "name": "untested-critical-recovery-function",
+              "shortDescription": {
+                "text": "untested critical recovery function"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-A1D",
+              "name": "untested-cli-flag-or-entrypoint-wiring",
+              "shortDescription": {
+                "text": "untested cli flag or entrypoint wiring"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-A2A",
+              "name": "growth-blind-invariant-check",
+              "shortDescription": {
+                "text": "growth blind invariant check"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-A2B",
+              "name": "untested-error-handling-path",
+              "shortDescription": {
+                "text": "untested error handling path"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-A2C",
+              "name": "untested-fallback-default-branch",
+              "shortDescription": {
+                "text": "untested fallback default branch"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-A2D",
+              "name": "untested-malformed-or-boundary-input",
+              "shortDescription": {
+                "text": "untested malformed or boundary input"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-A2E",
+              "name": "single-case-enum-mapping-coverage",
+              "shortDescription": {
+                "text": "single case enum mapping coverage"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-A2F",
+              "name": "untested-negative-boolean-branch",
+              "shortDescription": {
+                "text": "untested negative boolean branch"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-A3A",
+              "name": "mocked-or-absent-integration-path",
+              "shortDescription": {
+                "text": "mocked or absent integration path"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-A3B",
+              "name": "unverified-planted-fixture-detection",
+              "shortDescription": {
+                "text": "unverified planted fixture detection"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-A3C",
+              "name": "narrow-scenario-matrix",
+              "shortDescription": {
+                "text": "narrow scenario matrix"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-A4A",
+              "name": "unvalidated-subprocess-output-format",
+              "shortDescription": {
+                "text": "unvalidated subprocess output format"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-A4B",
+              "name": "unvalidated-tool-output-schema",
+              "shortDescription": {
+                "text": "unvalidated tool output schema"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-A4C",
+              "name": "unenforced-fixture-presence-check",
+              "shortDescription": {
+                "text": "unenforced fixture presence check"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-B1A",
+              "name": "regression-test-verifies-wrong-property",
+              "shortDescription": {
+                "text": "regression test verifies wrong property"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-B1B",
+              "name": "substring-instead-of-structural-assertion",
+              "shortDescription": {
+                "text": "substring instead of structural assertion"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-B1C",
+              "name": "truthy-or-presence-only-assertion",
+              "shortDescription": {
+                "text": "truthy or presence only assertion"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-B1D",
+              "name": "unverified-critical-mock-argument",
+              "shortDescription": {
+                "text": "unverified critical mock argument"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-B1E",
+              "name": "missing-positive-assertion",
+              "shortDescription": {
+                "text": "missing positive assertion"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-B1F",
+              "name": "universal-invariant-only-example-tested",
+              "shortDescription": {
+                "text": "universal invariant only example tested"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "TST-B2A",
+              "name": "always-true-assertion",
+              "shortDescription": {
+                "text": "always true assertion"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-B2B",
+              "name": "environment-branch-vacuous-test",
+              "shortDescription": {
+                "text": "environment branch vacuous test"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-B2C",
+              "name": "incomplete-loop-assertion-coverage",
+              "shortDescription": {
+                "text": "incomplete loop assertion coverage"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-B2D",
+              "name": "inverted-logic-assertion",
+              "shortDescription": {
+                "text": "inverted logic assertion"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "TST-B3A",
+              "name": "unsafe-index-based-assertion",
+              "shortDescription": {
+                "text": "unsafe index based assertion"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-B3B",
+              "name": "unmanaged-golden-snapshot-assertion",
+              "shortDescription": {
+                "text": "unmanaged golden snapshot assertion"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-C1A",
+              "name": "test-defined-after-main-guard",
+              "shortDescription": {
+                "text": "test defined after main guard"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-C1B",
+              "name": "undiscoverable-test-function",
+              "shortDescription": {
+                "text": "undiscoverable test function"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-C2A",
+              "name": "monolithic-test-module",
+              "shortDescription": {
+                "text": "monolithic test module"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-C2B",
+              "name": "duplicated-test-helper-across-cases",
+              "shortDescription": {
+                "text": "duplicated test helper across cases"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-C3A",
+              "name": "unrepresentative-test-input",
+              "shortDescription": {
+                "text": "unrepresentative test input"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-C3B",
+              "name": "misleading-test-name",
+              "shortDescription": {
+                "text": "misleading test name"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-C3C",
+              "name": "misnamed-helper-inverted-semantics",
+              "shortDescription": {
+                "text": "misnamed helper inverted semantics"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-C3D",
+              "name": "misnamed-test-artifact",
+              "shortDescription": {
+                "text": "misnamed test artifact"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-C4A",
+              "name": "incomplete-test-double-masks-behavior",
+              "shortDescription": {
+                "text": "incomplete test double masks behavior"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-C4B",
+              "name": "inconsistent-mocking-pattern",
+              "shortDescription": {
+                "text": "inconsistent mocking pattern"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-C4C",
+              "name": "mock-asserts-internal-behavior-not-output",
+              "shortDescription": {
+                "text": "mock asserts internal behavior not output"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-C4D",
+              "name": "undocumented-test-double-contract",
+              "shortDescription": {
+                "text": "undocumented test double contract"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-C5A",
+              "name": "missing-import-for-referenced-symbol",
+              "shortDescription": {
+                "text": "missing import for referenced symbol"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-C5B",
+              "name": "overengineered-fixture-builder",
+              "shortDescription": {
+                "text": "overengineered fixture builder"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-C5C",
+              "name": "nonstandard-import-placement",
+              "shortDescription": {
+                "text": "nonstandard import placement"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-C5D",
+              "name": "unexplained-magic-value-in-test",
+              "shortDescription": {
+                "text": "unexplained magic value in test"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-D1A",
+              "name": "manual-state-patch-without-context-manager",
+              "shortDescription": {
+                "text": "manual state patch without context manager"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-D1B",
+              "name": "unclosed-file-handle",
+              "shortDescription": {
+                "text": "unclosed file handle"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-D1C",
+              "name": "unscoped-env-var-mutation",
+              "shortDescription": {
+                "text": "unscoped env var mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-D2A",
+              "name": "cwd-relative-fixture-path",
+              "shortDescription": {
+                "text": "cwd relative fixture path"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-D2B",
+              "name": "hardcoded-shared-tmp-path",
+              "shortDescription": {
+                "text": "hardcoded shared tmp path"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "TST-E1A",
+              "name": "unvalidated-fixture-existence-assumption",
+              "shortDescription": {
+                "text": "unvalidated fixture existence assumption"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-E1B",
+              "name": "orphaned-unused-fixture",
+              "shortDescription": {
+                "text": "orphaned unused fixture"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-E2A",
+              "name": "degenerate-fixture-values",
+              "shortDescription": {
+                "text": "degenerate fixture values"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-E2B",
+              "name": "fixture-lockfile-version-drift",
+              "shortDescription": {
+                "text": "fixture lockfile version drift"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-E2C",
+              "name": "hardcoded-machine-specific-path-in-fixture-data",
+              "shortDescription": {
+                "text": "hardcoded machine specific path in fixture data"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-E2D",
+              "name": "unrealistic-synthetic-fixture-data",
+              "shortDescription": {
+                "text": "unrealistic synthetic fixture data"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "TST-F1A",
+              "name": "cascading-skip-guard-chain",
+              "shortDescription": {
+                "text": "cascading skip guard chain"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-F1B",
+              "name": "environment-gated-test-execution",
+              "shortDescription": {
+                "text": "environment gated test execution"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-F1C",
+              "name": "unexpected-outcome-silently-skipped",
+              "shortDescription": {
+                "text": "unexpected outcome silently skipped"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-F1D",
+              "name": "unseeded-randomness-dependent-test",
+              "shortDescription": {
+                "text": "unseeded randomness dependent test"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-F1E",
+              "name": "wall-clock-dependent-test",
+              "shortDescription": {
+                "text": "wall clock dependent test"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-F1F",
+              "name": "unisolated-external-service-call",
+              "shortDescription": {
+                "text": "unisolated external service call"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "TST-F2A",
+              "name": "unverified-test-selection-filter",
+              "shortDescription": {
+                "text": "unverified test selection filter"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-F2B",
+              "name": "exit-code-conflates-pass-with-no-op",
+              "shortDescription": {
+                "text": "exit code conflates pass with no op"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-F2C",
+              "name": "test-order-coupling",
+              "shortDescription": {
+                "text": "test order coupling"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "id": "TST-G1A",
+              "name": "test-suite-sys-path-import-hack",
+              "shortDescription": {
+                "text": "test suite sys path import hack"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-G1B",
+              "name": "test-fixture-scaffolding-duplicated-across-files",
+              "shortDescription": {
+                "text": "test fixture scaffolding duplicated across files"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-G1C",
+              "name": "unit-and-integration-tests-not-separated",
+              "shortDescription": {
+                "text": "unit and integration tests not separated"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-G2A",
+              "name": "inconsistent-import-convention-in-test-methods",
+              "shortDescription": {
+                "text": "inconsistent import convention in test methods"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-G2D",
+              "name": "hardcoded-test-constant-duplicated",
+              "shortDescription": {
+                "text": "hardcoded test constant duplicated"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-G2E",
+              "name": "inconsistent-assertion-style-in-test-suite",
+              "shortDescription": {
+                "text": "inconsistent assertion style in test suite"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-G2F",
+              "name": "missing-test-module-documentation",
+              "shortDescription": {
+                "text": "missing test module documentation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-G3A",
+              "name": "exit-code-remap-path-never-exercised-by-tests",
+              "shortDescription": {
+                "text": "exit code remap path never exercised by tests"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-G3B",
+              "name": "long-running-subprocess-test-has-no-timeout",
+              "shortDescription": {
+                "text": "long running subprocess test has no timeout"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "id": "TST-G3D",
+              "name": "test-fixture-not-validated-against-authoritative-source",
+              "shortDescription": {
+                "text": "test fixture not validated against authoritative source"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-G3E",
+              "name": "security-critical-path-only-unit-tested-never-e2e",
+              "shortDescription": {
+                "text": "security critical path only unit tested never e2e"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "id": "TST-G3F",
+              "name": "weak-test-assertion-doesnt-verify-real-behavior",
+              "shortDescription": {
+                "text": "weak test assertion doesnt verify real behavior"
+              }
+            }
+          ],
+          "version": "0.4.1"
+        }
+      ],
+      "tool": {
+        "driver": {
+          "name": "ocrdb-export",
+          "version": "0.4.1"
+        }
+      }
+    }
+  ],
+  "version": "2.1.0"
+}

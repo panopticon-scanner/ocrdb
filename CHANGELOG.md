@@ -2,7 +2,13 @@
 
 All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (pre-1.0); see SCHEMA.md stability contract.
 
-## [Unreleased] — 2026-08-21
+## [0.4.1] - 2026-08-22
+
+Patch release: a severity-grading refinement to one code's `criteria`, plus the domain-lifecycle vocabulary formalization. All 392 codes stay byte-identical on `name`/`default_severity` against 0.4.0 — the stability contract holds.
+
+### Changed — catalog
+
+- `AGT-B1A incomplete-mediation-coverage-gap` `criteria` now grade severity by the **capability of the ungated invocation class**: HIGH when that class can write, execute, or exfiltrate (an ungated Bash/Edit/Write, or any path to un-adjudicated egress); MEDIUM when the ungated class is read-only and its output is adjudicated — e.g. a review scope-fence constraining Read/Grep/Glob only, with no write/exec/egress channel — especially where the gap is disclosed. A read-only, adjudicated, disclosed coverage gap is defense-in-depth, not a directly-exploitable HIGH. `name`/`default_severity` unchanged (the default stays HIGH — the write/exec anchor case).
 
 ### Terminology — domain-lifecycle vocabulary formalized
 
