@@ -1,6 +1,19 @@
 # Changelog
 
-All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (incubating); see SCHEMA.md stability contract.
+All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (pre-1.0); see SCHEMA.md stability contract.
+
+## [Unreleased] — 2026-08-21
+
+### Terminology — domain-lifecycle vocabulary formalized
+
+The domain-status vocabulary is unified to the four-stage ladder **provisional → draft → approved → ratified**, now defined canonically in `RATIFICATION.md`. Earlier docs used "active / incubating / ratified" loosely — "incubating" for the whole pre-1.0 catalog, "active" for both the core roster and the per-code `status` flag, and "ratified" for the 0.1 seeding session. Those are now unified:
+
+- The 10 core domains (SEC, COD, ARC, TST, QAL, AGT, DAT, OPS, ACC, LNG) are **approved**; the candidate domains MOC, CMP are **draft** and FRN, LGL are **provisional**.
+- **No domain is ratified until 1.0** — the one-time roster-and-code stability freeze. The legacy "incubating" framing (the whole catalog being pre-1.0) is retired in favor of this precise statement.
+- Domain **stage** is now described as a **derived** property rolled up from the live catalog (derivation rule to be finalized) — distinct from, and never conflated with, the per-code `status: active | deprecated` field.
+- The version history was reconstructed to match the ladder, and the roster-freeze point is corrected from the previously-documented **0.5.0** to **1.0**, with candidate-domain entry points at **0.4.0 / 0.6.0 / 0.8.0**.
+
+This is a **terminology refinement**, not a change to what was done or to any shipped catalog data: no code, `name`, `default_severity`, `status`, or entry was added, removed, or re-graded; `domains/*.yml` data and the build tooling are untouched. Prior release entries below are preserved as-is and retain their original wording. `CHARTER.md`, `SCHEMA.md`, `README.md`, and the domain-file headers now defer to `RATIFICATION.md` for the canonical ladder.
 
 ## [0.4.0] - 2026-08-18
 

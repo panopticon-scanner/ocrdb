@@ -6,15 +6,15 @@ helping build it. Please read [`CHARTER.md`](CHARTER.md) (what OCRDb is and is n
 and [`SCHEMA.md`](SCHEMA.md) (the normative entry format and stability contract)
 first; this file is the practical how-to.
 
-> **Status: incubating (pre-1.0).** Codes are held stable *within* a release but
-> may change between releases until the 1.0 freeze. See the stability contract in
-> `SCHEMA.md`.
+> **Status: pre-1.0.** No domain is ratified until 1.0; codes are held stable *within*
+> a release but may change between releases until the 1.0 freeze. See the stability
+> contract in `SCHEMA.md` and the domain-lifecycle ladder in `RATIFICATION.md`.
 
 ## The shape of a code
 
 Every code is `DOMAIN-AREA CAT ISSUE`, e.g. `SEC-A2D`:
 
-- **Domain** — one of the ten ratified domains (`SEC COD ARC TST QAL AGT DAT OPS ACC LNG`).
+- **Domain** — one of the ten **approved** core domains (`SEC COD ARC TST QAL AGT DAT OPS ACC LNG`); candidate domains (`MOC`/`CMP` draft, `FRN`/`LGL` provisional) are not yet in the catalog. See the lifecycle ladder in `RATIFICATION.md`.
 - **Area** (a letter) and **category** (a digit) group related hazards.
 - **Issue** (a letter) names one defect type, letter-ordered by typical severity.
 

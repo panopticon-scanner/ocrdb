@@ -4,7 +4,10 @@ A hierarchical, severity-graded database of code-review finding types — securi
 correctness, architecture, tests, and quality — with stable identifiers
 (`SEC-A2D`), CWE/ISO-5055/ASVS crosswalks, and a SARIF taxonomy export.
 
-**Status: INCUBATING.** Private while the schema and seed taxonomy form; public at 1.0.
+**Status: pre-1.0.** Private while the schema and seed taxonomy form; public at 1.0.
+No domain is ratified until 1.0 — each domain carries a derived lifecycle stage
+(provisional → draft → approved → ratified); see the ladder in
+[`RATIFICATION.md`](RATIFICATION.md).
 We start honestly: OCRDb offers the community a solid, evidence-grounded starting
 point — not the authoritative answer.
 
@@ -18,6 +21,7 @@ Both are generated from `domains/` by `tools/build_catalog.py` (run at each rele
 ## Repository layout
 
 - `CHARTER.md` — founding principles, gap analysis, license posture
+- `RATIFICATION.md` — the canonical domain-lifecycle ladder (provisional → draft → approved → ratified) + the 0.1 ratification-session record
 - `SCHEMA.md` — entry schema + stability contract (normative)
 - `domains/` — the taxonomy content (source of truth)
 - `build/` — generated per release: JSON bundle, SARIF taxonomy export, Gate C menus, catalog HTML
