@@ -1,3 +1,53 @@
+# OCRDb Domain Lifecycle — the canonical ladder
+
+**Status: pre-1.0. Nothing is ratified yet.** This section is the single source of truth for how a domain matures. The other documents — `CHARTER.md`, `SCHEMA.md`, `README.md`, `CATALOG.md`, `CHANGELOG.md`, and the `domains/*.yml` headers — defer to it.
+
+OCRDb domains progress through a four-stage ladder:
+
+1. **provisional** — a newly proposed candidate domain, admitted at a minor entry-point release. It is a skeleton only (not in the `domains/*.yml` catalog) and must *earn its place* through calibration before it advances. **Currently: FRN, LGL** (admitted 0.6.0).
+2. **draft** — a provisional candidate that *survived its first round of reviews* (cleared the round-1 demand / eligibility gate). Still a calibration skeleton, now with round-1 evidence behind it. **Currently: MOC, CMP** (admitted 0.4.0; cleared round 1).
+3. **approved** — a domain that *proved demand for its existence separate from any other domain*: the ratify-vs-absorb / `would_file_as` evidence came back "distinct home." It lives in the core `domains/*.yml` catalog and is actively maintained and strengthened. **Currently: the 10 core** — SEC, COD, ARC, TST, QAL, AGT, DAT, OPS, ACC, LNG.
+4. **ratified** — the final, stability-locked state, conferred at **1.0**. Ratification activates the `SCHEMA.md` stability contract: no rename, split, merge, or re-letter of any code thereafter. **Currently: none** (pre-1.0). After 1.0, adding or changing a domain requires a **major** version bump.
+
+## Version history — the ladder over time
+
+| Version | Event |
+|---|---|
+| 0.0.0 | all domains provisional (the initial proposal set) |
+| 0.1.0 | survivors promoted provisional → draft |
+| 0.2.0 | first domains reached approved (core catalog established) |
+| 0.3.0 | strengthened the approved domains; researched the draft / provisional candidates |
+| 0.4.0 | domain entry point → MOC, CMP admitted (provisional → draft after clearing round 1) |
+| 0.5.0 | continued strengthening / round-2 calibration |
+| 0.6.0 | domain entry point → FRN, LGL admitted (provisional) |
+| 0.8.0 | final pre-1.0 domain entry point |
+| 1.0 | ratification: roster + codes freeze; the stability contract activates |
+
+## Entry-point cadence
+
+New candidate domains are admitted **only** at the even-minor entry points **0.4.0 / 0.6.0 / 0.8.0** before 1.0 — a controlled cadence, not ad-hoc admission. Between entry points, existing domains are strengthened and the standing candidates are calibrated. The roster is **not** frozen before 1.0; the one-time roster-and-code freeze *is* the act of ratification at 1.0.
+
+## Promotion gates
+
+- **provisional → draft** — survive the first review round (clear the round-1 demand / eligibility gate).
+- **draft → approved** — prove distinct demand: findings that would not be better filed under an existing domain (the `would_file_as` / ratify-vs-absorb evidence resolves to "distinct home").
+- **approved → ratified** — the one-time 1.0 stability freeze; conferred on the whole roster at once, never per-domain before then.
+
+## Two orthogonal axes — keep them distinct
+
+Domain **stage** and code **status** are different properties and must never be conflated.
+
+- **Domain stage** (`provisional | draft | approved | ratified`) is a per-*domain* maturity property. It is **derived — rolled up from the live catalog** (the code / catalog data), not a hand-frozen value and not a stored field: think of it as a computed property of the current tree, the way a parent node's status rolls up from its leaves. There is **no `stage:` or `maturity:` field** in the YAML. The exact roll-up rule is a **derivation rule (to be finalized)**; until it is pinned, each domain's *current* stage is the one stated above.
+- **Code status** (`status: active | deprecated`, per catalog entry) is the per-*code* inclusion / stability flag the build tooling reads (`tools/build_bundle.py` filters on `status == "active"`). It is unchanged by this lifecycle model and is independent of a domain's stage.
+
+The legacy term **"incubating"** — meaning "the whole catalog is pre-1.0" — is retired in favor of this ladder. The pre-1.0 condition is now stated precisely as *"no domain is ratified until 1.0,"* while each domain carries its own derived stage.
+
+---
+
+> **Historical record below.** The 0.1 ratification agenda that follows fed the 2026-08-10 owner seeding session and is preserved unchanged. Its title's "RATIFIED 2026-08-10" refers to that **seeding-session** sense — the owner walked the agenda and applied the rulings to `domains/` — which predates and is distinct from the **ratified** *stage* defined above (the 1.0 stability lock, not yet reached).
+
+---
+
 # OCRDb 0.1 — Ratification Agenda  ·  RATIFIED 2026-08-10
 
 > **Status: RESOLVED.** This agenda was walked in the owner ratification session on 2026-08-10; every big rock and gap decision was ruled and applied to `domains/`. The 0.1.0 bundle is built and tagged. See `CHANGELOG.md` for the rulings as-applied. The text below is preserved as the historical agenda that fed the session.

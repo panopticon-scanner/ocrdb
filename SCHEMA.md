@@ -1,6 +1,6 @@
 # OCRDb Schema — Normative
 
-**Status:** Normative — pre-1.0 (incubating). The stability contract below **activates at the 1.0 release**; until then, ratification may rename, split, merge, and re-letter freely.
+**Status:** Normative — pre-1.0. No domain is ratified until 1.0; the stability contract below **activates at the 1.0 release**; until then, codes may be renamed, split, merged, and re-lettered freely. Domain lifecycle stages (provisional → draft → approved → ratified) are defined canonically in `RATIFICATION.md`.
 
 ## Code grammar
 
@@ -9,7 +9,7 @@ DOMAIN (3 letters) - AREA (letter) CATEGORY (digit) ISSUE (letter)
 SEC-A2D
 ```
 
-- **Domain** — 3-letter, tool-neutral. Active set: `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic, `DAT` data, `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. The roster is open for evidence-driven additions through 0.5.0 (roadmapped: `MOC`, `CMP`), then hard-frozen until 1.0 — see the domain-roster lifecycle in `CHARTER.md`.
+- **Domain** — 3-letter, tool-neutral. Active set: the 10 **approved** core domains — `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic, `DAT` data, `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. Candidate domains are admitted only at the entry points 0.4.0 / 0.6.0 / 0.8.0 (`MOC`/`CMP` entered 0.4.0 as draft, `FRN`/`LGL` 0.6.0 as provisional) and the roster freezes once at 1.0 — see the domain-lifecycle ladder in `RATIFICATION.md`.
 - **Area** — a letter (`A`–`Z`) naming a coherent territory within the domain.
 - **Category** — a digit (`1`–`9`) within the area.
 - **Issue** — a letter naming a **distinct defect type** (not a severity slot). At seeding time, issue letters within a category are assigned in typical-severity order (a mnemonic aid only — the letter's meaning never changes even if severities are later re-graded).
@@ -88,10 +88,19 @@ Emitting skills default to `character: opportunity` unless explicitly running in
 
 Per CWE discipline:
 
-1. **Codes are immutable from the 1.0 release** — never reused, renamed, or re-lettered thereafter. Before 1.0 the catalog is incubating and codes may change (per CHARTER); 0.x releases are held stable as a courtesy, not a contract.
+1. **Codes are immutable from the 1.0 release** — never reused, renamed, or re-lettered thereafter. Before 1.0 the catalog is pre-1.0 and codes may change (per CHARTER); 0.x releases are held stable as a courtesy, not a contract.
 2. Corrections happen by `status: deprecated` + `superseded_by` + a new code.
 3. Releases are semver'd with changelogs; consumers pin a release (`build/ocrdb-<ver>.json`).
 4. `tools/validate.py` enforces this mechanically against the previous release bundle: a code that disappears or changes `name` fails the build.
+
+## Two axes — domain stage vs. code status
+
+OCRDb tracks two independent maturity properties; do not conflate them.
+
+- **Code status** — the per-entry `status: active | deprecated` field above. It is the inclusion / stability flag the build reads: `tools/build_bundle.py` filters on `status == "active"`, and `superseded_by` is required when `status: deprecated`. It is a property of a single **code**.
+- **Domain stage** — `provisional | draft | approved | ratified`, a property of a whole **domain**. It is **derived** (rolled up from the live catalog), not a stored field: there is no `stage:` or `maturity:` key in the YAML, and the roll-up **derivation rule is to be finalized**. The 10 domains in the active set above are **approved**; provisional and draft candidates are calibration skeletons outside `domains/*.yml`; `ratified` is the 1.0 stability-locked state — **no domain is ratified pre-1.0**.
+
+The four-stage ladder, the version history, the promotion gates, and the 0.4.0 / 0.6.0 / 0.8.0 entry-point cadence are defined canonically in `RATIFICATION.md`; this schema documents only the per-code `status` field and the fact that domain `stage` is derived.
 
 ## Provenance vocabulary
 
@@ -100,7 +109,7 @@ Per CWE discipline:
 - `corpus` — the hazard was observed in a real code-review corpus (panopticon's self-scan / PR-review runs).
 - `tool-observed` — surfaced by automated review tooling or review skills. Deliberately vendor-neutral: the taxonomy is a public, CC-BY-SA-licensed catalog and does not name specific commercial tools or internal run/skill identifiers as provenance values.
 - `gap-review` — added by a systematic gap-analysis pass over the taxonomy (e.g. filling a missing precursor/exploited-form pairing).
-- `prior-art` — completed from an external taxonomy/standard to fill an obvious asymmetry (e.g. the exploited form of a defect whose precursor was observed). Budget-capped: entries grounded ONLY by prior-art (provenance carries `prior-art` and neither `corpus` nor `tool-observed`) must be ≤ 25% of a domain's entries. An entry that later gains a real corpus/tool observation no longer counts against the cap. `tools/validate.py` enforces this — a WARNING while the catalog is incubating (pre-1.0), a hard error at 1.0.
+- `prior-art` — completed from an external taxonomy/standard to fill an obvious asymmetry (e.g. the exploited form of a defect whose precursor was observed). Budget-capped: entries grounded ONLY by prior-art (provenance carries `prior-art` and neither `corpus` nor `tool-observed`) must be ≤ 25% of a domain's entries. An entry that later gains a real corpus/tool observation no longer counts against the cap. `tools/validate.py` enforces this — a WARNING while the catalog is pre-1.0, a hard error at 1.0.
 - `owasp-align` / `asvs-align` / `openssf-align` / `cwe-align` — crosswalk alignment to a named open standard (OWASP Top 10, OWASP ASVS, OpenSSF, CWE respectively). `cwe-align` is reserved for future crosswalk-driven additions.
 
 No other values are permitted. This is a pre-1.0 breaking change from the 0.1 vocabulary, which leaked vendor names (`coderabbit`, `copilot`), internal run/skill identifiers (`pr945`, `skills-class`, `simplify-skill`, `code-simplifier-agent`, `receiving-code-review-skill`), version-qualified corpus tags (`corpus-4x`, `corpus-2.3.0`), and source-specific gap-review tags (`deep-gap-review`, `gemini-gap-review`) into the public catalog; all of these now collapse to the neutral tiers above.

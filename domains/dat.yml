@@ -1,4 +1,4 @@
-# OCRDb domain file — INCUBATING (pre-1.0; codes may change until the 1.0 freeze). See CHARTER.md.
+# OCRDb domain file — INCUBATING (pre-1.0): no domain is ratified until 1.0; this domain's lifecycle stage is derived, not stored here — see RATIFICATION.md.
 domain: DAT
 name: data-and-persistence
 areas:
