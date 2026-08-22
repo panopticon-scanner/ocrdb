@@ -87,7 +87,13 @@ entries:
       action, route by what is absent — missing human approval on a destructive
       action is B1B, absent scope bounds on a write-capable tool is B1C, and an
       over-broad grant of tools beyond the task is B1D. A control that runs but
-      mis-parses an undocumented input shape is instead ARC-F2C.
+      mis-parses an undocumented input shape is instead ARC-F2C. Severity is
+      graded by the CAPABILITY of the ungated invocation class, not the mere
+      existence of the gap: HIGH when that class can write, execute, or
+      exfiltrate (an ungated Bash/Edit/Write, or any path to un-adjudicated
+      egress); MEDIUM when the ungated class is read-only and its output is
+      adjudicated — e.g. a review scope-fence constraining Read/Grep/Glob only,
+      with no write/exec/egress channel — especially where the gap is disclosed.
     see_also:
     - AGT-B1B
     - AGT-B1C
