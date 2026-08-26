@@ -5,7 +5,7 @@
 OCRDb domains progress through a four-stage ladder:
 
 1. **provisional** — a newly proposed candidate domain, admitted at a minor entry-point release. It is a skeleton only (not in the `domains/*.yml` catalog) and must *earn its place* through calibration before it advances. **Currently: FRN, LGL** (admitted 0.6.0).
-2. **draft** — a provisional candidate that *survived its first round of reviews* (cleared the round-1 demand / eligibility gate). Still a calibration skeleton, now with round-1 evidence behind it. **Currently: MOC, CMP** (admitted 0.4.0; cleared round 1).
+2. **draft** — a provisional candidate that *survived its first round of reviews* (cleared the round-1 demand / eligibility gate). Still a calibration skeleton, now with round-1 evidence behind it. **Currently: none.** MOC and CMP were admitted 0.4.0 and cleared round 1, but at 0.5.0 their round-2 `would_file_as` evidence resolved to a *distinct home* (MOC → ARC, CMP → SEC) rather than a *distinct domain*, so both were **absorbed** rather than advanced to approved. An absorbed candidate may be re-proposed at a later entry point (0.6.0 / 0.8.0).
 3. **approved** — a domain that *proved demand for its existence separate from any other domain*: the ratify-vs-absorb / `would_file_as` evidence came back "distinct home." It lives in the core `domains/*.yml` catalog and is actively maintained and strengthened. **Currently: the 10 core** — SEC, COD, ARC, TST, QAL, AGT, DAT, OPS, ACC, LNG.
 4. **ratified** — the final, stability-locked state, conferred at **1.0**. Ratification activates the `SCHEMA.md` stability contract: no rename, split, merge, or re-letter of any code thereafter. **Currently: none** (pre-1.0). After 1.0, adding or changing a domain requires a **major** version bump.
 
@@ -18,7 +18,7 @@ OCRDb domains progress through a four-stage ladder:
 | 0.2.0 | first domains reached approved (core catalog established) |
 | 0.3.0 | strengthened the approved domains; researched the draft / provisional candidates |
 | 0.4.0 | domain entry point → MOC, CMP admitted (provisional → draft after clearing round 1) |
-| 0.5.0 | continued strengthening / round-2 calibration |
+| 0.5.0 | round-2 calibration → **MOC absorbed → ARC, CMP absorbed → SEC** (no distinct home); +3 codes (ARC-C1F, SEC-B4D, SEC-C4C), 392 → 395 |
 | 0.6.0 | domain entry point → FRN, LGL admitted (provisional) |
 | 0.8.0 | final pre-1.0 domain entry point |
 | 1.0 | ratification: roster + codes freeze; the stability contract activates |

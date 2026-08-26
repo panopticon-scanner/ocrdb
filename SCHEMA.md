@@ -9,7 +9,7 @@ DOMAIN (3 letters) - AREA (letter) CATEGORY (digit) ISSUE (letter)
 SEC-A2D
 ```
 
-- **Domain** — 3-letter, tool-neutral. Active set: the 10 **approved** core domains — `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic, `DAT` data, `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. Candidate domains are admitted only at the entry points 0.4.0 / 0.6.0 / 0.8.0 (`MOC`/`CMP` entered 0.4.0 as draft, `FRN`/`LGL` 0.6.0 as provisional) and the roster freezes once at 1.0 — see the domain-lifecycle ladder in `RATIFICATION.md`.
+- **Domain** — 3-letter, tool-neutral. Active set: the 10 **approved** core domains — `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic, `DAT` data, `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. Candidate domains are admitted only at the entry points 0.4.0 / 0.6.0 / 0.8.0 (`MOC`/`CMP` entered 0.4.0 as draft and were absorbed into ARC/SEC at 0.5.0; `FRN`/`LGL` entered 0.6.0 as provisional) and the roster freezes once at 1.0 — see the domain-lifecycle ladder in `RATIFICATION.md`.
 - **Area** — a letter (`A`–`Z`) naming a coherent territory within the domain.
 - **Category** — a digit (`1`–`9`) within the area.
 - **Issue** — a letter naming a **distinct defect type** (not a severity slot). At seeding time, issue letters within a category are assigned in typical-severity order (a mnemonic aid only — the letter's meaning never changes even if severities are later re-graded).
