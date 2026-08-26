@@ -347,6 +347,22 @@ entries:
     status: active
     provenance:
     - prior-art
+    criteria: >-
+      Covers a retention window that is either ABSENT or present-but-unconfigurable
+      (a hardcoded / compile-time constant with no config key to set it) — both leave
+      the operator unable to bound how long personal data is kept. (Widened in 0.5.0
+      when the CMP-absorb corpus surfaced hardcoded-retention alongside missing-retention.)
+  SEC-B4D:
+    name: missing-data-subject-rights-path
+    default_severity: LOW
+    status: active
+    provenance:
+    - corpus
+    recurrence: 6
+    examples:
+    - The data model holds a subject's personal data but exposes no self-service path for that subject to
+      exercise access / portability (export their own data in a portable form) or erasure (delete or
+      anonymize), so an access/portability/erasure request has no product path
   SEC-C1A:
     name: excessive-container-network-and-filesystem-privilege
     default_severity: HIGH
@@ -538,6 +554,18 @@ entries:
     - CWE-223
     examples:
     - Sensitive fund-transfer action executes with no audit logging
+  SEC-C4C:
+    name: audit-trail-not-durable-destroyed-by-deletion
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 2
+    examples:
+    - Audit records are destroyed or orphaned through the same channel they audit — a LogEntry.user CASCADE
+      wipes a user's admin-action trail on account deletion, or a bulk-deletion workflow purges
+      Version/Communication/Comment history — with no append-only or tamper protection. (The log IS written,
+      then destroyed; distinct from SEC-C4B missing-audit-logging.)
   SEC-D1A:
     name: path-traversal-via-unvalidated-input
     default_severity: HIGH

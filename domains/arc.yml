@@ -405,6 +405,17 @@ entries:
     - CWE-732
     examples:
     - 'ci.yml is the only in-scope workflow with no explicit least-privilege permissions: block, unlike codeql.yml/security.yml/docker-publish.yml'
+  ARC-C1F:
+    name: generated-artifact-drift-unverified-in-build
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 2
+    examples:
+    - A committed generated artifact (engine_traits.json, servicelist.go, an OpenAPI spec) has no CI/build
+      step that regenerates it and fails on a diff against its generator source, so a stale artifact ships
+      silently
   ARC-C2A:
     name: silent-fallback-masks-pipeline-failure
     default_severity: LOW

@@ -1,6 +1,6 @@
-# OCRDb Catalog — v0.4.1
+# OCRDb Catalog — v0.5.0
 
-392 finding types across 10 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.4.1.html`.
+395 finding types across 10 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.5.0.html`.
 
 **Severity** INFO · LOW · MEDIUM · HIGH · CRITICAL — the *typical* grade for the defect type, not a per-instance verdict. **character**: `defect` (absent) or `opportunity`.
 
@@ -10,13 +10,13 @@
 |---|---|---:|
 | [`ACC`](#acc--accessibility) | accessibility | 8 |
 | [`AGT`](#agt--agentic-trust) | agentic-trust | 16 |
-| [`ARC`](#arc--architecture) | architecture | 70 |
+| [`ARC`](#arc--architecture) | architecture | 71 |
 | [`COD`](#cod--correctness) | correctness | 55 |
 | [`DAT`](#dat--data-and-persistence) | data-and-persistence | 27 |
 | [`LNG`](#lng--language-and-internationalization) | language-and-internationalization | 8 |
 | [`OPS`](#ops--production-readiness) | production-readiness | 9 |
 | [`QAL`](#qal--quality-maintainability) | quality-maintainability | 51 |
-| [`SEC`](#sec--security) | security | 72 |
+| [`SEC`](#sec--security) | security | 74 |
 | [`TST`](#tst--testing) | testing | 76 |
 
 ## ACC — accessibility
@@ -205,6 +205,7 @@
 | `ARC-C1C` | untested-integration-path-in-ci | MEDIUM | — | — |
 | `ARC-C1D` | ci-lint-gate-scope-gap | LOW | — | — |
 | `ARC-C1E` | inconsistent-workflow-permissions-scoping | LOW | CWE-732 | — |
+| `ARC-C1F` | generated-artifact-drift-unverified-in-build | MEDIUM | — | — |
 
 **ARC-C2 · failure-handling**
 
@@ -885,6 +886,7 @@
 | `SEC-B4A` | pii-in-logs | MEDIUM | CWE-532 | — |
 | `SEC-B4B` | excessive-data-collection | LOW | CWE-359 | — |
 | `SEC-B4C` | missing-retention-limit | LOW | — | — |
+| `SEC-B4D` | missing-data-subject-rights-path | LOW | — | — |
 
 ### SEC-C · identity-access-and-cryptography
 
@@ -920,6 +922,7 @@
 | Code | Issue | Severity | CWE | Notes |
 |---|---|---|---|---|
 | `SEC-C4B` | missing-audit-logging-for-sensitive-action | LOW | CWE-778, CWE-223 | — |
+| `SEC-C4C` | audit-trail-not-durable-destroyed-by-deletion | MEDIUM | — | — |
 
 ### SEC-D · untrusted-path-and-resource-resolution
 

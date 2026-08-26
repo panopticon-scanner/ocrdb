@@ -2,6 +2,24 @@
 
 All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (pre-1.0); see SCHEMA.md stability contract.
 
+## [0.5.0] - 2026-08-25
+
+Round-2 calibration **absorbed** the two draft candidate domains — **MOC (model-as-code) → ARC** and **CMP (compliance/governance) → SEC**. Round-2 measured that their findings overwhelmingly file into an existing approved domain (homelessness 2.6% / 9.7% against a 50% floor) — a distinct *home*, not a distinct *domain* — so neither advanced to approved. Both are re-proposable at the 0.6.0 / 0.8.0 entry points. The corpus surfaced three genuinely-new gaps no existing code covered, added here. **392 → 395 codes.**
+
+### Added — catalog (3 codes from the MOC/CMP absorb)
+
+- `ARC-C1F generated-artifact-drift-unverified-in-build` (MEDIUM) — a committed generated artifact (e.g. `engine_traits.json`, `servicelist.go`, an OpenAPI spec) with no CI/build step that regenerates it and fails on a diff against its generator source, so a stale artifact ships silently. The MOC core: reviewers hit the identical hazard on 9 targets and scattered it across six existing codes, proving no canonical home.
+- `SEC-B4D missing-data-subject-rights-path` (LOW) — the data model holds a subject's personal data but exposes no self-service access / portability / erasure path (GDPR Art. 15/17/20). Distinct from `SEC-B4B` (over-collection) and `SEC-B4C` (retention).
+- `SEC-C4C audit-trail-not-durable-destroyed-by-deletion` (MEDIUM) — audit records destroyed through the same channel they audit (a CASCADE wipes a user's trail on account deletion; a bulk-delete purges history), with no append-only / tamper protection. Distinct from `SEC-C4B` (missing-audit-logging): the log *is* written, then destroyed.
+
+### Changed — catalog
+
+- `SEC-B4C missing-retention-limit` `criteria` widened to cover a retention window that is ABSENT **or** present-but-unconfigurable (a hardcoded / compile-time constant with no config key) — both leave the operator unable to bound retention. `name` / `default_severity` unchanged.
+
+### Domain roster
+
+- **MOC and CMP absorbed** (draft → absorbed): MOC → ARC, CMP → SEC. The roster stays at **10 approved** domains; standing candidates are now provisional **FRN / LGL** only. Recorded in `RATIFICATION.md`, `CHARTER.md`, `SCHEMA.md`.
+
 ## [0.4.1] - 2026-08-22
 
 Patch release: a severity-grading refinement to one code's `criteria`, plus the domain-lifecycle vocabulary formalization. All 392 codes stay byte-identical on `name`/`default_severity` against 0.4.0 — the stability contract holds.
