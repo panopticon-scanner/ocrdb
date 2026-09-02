@@ -264,7 +264,10 @@ class TestGovernanceDocs(unittest.TestCase):
         for f in glob.glob(os.path.join(ROOT, "domains", "*.yml")):
             first = open(f, encoding="utf-8").readline()
             self.assertNotIn("RATIFIED", first, f)
-            self.assertIn("INCUBATING", first, f)
+            # "incubating" was retired in 0.4.1 in favour of the lifecycle ladder
+            self.assertNotIn("INCUBATING", first, f)
+            self.assertIn("PRE-1.0", first, f)
+            self.assertIn("RATIFICATION.md", first, f)
 
     def test_schema_lists_all_active_and_incubating_domains(self):
         # 0.3.0: OPS/ACC/LNG activated — the roster is 10 active, 0 declared-

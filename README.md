@@ -2,7 +2,7 @@
 
 A hierarchical, severity-graded database of code-review finding types — security,
 correctness, architecture, tests, and quality — with stable identifiers
-(`SEC-A2D`), CWE/ISO-5055/ASVS crosswalks, and a SARIF taxonomy export.
+(`SEC-A1A`), CWE/ISO-5055/ASVS crosswalks, and a SARIF taxonomy export.
 
 **Status: pre-1.0.** Private while the schema and seed taxonomy form; public at 1.0.
 No domain is ratified until 1.0 — each domain carries a derived lifecycle stage

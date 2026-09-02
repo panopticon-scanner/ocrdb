@@ -6,14 +6,14 @@
 
 ```
 DOMAIN (3 letters) - AREA (letter) CATEGORY (digit) ISSUE (letter)
-SEC-A2D
+SEC-A1A
 ```
 
-- **Domain** — 3-letter, tool-neutral. Active set: the 10 **approved** core domains — `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic, `DAT` data, `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. Candidate domains are admitted only at the entry points 0.4.0 / 0.6.0 / 0.8.0 (`MOC`/`CMP` entered 0.4.0 as draft and were absorbed into ARC/SEC at 0.5.0; `FRN`/`LGL` entered 0.6.0 as provisional) and the roster freezes once at 1.0 — see the domain-lifecycle ladder in `RATIFICATION.md`.
+- **Domain** — 3-letter, tool-neutral. Active set: the 10 **approved** core domains — `SEC` security, `COD` correctness, `ARC` architecture, `TST` testing, `QAL` quality/maintainability, `AGT` agentic, `DAT` data, `OPS` production-readiness, `ACC` accessibility, `LNG` language/internationalization. The roster changes only at the even-minor entry points 0.0.0 / 0.2.0 / 0.4.0 / 0.6.0 / 0.8.0 (`MOC`/`CMP` entered 0.4.0 as draft and were absorbed into ARC/SEC at 0.5.0 — the one off-cadence change; `FRN`/`LGL` are proposed for admission at 0.6.0) and freezes once at 1.0 — see the domain-lifecycle ladder in `RATIFICATION.md`.
 - **Area** — a letter (`A`–`Z`) naming a coherent territory within the domain.
 - **Category** — a digit (`1`–`9`) within the area.
 - **Issue** — a letter naming a **distinct defect type** (not a severity slot). At seeding time, issue letters within a category are assigned in typical-severity order (a mnemonic aid only — the letter's meaning never changes even if severities are later re-graded).
-- **Versioned citation form** (outside a pinned context): `ocrdb-v0.1-SEC-A2D`.
+- **Versioned citation form** (outside a pinned context): `ocrdb-v0.5-SEC-A1A`.
 - **Domain fallback code**: `<DOM>-X0X` — used by consumers when no specific issue fits. It is a **reserved non-entry form** that deliberately sits OUTSIDE the entry grammar above (`0` is a reserved category digit, `X` a reserved area/issue letter), so a real entry code and the sentinel can never collide. Fallback usage is the catalog-gap signal that feeds curation; `X0X` is never assigned to a real entry. Every declared domain has a fallback, e.g. `SEC-X0X`, `OPS-X0X`.
 
 ## Entry schema
@@ -29,7 +29,7 @@ areas:                       # hierarchy naming — areas and categories carry n
     categories:
       1: command-execution
 entries:                     # one entry per issue code
-  SEC-A1B:
+  SEC-A1A:
     # ---- required core ----
     name: os-command-injection        # kebab-case, stable once released
     default_severity: HIGH            # INFO | LOW | MEDIUM | HIGH | CRITICAL
@@ -40,7 +40,7 @@ entries:                     # one entry per issue code
     character: defect                 # defect | opportunity (absent = defect)
     definition: "…"                   # one paragraph
     criteria: "qualifies when …; elevate if …"
-    superseded_by: SEC-A3B            # required iff status: deprecated
+    superseded_by: SEC-A1B            # required iff status: deprecated (illustrative here — SEC-A1A is active)
     cwe: [CWE-78]
     iso5055_measure: [security]
     iso25010: [security.integrity]
@@ -53,7 +53,7 @@ entries:                     # one entry per issue code
     mantyla_class: functional         # functional | evolvability
     automated_by: [ruff:E401]         # linter/formatter rule that catches it mechanically;
                                       #   absent/empty = requires human/agent judgment
-    see_also: [COD-A1B]               # cross-references to the single home of a related hazard
+    see_also: [COD-A1A]               # cross-references to the single home of a related hazard
     examples: ["…"]                   # illustrative finding titles (bad), and/or {bad: …, good: …}
     remediation: "…"
     notes: "…"                        # curation notes, contested classifications
@@ -100,7 +100,7 @@ OCRDb tracks two independent maturity properties; do not conflate them.
 - **Code status** — the per-entry `status: active | deprecated` field above. It is the inclusion / stability flag the build reads: `tools/build_bundle.py` filters on `status == "active"`, and `superseded_by` is required when `status: deprecated`. It is a property of a single **code**.
 - **Domain stage** — `provisional | draft | approved | ratified`, a property of a whole **domain**. It is **derived** (rolled up from the live catalog), not a stored field: there is no `stage:` or `maturity:` key in the YAML, and the roll-up **derivation rule is to be finalized**. The 10 domains in the active set above are **approved**; provisional and draft candidates are calibration skeletons outside `domains/*.yml`; `ratified` is the 1.0 stability-locked state — **no domain is ratified pre-1.0**.
 
-The four-stage ladder, the version history, the promotion gates, and the 0.4.0 / 0.6.0 / 0.8.0 entry-point cadence are defined canonically in `RATIFICATION.md`; this schema documents only the per-code `status` field and the fact that domain `stage` is derived.
+The four-stage ladder, the version history, the promotion gates, and the 0.0.0 / 0.2.0 / 0.4.0 / 0.6.0 / 0.8.0 entry-point cadence are defined canonically in `RATIFICATION.md`; this schema documents only the per-code `status` field and the fact that domain `stage` is derived.
 
 ## Provenance vocabulary
 
