@@ -267,7 +267,7 @@ entries:
       query — a count via len(lazy_relationship) instead of SQL COUNT, per-row
       .get()/update in a serializer or merge loop, a constant lookup re-queried
       per row.
-    notes: moved from QAL-G1D at ratification
+    notes: moved at the 0.1 seeding session from the draft QAL-G1D (a code that did not survive the 0.2.0 identity-base reset)
   DAT-C1C:
     name: unbounded-result-set
     default_severity: MEDIUM

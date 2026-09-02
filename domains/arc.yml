@@ -373,6 +373,8 @@ entries:
     provenance:
     - corpus
     recurrence: 1
+    see_also:
+    - ARC-C1F
     examples:
     - 'docker-publish.yml''s trigger paths: filter doesn''t cover everything the Dockerfile COPYs into the published
       image, so some changes ship unbuilt'
@@ -412,6 +414,13 @@ entries:
     provenance:
     - corpus
     recurrence: 2
+    criteria: >-
+      Qualifies when a generated artifact (a JSON/Go/OpenAPI file derived from a
+      generator source) is committed but no CI or build step regenerates it and
+      fails on a diff, so a stale artifact ships silently. Does not qualify if a
+      regeneration check exists but is skipped by a path filter — that is ARC-C1B.
+    see_also:
+    - ARC-C1B
     examples:
     - A committed generated artifact (engine_traits.json, servicelist.go, an OpenAPI spec) has no CI/build
       step that regenerates it and fails on a diff against its generator source, so a stale artifact ships
