@@ -341,6 +341,13 @@ entries:
     - prior-art
     cwe:
     - CWE-359
+    criteria: >-
+      Qualifies when personal data is collected or stored beyond what the stated
+      purpose needs (over-collection at intake). Distinct from SEC-B4C (data kept
+      too long) and SEC-B4D (no path for the subject to access or erase it).
+    see_also:
+    - SEC-B4C
+    - SEC-B4D
   SEC-B4C:
     name: missing-retention-limit
     default_severity: LOW
@@ -352,6 +359,10 @@ entries:
       (a hardcoded / compile-time constant with no config key to set it) — both leave
       the operator unable to bound how long personal data is kept. (Widened in 0.5.0
       when the CMP-absorb corpus surfaced hardcoded-retention alongside missing-retention.)
+      Distinct from SEC-B4B (over-collection at intake) and SEC-B4D (no subject-rights path).
+    see_also:
+    - SEC-B4B
+    - SEC-B4D
   SEC-B4D:
     name: missing-data-subject-rights-path
     default_severity: LOW
@@ -359,6 +370,15 @@ entries:
     provenance:
     - corpus
     recurrence: 6
+    criteria: >-
+      Qualifies when the data model holds a subject's personal data but the product
+      exposes no self-service path for that subject to exercise access, portability
+      (export in a portable form), or erasure (delete or anonymize) — GDPR Art.
+      15 / 20 / 17. Distinct from SEC-B4B (over-collection) and SEC-B4C (retention
+      window): the data may be minimal and time-bounded and this still qualifies.
+    see_also:
+    - SEC-B4B
+    - SEC-B4C
     examples:
     - The data model holds a subject's personal data but exposes no self-service path for that subject to
       exercise access / portability (export their own data in a portable form) or erasure (delete or
@@ -552,6 +572,13 @@ entries:
     cwe:
     - CWE-778
     - CWE-223
+    criteria: >-
+      Qualifies when a sensitive action (fund transfer, privilege change, data
+      export, deletion) executes with no audit record written at all. If the
+      record IS written but can later be destroyed through the channel it audits,
+      that is SEC-C4C, not this code.
+    see_also:
+    - SEC-C4C
     examples:
     - Sensitive fund-transfer action executes with no audit logging
   SEC-C4C:
@@ -561,6 +588,14 @@ entries:
     provenance:
     - corpus
     recurrence: 2
+    criteria: >-
+      Qualifies when audit records are destroyed or orphaned through the same
+      channel they audit — a CASCADE from the audited row (e.g. LogEntry.user)
+      wipes the actor's trail on account deletion, or a bulk-deletion workflow
+      purges history — with no append-only store or tamper protection. The log is
+      written, then lost. Distinct from SEC-C4B, where no record is written.
+    see_also:
+    - SEC-C4B
     examples:
     - Audit records are destroyed or orphaned through the same channel they audit — a LogEntry.user CASCADE
       wipes a user's admin-action trail on account deletion, or a bulk-deletion workflow purges

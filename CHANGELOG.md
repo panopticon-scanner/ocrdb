@@ -2,6 +2,26 @@
 
 All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (pre-1.0); see SCHEMA.md stability contract.
 
+## [0.5.1] - 2026-09-02
+
+Patch release: the 0.5.0 codes get the `criteria` / `see_also` boundary encoding the 0.5.0 notes described but the catalog did not carry, plus a governance-doc consistency pass (#31). All 395 codes stay byte-identical on `name`/`default_severity` against 0.5.0 — the stability contract holds. No codes added, removed, or re-graded.
+
+### Changed — catalog
+
+- `SEC-B4D missing-data-subject-rights-path`, `SEC-C4C audit-trail-not-durable-destroyed-by-deletion`, `ARC-C1F generated-artifact-drift-unverified-in-build` — the three codes added at 0.5.0 — now carry `criteria` (qualification plus nearest-neighbour exclusion, the bar the 0.4.0 additions set) and reciprocal `see_also`.
+- Their neighbours gain the reciprocal side and, where they had none, a `criteria` that names the boundary: `SEC-B4B excessive-data-collection` ↔ `SEC-B4C missing-retention-limit` ↔ `SEC-B4D` (over-collection at intake / retention window / subject-rights path); `SEC-C4B missing-audit-logging-for-sensitive-action` ↔ `SEC-C4C` (no record written / record written then destroyed); `ARC-C1B ci-trigger-path-filter-incomplete` ↔ `ARC-C1F` (check exists but is path-filtered out / no regeneration check at all).
+- `DAT-C1B n-plus-one-query` `notes` no longer cites `QAL-G1D` as if it were live; that draft code did not survive the 0.2.0 identity-base reset.
+
+### Changed — governance docs (#31)
+
+- **Entry-point cadence pinned.** The roster changes — admission *and* absorption — only at the even-minor entry points **0.0.0 / 0.2.0 / 0.4.0 / 0.6.0 / 0.8.0**; docs previously said 0.4.0 / 0.6.0 / 0.8.0 and framed it as admission-only. After 1.0 any roster change (add, absorb, rename, remove) is a **major** release. The MOC/CMP absorption at 0.5.0 is recorded as the one off-cadence roster change, made before this rule was pinned.
+- **FRN / LGL corrected to *proposed*.** The 0.4.1 entry below and the lifecycle docs called them *provisional* — a stage the ladder defines as already admitted — while 0.6.0, their admission point, has not shipped. They are proposed for admission at 0.6.0 and not yet on the ladder; the *provisional* rung is currently empty. The 0.4.1 text is preserved as written.
+- `CONTRIBUTING.md` no longer describes MOC/CMP as draft candidates (absorbed at 0.5.0).
+- The grammar example `SEC-A2D` (README, SCHEMA, CHARTER, CONTRIBUTING) never existed; it is now the real `SEC-A1A`, whose data the SCHEMA example already carried. `superseded_by` / `see_also` examples likewise point at real codes.
+- `domains/*.yml` header comments say `PRE-1.0` instead of the retired `INCUBATING`.
+
+Stability contract checked against `build/ocrdb-0.5.0.json`: all 395 codes byte-identical on `name`/`default_severity`.
+
 ## [0.5.0] - 2026-08-25
 
 Round-2 calibration **absorbed** the two draft candidate domains — **MOC (model-as-code) → ARC** and **CMP (compliance/governance) → SEC**. Round-2 measured that their findings overwhelmingly file into an existing approved domain (homelessness 2.6% / 9.7% against a 50% floor) — a distinct *home*, not a distinct *domain* — so neither advanced to approved. Both are re-proposable at the 0.6.0 / 0.8.0 entry points. The corpus surfaced three genuinely-new gaps no existing code covered, added here. **392 → 395 codes.**
