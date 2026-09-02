@@ -4,33 +4,39 @@
 
 OCRDb domains progress through a four-stage ladder:
 
-1. **provisional** — a newly proposed candidate domain, admitted at a minor entry-point release. It is a skeleton only (not in the `domains/*.yml` catalog) and must *earn its place* through calibration before it advances. **Currently: FRN, LGL** (admitted 0.6.0).
-2. **draft** — a provisional candidate that *survived its first round of reviews* (cleared the round-1 demand / eligibility gate). Still a calibration skeleton, now with round-1 evidence behind it. **Currently: none.** MOC and CMP were admitted 0.4.0 and cleared round 1, but at 0.5.0 their round-2 `would_file_as` evidence resolved to a *distinct home* (MOC → ARC, CMP → SEC) rather than a *distinct domain*, so both were **absorbed** rather than advanced to approved. An absorbed candidate may be re-proposed at a later entry point (0.6.0 / 0.8.0).
+1. **provisional** — a newly proposed candidate domain, admitted at an even-minor entry-point release. It is a skeleton only (not in the `domains/*.yml` catalog) and must *earn its place* through calibration before it advances. **Currently: none.** `FRN` and `LGL` are *proposed* for admission at the 0.6.0 entry point; until then they are not on the ladder.
+2. **draft** — a provisional candidate that *survived its first round of reviews* (cleared the round-1 demand / eligibility gate). Still a calibration skeleton, now with round-1 evidence behind it. **Currently: none.** MOC and CMP were admitted 0.4.0 and cleared round 1, but their round-2 `would_file_as` evidence resolved to a *distinct home* (MOC → ARC, CMP → SEC) rather than a *distinct domain*, so both were **absorbed** rather than advanced to approved. The absorption landed at 0.5.0 — ahead of the 0.6.0 entry point, the one off-cadence roster change; see *Entry-point cadence* below. An absorbed candidate may be re-proposed at a later entry point (0.6.0 / 0.8.0).
 3. **approved** — a domain that *proved demand for its existence separate from any other domain*: the ratify-vs-absorb / `would_file_as` evidence came back "distinct home." It lives in the core `domains/*.yml` catalog and is actively maintained and strengthened. **Currently: the 10 core** — SEC, COD, ARC, TST, QAL, AGT, DAT, OPS, ACC, LNG.
-4. **ratified** — the final, stability-locked state, conferred at **1.0**. Ratification activates the `SCHEMA.md` stability contract: no rename, split, merge, or re-letter of any code thereafter. **Currently: none** (pre-1.0). After 1.0, adding or changing a domain requires a **major** version bump.
+4. **ratified** — the final, stability-locked state, conferred at **1.0**. Ratification activates the `SCHEMA.md` stability contract: no rename, split, merge, or re-letter of any code thereafter. **Currently: none** (pre-1.0). After 1.0, adding, absorbing, renaming, or removing a domain requires a **major** version bump — never a minor.
 
 ## Version history — the ladder over time
 
+Entry-point releases are marked ◆.
+
 | Version | Event |
 |---|---|
-| 0.0.0 | all domains provisional (the initial proposal set) |
+| 0.0.0 ◆ | all domains provisional (the initial proposal set) |
 | 0.1.0 | survivors promoted provisional → draft |
-| 0.2.0 | first domains reached approved (core catalog established) |
+| 0.2.0 ◆ | first domains reached approved (core catalog established) |
 | 0.3.0 | strengthened the approved domains; researched the draft / provisional candidates |
-| 0.4.0 | domain entry point → MOC, CMP admitted (provisional → draft after clearing round 1) |
-| 0.5.0 | round-2 calibration → **MOC absorbed → ARC, CMP absorbed → SEC** (no distinct home); +3 codes (ARC-C1F, SEC-B4D, SEC-C4C), 392 → 395 |
-| 0.6.0 | domain entry point → FRN, LGL admitted (provisional) |
-| 0.8.0 | final pre-1.0 domain entry point |
+| 0.4.0 ◆ | MOC, CMP admitted (provisional → draft after clearing round 1) |
+| 0.5.0 | round-2 calibration → **MOC absorbed → ARC, CMP absorbed → SEC** (no distinct home) — the one off-cadence roster change; +3 codes (ARC-C1F, SEC-B4D, SEC-C4C), 392 → 395 |
+| 0.6.0 ◆ | FRN, LGL to be admitted (provisional); MOC/CMP re-proposable |
+| 0.8.0 ◆ | final pre-1.0 entry point |
 | 1.0 | ratification: roster + codes freeze; the stability contract activates |
 
 ## Entry-point cadence
 
-New candidate domains are admitted **only** at the even-minor entry points **0.4.0 / 0.6.0 / 0.8.0** before 1.0 — a controlled cadence, not ad-hoc admission. Between entry points, existing domains are strengthened and the standing candidates are calibrated. The roster is **not** frozen before 1.0; the one-time roster-and-code freeze *is* the act of ratification at 1.0.
+The roster changes **only** at the even-minor entry points **0.0.0 / 0.2.0 / 0.4.0 / 0.6.0 / 0.8.0** before 1.0 — a controlled cadence, not ad-hoc change. Both directions are gated: candidate domains are *admitted* at an entry point, and a candidate that fails calibration is *absorbed* (or dropped) at an entry point. Between entry points, existing domains are strengthened and standing candidates are calibrated; the evidence may be conclusive earlier, but the roster change waits for the next entry point.
+
+One exception is on record: MOC and CMP were absorbed at 0.5.0, before this rule was pinned, once their round-2 evidence was conclusive. From 0.6.0 onward no roster change lands off-cadence.
+
+The roster is **not** frozen before 1.0; the one-time roster-and-code freeze *is* the act of ratification at 1.0. After 1.0, any roster change is a **major** release.
 
 ## Promotion gates
 
 - **provisional → draft** — survive the first review round (clear the round-1 demand / eligibility gate).
-- **draft → approved** — prove distinct demand: findings that would not be better filed under an existing domain (the `would_file_as` / ratify-vs-absorb evidence resolves to "distinct home").
+- **draft → approved** — prove distinct demand: findings that would not be better filed under an existing domain (the `would_file_as` / ratify-vs-absorb evidence resolves to "distinct home"). If it resolves to an *existing* home instead, the candidate is **absorbed** into that domain at the next entry point.
 - **approved → ratified** — the one-time 1.0 stability freeze; conferred on the whole roster at once, never per-domain before then.
 
 ## Two orthogonal axes — keep them distinct
