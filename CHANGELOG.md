@@ -2,6 +2,14 @@
 
 All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (pre-1.0); see SCHEMA.md stability contract.
 
+## [Unreleased] — 0.6.0 entry point
+
+### Changed — domain ladder
+
+- **FRN and LGL admitted** at the 0.6.0 entry point. Both are calibration skeletons; neither is in `domains/*.yml`, and the 395-code catalog is unchanged.
+- **FRN → draft.** It cleared every 0.6.0-R1 round-1 gate: 129 adversarially upheld findings, breadth 7 of 7 core targets, independence on 6 targets, and 4 areas with ≥ 2 codes each. Verdict record: `ocrdb-docs/calibration/0.6.0-r1-panel-2026-08-27/verdict-r1.md`.
+- **LGL holds at provisional.** It failed only the domain-shape gate: areas A and C surfaced one code each. 0.6.0-R2 re-probes them.
+
 ## [0.5.1] - 2026-09-02
 
 Patch release: the 0.5.0 codes get the `criteria` / `see_also` boundary encoding the 0.5.0 notes described but the catalog did not carry, plus a governance-doc consistency pass (#31). All 395 codes stay byte-identical on `name`/`default_severity` against 0.5.0 — the stability contract holds. No codes added, removed, or re-graded.
