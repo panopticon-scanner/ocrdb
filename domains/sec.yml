@@ -1296,7 +1296,6 @@ entries:
     see_also:
     - COD-F1B
     - SEC-D1A
-    - TST-D2B
     severity_range:
       floor: MEDIUM
       ceiling: HIGH
@@ -1802,7 +1801,6 @@ entries:
     - COD-C2A
     - SEC-G2A
     - SEC-G2C
-    - TST-A4C
     severity_range:
       floor: MEDIUM
       ceiling: HIGH
@@ -1858,6 +1856,7 @@ entries:
     - TST-A2B
     - TST-A2D
     - TST-A2F
+    - TST-A3C
     - TST-G3E
     severity_range:
       floor: LOW

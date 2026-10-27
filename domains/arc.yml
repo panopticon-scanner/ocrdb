@@ -1026,7 +1026,6 @@ entries:
     - ARC-D2E
     - COD-D1A
     - COD-D1D
-    - TST-A4B
     severity_range:
       floor: MEDIUM
       ceiling: HIGH
@@ -1410,7 +1409,6 @@ entries:
     see_also:
     - ARC-E1A
     - ARC-E1C
-    - TST-E2C
     severity_range:
       floor: MEDIUM
       ceiling: HIGH
