@@ -1,48 +1,159 @@
 # OCRDb domain file — PRE-1.0: no domain is ratified until 1.0; this domain's lifecycle stage is derived, not stored here — see RATIFICATION.md.
 domain: ARC
 name: architecture
+guide: 'ARC covers structure: where a responsibility lives, whether two specifications agree with each
+  other (code vs code, doc vs code, schema vs producer, docs vs the repository''s actual layout), and
+  whether declared gates and enforcement are wired and fail closed. Choose ARC when the fix is structural
+  (a new owner, boundary, contract or gate) or when two specs disagree; choose COD when one instance breaks
+  a contract or gives a wrong result, QAL for a per-instance smell or inert staleness, OPS for runtime
+  error-swallowing or a self-inflicted operational failure (a deliberate fail-open design decision stays
+  ARC), and SEC/AGT when the finding is the exploitable flaw itself rather than the architecture around
+  it. Look in A (module boundaries and ownership), B (packaging and images), C (CI/CD gating), D (contracts
+  and interfaces), E (configuration), F (enforcement and fail-open), G (documentation integrity).'
 areas:
   A:
     name: module-boundaries
+    guide: 'Module boundaries: how code is divided into units, who owns each rule, constant or registry, and
+      how units depend on each other. Use A1 for cohesion, A2 for coupling, A3 and A5 for duplication and
+      missing canonical owners, and A4 for consistency across implementations of a shared extension point.
+      A per-instance copy-paste fixable in place is QAL-D1x, not A.'
     categories:
       '1': cohesion
       '2': coupling
       '3': duplication
       '4': extension-point-consistency
       '5': canonical-ownership
+    category_guides:
+      '1': 'Cohesion: ARC-A1A when one rule is scattered across many units with no owner, ARC-A1B when one
+        module holds many unrelated jobs, ARC-A1C when one function mixes separable concerns. A long function
+        with a single concern is QAL-H1A.'
+      '2': 'Coupling: ARC-A2A for cyclic or import-order dependencies, ARC-A2B when producer and consumer
+        share a grammar defined only by a parser, ARC-A2C for sys.path hacks standing in for a package layout
+        (test-suite form TST-G1A; per-instance QAL-F1A), ARC-A2D for a public surface that leaks internals.'
+      '3': 'Duplication with a structural gap, where the fix must create a shared home: ARC-A3A for business
+        logic with no shared module, ARC-A3B for a configuration or mapping table defined in several places.
+        A scalar constant with no canonical owner is ARC-A5A and a mechanically derivable copy is ARC-A5B;
+        per-instance duplicates fixable in place are QAL-D1A/QAL-D1B/QAL-D1C.'
+      '4': 'Extension-point consistency: ARC-A4A for an outlier adapter that breaks the siblings'' convention
+        (declared-protocol violations are COD-D3B), ARC-A4C for a hand-kept shadow registry with no enforced
+        parity (retired-but-registered is QAL-E2B), and ARC-A4D for silently ignoring an unregistered key
+        (compare ARC-F2D, COD-C3B).'
+      '5': 'Canonical ownership: ARC-A5A for a constant with no authoritative owner (per-instance is QAL-D1B),
+        ARC-A5B for a structure kept by hand though it could be derived. Check ARC-A3B and ARC-A2B before
+        choosing.'
   B:
     name: dependency-and-build-architecture
+    guide: 'Dependency and build architecture: whether the packaging manifest describes an installable project
+      and whether container images are designed well. Use B1 for manifests and install mechanics and B3 for
+      image and environment design. Pinning, integrity and supply-chain risk belong to SEC-E.'
     categories:
       '1': packaging-metadata
       '3': container-image-design
+    category_guides:
+      '1': 'Packaging metadata: ARC-B1A for undeclared runtime dependencies, ARC-B1D for a missing build-system
+        declaration, ARC-B1C for stale manifest URLs (doc/code URLs are QAL-C1A), ARC-B1E for lint config
+        that disables its own rule, and ARC-B1F for install paths that bypass the package manager.'
+      '3': 'Container image and environment design: ARC-B3A when tested and shipped environments differ (per-host
+        config parity is ARC-E3C), ARC-B3B for one image holding many unrelated toolchains, and ARC-B3C for
+        images built FROM another mutable in-repo image. Container privilege is SEC-C1A/SEC-C1E.'
   C:
     name: ci-cd-pipeline-architecture
+    guide: 'CI/CD pipeline architecture: whether the pipeline gates on the right signal, covers the right
+      inputs, and surfaces its own failures. Use C1 for what a gate checks and when it runs, and C2 for failures
+      the pipeline hides. Test-quality defects inside the suite are TST; supply-chain pinning is SEC-E2x.'
     categories:
       '1': pipeline-gating
       '2': failure-handling
+    category_guides:
+      '1': 'Pipeline gating: ARC-C1A when a gate bypasses the project''s verdict model, ARC-C1B when trigger
+        paths miss consumed inputs, ARC-C1D when lint globs exclude in-scope code, ARC-C1C when integration
+        tests never run against real tools (mocked/absent tests are TST-A3A), ARC-C1E for a missing least-privilege
+        permissions block, and ARC-C1F when generated artifacts are never regenerated and diffed.'
+      '2': 'Failure handling: ARC-C2A when a failing step silently falls back to another path, ARC-C2B when
+        a step simply ignores its own failure. Scan tools that silently lose coverage are SEC-G2B.'
   D:
     name: contracts-and-interfaces
+    guide: 'Contracts and interfaces: agreement between schemas, specs, prompts, CLIs and the code that produces
+      or consumes them. Use D1 when an implementation or identity drifts from its schema, D2 when a contract
+      is incomplete or ambiguous, and D3 when a referenced artifact is missing. When one output instance is
+      rejected or wrong, route to COD-C3x/COD-D1x instead.'
     categories:
       '1': schema-implementation-drift
       '2': contract-completeness
       '3': missing-referenced-artifacts
+    category_guides:
+      '1': 'Schema-implementation drift: ARC-D1B for wholesale doc-vs-schema divergence (field-level is COD-D1A/COD-D1D),
+        ARC-D1D for one id format specified differently across artifacts (COD-D1B when live output is rejected),
+        ARC-D1A for lossy producer/recovery round trips, ARC-D1C for unstable fingerprints, ARC-D1E for one
+        fact derived independently without reconciliation, and ARC-D1F for unversioned inter-phase artifacts
+        (persisted formats are DAT-F2A).'
+      '2': 'Contract completeness: ARC-D2A for systemic CLI contract drift (one unimplemented flag is COD-D2B,
+        stale flag docs are QAL-C2C), ARC-D2E for a required field no producer emits vs ARC-D2D for an optional
+        field never populated, ARC-D2F for undefined terms, ARC-D2C for agents sharing state with no coordination
+        contract, and ARC-D2B for equivalent inputs handled differently.'
+      '3': 'Missing referenced artifacts: ARC-D3A when code or build references an absent file and something
+        breaks, ARC-D3B when docs assert a structural artifact the repo lacks. A drifted path pointer that
+        breaks nothing is QAL-C1C.'
   E:
     name: configuration-architecture
+    guide: 'Configuration architecture: hardcoded values that should be configuration, implicit or global
+      state, and configuration models too complex to reason about. Use E1 for hardcoding, E2 for implicit
+      and global state, and E3 for configuration-model complexity and parity. Config-loader fail-direction
+      bugs are COD-B1A; startup validation is OPS-C1A.'
     categories:
       '1': hardcoded-values
       '2': implicit-and-global-state
       '3': config-model-complexity
+    category_guides:
+      '1': 'Hardcoded values: ARC-E1A for machine-specific absolute paths in shipped source (fixture data
+        is TST-E2C), ARC-E1B for a path tied to one run or date, and ARC-E1C for one identifier hardcoded
+        independently in several modules (a single stale URL is QAL-C1A or ARC-B1C).'
+      '2': 'Implicit and global state: ARC-E2A for durable records kept in a disposable location, ARC-E2B
+        for global writes in a project-scoped model, ARC-E2C for a documented runtime precondition nothing
+        checks (compare ARC-F1E), and ARC-E2D for silent config auto-discovery (compare QAL-C2F).'
+      '3': 'Config-model complexity: ARC-E3A for config axes whose cross-product is never enumerated or validated,
+        ARC-E3C for per-host config that lacks parity across hosts (CI-vs-image environment divergence is
+        ARC-B3A), and ARC-E3B for a peer component lacking reference material its siblings have (an incomplete
+        docs inventory is ARC-G1C).'
   F:
     name: enforcement-and-security-boundary
+    guide: 'Enforcement and security boundary: the architecture of gates, guards and policies. Did enforcement
+      happen, did it cover the right scope, and which way does it fail? Use F1 when a stated policy or authorization
+      is not enforced or is enforced on stale data, and F2 for controls that fail open or have blind spots.
+      A control that misses a whole class of agent invocations is AGT-B1A; an exploit primitive is SEC.'
     categories:
       '1': enforcement-gap
       '2': fail-open-defaults
+    category_guides:
+      '1': 'Enforcement gaps: ARC-F1E when a documented policy has no code enforcing it (an unchecked environmental
+        precondition such as the working directory is ARC-E2C), ARC-F1A when enforcement trusts a stale flag,
+        ARC-F1C when only some sibling scripts check authorization, ARC-F1B when audit accounting skips in-scope
+        actors, and ARC-F1D when a batch operation has no recovery path for a mid-batch failure (a non-atomic
+        compound operation is COD-F1A).'
+      '2': 'Fail-open defaults and control blind spots: ARC-F2E when a security control permits because its
+        own config is missing or malformed, ARC-F2D when a non-enforcement component skips malformed input
+        (config-loader form COD-B1A, scan-tool form SEC-G2B), ARC-F2C when a control mis-parses an input shape,
+        ARC-F2A when a compensating control exempts the critical scope, ARC-F2B when a hook cannot tell actors
+        apart, and ARC-F2G for structurally overbroad catches (security swallow SEC-F1B, single unchecked
+        failure COD-B2C).'
   G:
     name: documentation-and-spec-integrity
+    guide: 'Documentation and spec integrity at the repository level: docs that disagree with code or CI,
+      design docs whose lifecycle state is unclear, and the repository''s own meta-configuration. Use G1 for
+      disagreements between sources, G2 for superseded or drifted design docs, and G3 for repo hygiene. A
+      single document contradicting itself is QAL-C2B; inert stale pointers are QAL-C1x.'
     categories:
       '1': doc-reality-drift
       '2': design-doc-lifecycle
       '3': repo-hygiene-and-meta-config
+    category_guides:
+      '1': 'Doc-reality drift: ARC-G1B when two sources of truth for one fact diverge, ARC-G1A when contributor
+        instructions differ from CI, and ARC-G1C when reference docs omit existing components (a capability
+        with no docs at all is COD-D2D).'
+      '2': 'Design-doc lifecycle: ARC-G2A for a superseded doc with no deprecation marker, ARC-G2B for a doc
+        still presented as current that has drifted from what was delivered.'
+      '3': 'Repo hygiene and meta-config: ARC-G3B for files tracked against the repo''s own ignore rules.
+        A tracked file that leaks a secret is SEC-B3A.'
 entries:
   ARC-A1A:
     name: fragmented-logic-no-single-owner
@@ -57,6 +168,21 @@ entries:
     - Evidence status precedence hierarchy (verdict > corroboration > tool_source, reinforced handling) is implicit
       and scattered across multiple functions instead of centralized
     - Template management scattered across multiple functions with no single owner
+    criteria: Qualifies when one coherent rule or policy (a precedence order, a lifecycle, a template-management
+      duty) has no single owning function or module and is instead implied by fragments spread across several,
+      so no one site states the rule and every change must touch all fragments. When the fragments are literal
+      copies of the same logic, that is ARC-A3A (structural) or QAL-D1A (per-instance); when one module holds
+      many unrelated responsibilities rather than one rule being spread out, that is ARC-A1B.
+    see_also:
+    - ARC-A1B
+    - ARC-A3A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: All fragments live in one module and a single comment or docstring states the full rule
+          and names every site that implements part of it.
   ARC-A1B:
     name: mixed-responsibility-module
     default_severity: MEDIUM
@@ -71,6 +197,22 @@ entries:
       model resolution, plan emission all in one ~687-line module)
     - orchestrator.py/evidence.py/run_tools.py/synthesize.py each mix file discovery, pattern matching, execution,
       and reporting concerns with no internal boundary
+    criteria: Qualifies when a single MODULE or class owns several unrelated responsibilities (discovery,
+      parsing, execution, reporting) with no internal boundary, so a change to one concern risks the others.
+      When the mixing is inside one FUNCTION, that is ARC-A1C; a long function with a single concern is QAL-H1A;
+      one rule scattered across modules (rather than many rules in one module) is ARC-A1A.
+    see_also:
+    - ARC-A1A
+    - ARC-A1C
+    - QAL-H1A
+    - TST-C2A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The module is an entry point or composition root whose only job is wiring the concerns
+          together, and each concern is already delegated to its own function or module.
   ARC-A1C:
     name: monolithic-function-mixed-concerns
     default_severity: MEDIUM
@@ -91,7 +233,16 @@ entries:
       function has a SINGLE concern but is simply too long or complex, that is
       QAL-H1A.
     see_also:
+    - ARC-A1B
     - QAL-H1A
+    - QAL-H2A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The function is a top-level main() or orchestrator in which each concern is a single delegated
+          call (it sequences concerns but implements none of them).
   ARC-A2A:
     name: circular-or-load-order-coupling
     default_severity: MEDIUM
@@ -105,6 +256,22 @@ entries:
     - Circular module dependency between dispatch.py and orchestrator.py held together only by a deferred import
     - Tool adapter registration tightly coupled at module load time
     - Direct ADAPTERS registry import creates tight coupling between synthesize and domain modules
+    criteria: Qualifies when two or more modules depend on each other cyclically (held together by a deferred
+      or function-local import), or when correctness depends on module import ORDER (registration side effects
+      at load time), so reordering or isolating an import breaks the program. A cyclic or chained BUILD/image
+      dependency is ARC-B3C; a one-way dependency on another module's internals is ARC-A2D; an inline import
+      flagged only for placement is QAL-B1B.
+    see_also:
+    - ARC-A2D
+    - ARC-B3C
+    - QAL-B1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The cycle exists only through a type-checking-only import (e.g. under TYPE_CHECKING) and
+          creates no runtime dependency.
   ARC-A2B:
     name: hidden-contract-via-informal-parsing
     default_severity: MEDIUM
@@ -120,6 +287,23 @@ entries:
       producer and consumer modules
     - reconcile_apply.ledger_key() must byte-for-byte match file_issues.key_for() with no shared source of truth
     - Panel names require manual synchronization in a regex pattern maintained separately from the panel registry
+    criteria: Qualifies when a producer and a consumer share a data or naming grammar (a filename pattern,
+      a key format, a panel list) whose ONLY specification is an informal parser such as a regex or a byte-for-byte
+      reimplementation, with no shared definition both import. When the same id/format is formally specified
+      in several artifacts that disagree, that is ARC-D1D; when the issue is only that a constant list lacks
+      a canonical owner, that is ARC-A5A; when the two sides have already diverged so live output is dropped
+      or mismatched, cite the COD instance (e.g. COD-C2C, COD-C2D).
+    see_also:
+    - ARC-A5A
+    - ARC-D1D
+    - COD-C2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Producer and consumer live in the same module, or a test round-trips producer output through
+          the consumer's parser.
   ARC-A2C:
     name: unpackaged-module-resolution-hack
     default_severity: MEDIUM
@@ -134,7 +318,22 @@ entries:
     - Ad hoc sys.path bootstrap duplicated verbatim across three entry-point scripts
     - Inconsistent sys.path manipulation and import-fallback patterns across the codebase undermine installability
     see_also:
+    - ARC-B1A
+    - QAL-F1A
+    - SEC-D1B
     - TST-G1A
+    criteria: Qualifies when production entry points find sibling modules by mutating sys.path (or an equivalent
+      import-path hack) because the code is not laid out as an installable package. This is a structural packaging
+      gap whose fix is a proper package layout. The same hack confined to the test suite is TST-G1A; a single
+      implicit import dependency fixable in place is QAL-F1A; third-party imports missing from the manifest
+      are ARC-B1A.
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The hack sits in a single standalone script that no other module imports and that is not
+          an installed entry point.
   ARC-A2D:
     name: leaky-module-interface
     default_severity: LOW
@@ -150,6 +349,19 @@ entries:
     - Module aliasing functions from another module without an explicit interface contract
     - Tool-specific noise-filtering policy (bandit B101 suppression) embedded directly in a shared, tool-agnostic
       helper
+    criteria: Qualifies when a module's public surface exposes or re-exports another module's internals, or
+      a shared tool-agnostic helper embeds caller-specific policy, so consumers couple to implementation details.
+      When the coupling is cyclic or depends on import order, that is ARC-A2A; when producer and consumer
+      share a grammar defined only by a parser, that is ARC-A2B.
+    see_also:
+    - ARC-A2A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The leaked names are underscore-prefixed or documented as unstable, and no caller outside
+          the package imports them.
   ARC-A3A:
     name: duplicated-business-logic-without-shared-module
     default_severity: MEDIUM
@@ -172,7 +384,16 @@ entries:
       copy-pasted and should be consolidated within the existing structure
       (per-instance), that is QAL-D1A.
     see_also:
+    - ARC-A1A
     - QAL-D1A
+    - QAL-D1C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Exactly two copies exist inside one package and a single test exercises both against the
+          same expected output.
   ARC-A3B:
     name: duplicated-configuration-or-mapping-table
     default_severity: LOW
@@ -186,6 +407,26 @@ entries:
     - Role-to-filename mappings defined in two places (ROLE_FILES and AGENT_NAME) with no single source of truth
     - dispatch-plan*.json glob duplicated verbatim across two functions with a documented history of drifting apart
     - Model policy hardcoded and duplicated across dispatch.py and model_resolver.py
+    criteria: Qualifies when a configuration or mapping TABLE (role-to-file map, glob, model policy) is defined
+      in two or more places with no single source of truth, so an edit to one copy silently misses the other.
+      A scalar constant with no canonical owner is ARC-A5A; a second table mechanically derivable from the
+      first is ARC-A5B; a per-instance duplicate constant fixable in place is QAL-D1B.
+    see_also:
+    - ARC-A5A
+    - ARC-A5B
+    - COD-C3B
+    - QAL-D1B
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The copies already disagree on at least one key or value and both copies are read on a
+          live code path (cite ARC-G1B alongside for the realized divergence).
+      lower_when:
+      - to: INFO
+        condition: Both copies are defined in the same function or the same literal block, so one edit visibly
+          touches both.
   ARC-A4A:
     name: adapter-implementation-inconsistency
     default_severity: MEDIUM
@@ -202,6 +443,24 @@ entries:
       same file set
     - spotbugs.py is the only adapter parsing tool output with un-hardened stdlib XML instead of JSON/SARIF like
       its siblings
+    criteria: Qualifies when one implementation of a shared extension point (adapter, plugin, handler) departs
+      from the convention every sibling follows (parsing style, defaulting direction, input format), so the
+      outlier behaves differently on the same class of input. When the outlier violates an explicitly DECLARED
+      protocol or interface, that is COD-D3B; when the deviation is an unhardened XML parse, the security
+      hazard is SEC-A4A.
+    see_also:
+    - COD-C1B
+    - COD-C2B
+    - COD-C3C
+    - COD-D3B
+    - SEC-A4A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: 'The deviation is stylistic only: the outlier produces the same observable result as its
+          siblings on every input, including missing keys.'
   ARC-A4C:
     name: shadow-registry-without-enforced-parity
     default_severity: MEDIUM
@@ -215,7 +474,18 @@ entries:
     - PROBES is a hand-maintained shadow of the ADAPTERS registry with no enforced parity; live adapters have shipped
       without a matching probe entry
     see_also:
+    - ARC-A5B
     - QAL-E2B
+    - TST-A2A
+    criteria: Qualifies when a hand-maintained list or registry mirrors an authoritative registry and no test
+      or derivation enforces parity, so entries can be added to one and missed in the other. A component removed
+      from use but still registered is QAL-E2B; a second structure fully derivable from the first is ARC-A5B.
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: A parity check exists but runs only outside CI (manual script or pre-release checklist).
   ARC-A4D:
     name: silent-failure-on-unrecognized-extension
     default_severity: MEDIUM
@@ -229,6 +499,22 @@ entries:
     examples:
     - Unregistered tool output formats silently skip instead of raising or logging
     - Generic host model resolution returns None instead of a diagnosable error when a host/role has no mapping
+    criteria: Qualifies when an extension point (format registry, host/role resolver, plugin lookup) meets
+      a key it has no registration for and silently skips or returns None instead of raising or logging, so
+      the missing registration cannot be diagnosed. A general component skipping malformed INPUT is ARC-F2D;
+      a lookup table missing entries so a fallback value is silently used is COD-C3B; a scan tool losing coverage
+      this way is SEC-G2B.
+    see_also:
+    - ARC-F2D
+    - COD-C3B
+    - SEC-G2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The unregistered key can only come from first-party code paths enumerated in the same module
+          (no user-, plugin- or file-supplied keys reach the lookup).
   ARC-A5A:
     name: non-canonical-constant-duplication
     default_severity: LOW
@@ -248,7 +534,20 @@ entries:
       the finding is simply that a constant is defined in more than one place and
       the copies should be unified (per-instance), that is QAL-D1B.
     see_also:
+    - ARC-A2B
+    - ARC-A3B
+    - ARC-E1C
     - QAL-D1B
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The copies already disagree on at least one value and both are read on a live code path
+          (cite ARC-G1B alongside).
+      lower_when:
+      - to: INFO
+        condition: All copies are in the same module.
   ARC-A5B:
     name: redundant-derived-structure
     default_severity: LOW
@@ -259,6 +558,21 @@ entries:
     examples:
     - dispatch.py's AGENT_NAME dict was a byte-for-byte parallel derivation of ROLE_FILES; replaced with agent_name(role)
       function
+    criteria: Qualifies when a data structure is maintained by hand although it is fully and mechanically
+      derivable from another structure in the codebase, so the fix replaces it with a derivation (a function
+      or comprehension). When the second structure is a duplicate but cannot be derived, that is ARC-A3B or
+      ARC-A5A; when it is a separate registry that needs enforced parity, that is ARC-A4C.
+    see_also:
+    - ARC-A3B
+    - ARC-A4C
+    - ARC-D1E
+    - QAL-H2C
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The derived structure is built once next to its source in the same block and both are immutable.
   ARC-B1A:
     name: missing-dependency-manifest-declarations
     default_severity: MEDIUM
@@ -269,6 +583,21 @@ entries:
     examples:
     - pyyaml, jsonschema, and pytest are imported and used throughout the project but never declared as dependencies
       in pyproject.toml
+    criteria: Qualifies when third-party packages imported by shipped code are not declared in the project's
+      dependency manifest, so a clean install fails or depends on whatever happens to be installed already.
+      A manifest with no build-system declaration is ARC-B1D; first-party modules resolved through sys.path
+      hacks are ARC-A2C; a declared but unpinned build dependency is SEC-E2A.
+    see_also:
+    - ARC-A2C
+    - ARC-B1D
+    - SEC-E2A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Every import of the undeclared package is wrapped in an ImportError fallback that disables
+          a feature with a clear message.
   ARC-B1C:
     name: stale-project-metadata-urls
     default_severity: MEDIUM
@@ -290,6 +619,12 @@ entries:
     see_also:
     - ARC-E1C
     - QAL-C1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The stale URL redirects automatically to the project's current location.
   ARC-B1D:
     name: incomplete-build-system-declaration
     default_severity: LOW
@@ -300,6 +635,15 @@ entries:
     examples:
     - pyproject.toml declares rich PyPI-style [project] metadata but has no [build-system] table, so the package
       is not actually pip-installable
+    criteria: Qualifies when a packaging manifest declares project metadata but omits the build-system declaration
+      (or its ecosystem equivalent) needed to install it, so the package looks installable but is not. Undeclared
+      runtime dependencies are ARC-B1A; an install path that bypasses the package manager by design is ARC-B1F.
+    see_also:
+    - ARC-B1A
+    - ARC-B1F
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   ARC-B1E:
     name: self-contradictory-lint-configuration
     default_severity: LOW
@@ -311,6 +655,20 @@ entries:
     - CWE-710
     examples:
     - ruff line-length=100 is declared but the rule that enforces it (E501) is explicitly listed in the ignore set
+    criteria: Qualifies when a lint or format configuration declares a rule or limit and, in the same configuration,
+      disables the rule that enforces it, so the declared standard is not enforced. A prose document contradicting
+      itself is QAL-C2B; inconsistent per-line suppression annotations are QAL-F3B.
+    see_also:
+    - QAL-C2B
+    - QAL-E1A
+    - QAL-F3B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: A formatter configured in the same project enforces the declared limit, so the disabled
+          lint rule is redundant.
   ARC-B1F:
     name: nonstandard-install-mechanism-bypasses-package-manager
     default_severity: INFO
@@ -320,6 +678,14 @@ entries:
     recurrence: 2
     examples:
     - README documents symlink-based installation into agent skill directories instead of a pip package install
+    criteria: Qualifies when the documented install mechanism bypasses the ecosystem's package manager (symlinks,
+      manual copies into tool directories), so versions, uninstall and dependency resolution are unmanaged.
+      A manifest that cannot actually be installed is ARC-B1D.
+    see_also:
+    - ARC-B1D
+    severity_range:
+      floor: INFO
+      ceiling: INFO
   ARC-B3A:
     name: divergent-execution-path-across-environments
     default_severity: MEDIUM
@@ -334,6 +700,20 @@ entries:
     - Optional Docker container creates divergent code-execution paths depending on whether it's present
     - Asymmetric dispatch architecture across agent platforms (kimi/claude/openrouter hosts) gives some hosts capabilities
       others lack
+    criteria: Qualifies when the same code runs on materially different paths or versions across environments
+      the project treats as equivalent (CI matrix vs shipped image, test vs production image, with vs without
+      an optional container), so what is tested is not what ships. Per-host configuration lacking parity is
+      ARC-E3C; tests that run only in some environments are TST-F1B.
+    see_also:
+    - ARC-E3C
+    - TST-F1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The divergence is a patch or minor-version difference inside a version range the project
+          declares as supported and tests at both ends.
   ARC-B3B:
     name: monolithic-multi-toolchain-image
     default_severity: MEDIUM
@@ -343,6 +723,18 @@ entries:
     recurrence: 2
     examples:
     - panopticon-tools Dockerfile installs 8+ language toolchains plus 10+ security scanners into one image
+    criteria: Qualifies when one container image bundles many unrelated toolchains or scanners, so every consumer
+      inherits the full size, attack surface and rebuild blast radius of all of them. Excess runtime privilege
+      granted to a container is SEC-C1A; a downstream image built FROM this one is ARC-B3C.
+    see_also:
+    - ARC-B3C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The image is a multi-stage build and consumers pull only a slim final stage scoped to their
+          own toolchain.
   ARC-B3C:
     name: circular-build-dependency
     default_severity: LOW
@@ -354,6 +746,21 @@ entries:
     - CWE-1047
     examples:
     - Dockerfile.fixtures builds FROM panopticon-tools:latest, so a failed tools build silently breaks fixture validation
+    criteria: Qualifies when one image or build artifact is built FROM another mutable in-repo artifact (a
+      :latest tag of a sibling image), so a failure or change upstream silently breaks or alters the downstream
+      build; a true build cycle is the extreme case. A cyclic MODULE import is ARC-A2A; a mutable third-party
+      base reference is SEC-E2C.
+    see_also:
+    - ARC-A2A
+    - ARC-B3B
+    - SEC-E2C
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The downstream build pins the upstream image by digest or is built in the same workflow
+          run as the upstream.
   ARC-C1A:
     name: ci-gate-bypasses-domain-verdict-model
     default_severity: HIGH
@@ -366,6 +773,21 @@ entries:
     examples:
     - The 'ingest findings and gate on HIGH/CRITICAL' CI step calls ingest_tools.ingest_dir() and filters on raw
       tool severity directly, bypassing the project's own evidence/confirmation model entirely
+    criteria: Qualifies when a CI gate decides pass/fail from raw, pre-model data (such as raw tool severity)
+      instead of the project's own verdict or confirmation model, so the gate's result silently disagrees
+      with what the project itself would report. A gate that never runs because a path filter skips it is
+      ARC-C1B; analyzer confidence conflated with severity inside the model is COD-C1A.
+    see_also:
+    - AGT-D1C
+    - ARC-C1B
+    - COD-C1A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The gating step is non-blocking (continue-on-error, an advisory job, or not a required
+          check).
   ARC-C1B:
     name: ci-trigger-path-filter-incomplete
     default_severity: MEDIUM
@@ -374,10 +796,25 @@ entries:
     - corpus
     recurrence: 1
     see_also:
+    - ARC-C1A
+    - ARC-C1D
     - ARC-C1F
+    - QAL-C1C
+    - TST-F2A
     examples:
     - 'docker-publish.yml''s trigger paths: filter doesn''t cover everything the Dockerfile COPYs into the published
       image, so some changes ship unbuilt'
+    criteria: Qualifies when a workflow's trigger paths filter omits inputs the job actually consumes (files
+      a Dockerfile COPYs, sources a generator reads), so changes to those inputs ship without the job running.
+      A regeneration check that exists nowhere is ARC-C1F; a lint job whose file globs exclude in-scope code
+      is ARC-C1D; a test-selection filter that silently drops tests is TST-F2A.
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: A scheduled or release-time run executes the same job with no paths filter before anything
+          is published.
   ARC-C1C:
     name: untested-integration-path-in-ci
     default_severity: MEDIUM
@@ -387,6 +824,24 @@ entries:
     recurrence: 1
     examples:
     - Phase-1 tool-adapter integration tests never execute with real tooling in any CI workflow
+    criteria: Qualifies when an integration path has tests, but no CI workflow runs them against the real
+      dependency (real tool binaries, real services), so the integration is never verified in the pipeline.
+      When the tests themselves mock or omit the integration, that is TST-A3A; when tests skip themselves
+      on environment gates, that is TST-F1B.
+    see_also:
+    - QAL-F2A
+    - TST-A1A
+    - TST-A3A
+    - TST-F1A
+    - TST-F1B
+    - TST-G1C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: A scheduled or pre-release job outside the PR pipeline runs the integration tests against
+          real tooling.
   ARC-C1D:
     name: ci-lint-gate-scope-gap
     default_severity: LOW
@@ -396,6 +851,21 @@ entries:
     recurrence: 2
     examples:
     - Top-level ops scripts that call the GitHub API are excluded from the CI lint job's file globs
+    criteria: Qualifies when a CI lint or static-check job's file globs or excludes leave in-scope source
+      (scripts, top-level ops code) unchecked, so violations there never fail CI. A trigger paths filter that
+      skips the whole job is ARC-C1B; a test-selection filter that silently drops tests is TST-F2A.
+    see_also:
+    - ARC-C1B
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The excluded files call remote write APIs or handle credentials, and the lint job runs
+          security rules (e.g. a bandit or semgrep ruleset) that would otherwise check them.
+      lower_when:
+      - to: INFO
+        condition: The excluded files are checked by a separate CI job or pre-commit hook enforced in CI.
   ARC-C1E:
     name: inconsistent-workflow-permissions-scoping
     default_severity: LOW
@@ -407,6 +877,22 @@ entries:
     - CWE-732
     examples:
     - 'ci.yml is the only in-scope workflow with no explicit least-privilege permissions: block, unlike codeql.yml/security.yml/docker-publish.yml'
+    criteria: Qualifies when a CI workflow omits the explicit least-privilege permissions block that its sibling
+      workflows declare, so it runs with the platform's default token scope. A mutable action reference is
+      SEC-E2B; excessive container privilege is SEC-C1A.
+    see_also:
+    - SEC-E2B
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The workflow is triggered by pull_request_target or workflow_run and checks out or executes
+          code from the triggering fork PR.
+      lower_when:
+      - to: INFO
+        condition: Settings-as-code or repository documentation in the reviewed tree shows the default GITHUB_TOKEN
+          permission is read-only.
   ARC-C1F:
     name: generated-artifact-drift-unverified-in-build
     default_severity: MEDIUM
@@ -421,10 +907,20 @@ entries:
       regeneration check exists but is skipped by a path filter — that is ARC-C1B.
     see_also:
     - ARC-C1B
+    - DAT-E1A
+    - TST-B3B
+    - TST-G3D
     examples:
     - A committed generated artifact (engine_traits.json, servicelist.go, an OpenAPI spec) has no CI/build
       step that regenerates it and fails on a diff against its generator source, so a stale artifact ships
       silently
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The shipped build regenerates the artifact from source, so the committed copy is used only
+          for reading or review.
   ARC-C2A:
     name: silent-fallback-masks-pipeline-failure
     default_severity: LOW
@@ -437,6 +933,21 @@ entries:
     examples:
     - security.yml silently falls back to a local docker build if pulling the pre-built panopticon-tools image fails,
       masking incomplete publishes
+    criteria: Qualifies when a pipeline step that fails silently falls back to an alternate path (a local
+      rebuild, a cached artifact) with no failure signal, so an upstream breakage such as an incomplete publish
+      is masked. A step whose failure is simply ignored is ARC-C2B; a scan tool that silently loses coverage
+      is SEC-G2B; runtime error-swallowing in shipped code is OPS-E1A.
+    see_also:
+    - ARC-C2B
+    - SEC-G2B
+    - TST-F1C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The fallback path builds or publishes a shipped artifact from inputs that differ from the
+          primary path's.
   ARC-C2B:
     name: swallowed-ci-step-failure
     default_severity: INFO
@@ -449,6 +960,20 @@ entries:
     examples:
     - 'The merge job''s build-provenance attestation step runs with continue-on-error: true, so a failed attestation
       is silently accepted'
+    criteria: Qualifies when a CI step is configured to ignore its own failure (continue-on-error, || true)
+      with no compensating report, so a failed step is silently accepted. When the failure triggers a silent
+      alternate path, that is ARC-C2A; a test runner exit code that conflates pass with no-op is TST-F2B.
+    see_also:
+    - ARC-C2A
+    - OPS-E1A
+    - TST-F2B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      raise_when:
+      - to: LOW
+        condition: The swallowed step is an integrity step (attestation, signing, vulnerability scan) whose
+          failure lets an unverified artifact publish.
   ARC-D1A:
     name: lossy-round-trip-between-producer-and-recovery-path
     default_severity: HIGH
@@ -461,6 +986,22 @@ entries:
     examples:
     - file_issues.py scrubs absolute paths when posting to GitHub, but the ledger-recovery fallback doesn't apply
       the same scrub, so recovered keys silently fail to match findings with absolute-path locations
+    criteria: Qualifies when a producer transforms data on one path (scrubbing, normalizing, re-keying) and
+      the recovery or read-back path does not apply the same transform, so recovered keys or records silently
+      fail to match the originals. A one-off identifier normalization mismatch at a single lookup is COD-C2D;
+      an identity that is unstable across runs is ARC-D1C.
+    see_also:
+    - AGT-C1C
+    - ARC-D1C
+    - COD-C2D
+    - TST-A1C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: A mismatch surfaces loudly (an error, or a duplicate-detection warning) instead of as a
+          silent miss.
   ARC-D1B:
     name: report-contract-out-of-sync-with-schema
     default_severity: HIGH
@@ -481,8 +1022,17 @@ entries:
       A single field carrying a value outside its enum is COD-D1A; a single
       documented-required field missing from the schema's required list is COD-D1D.
     see_also:
+    - ARC-D1D
+    - ARC-D2E
     - COD-D1A
     - COD-D1D
+    - TST-A4B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: No producer or consumer validates against the schema at runtime or in CI.
   ARC-D1C:
     name: fingerprint-identity-instability
     default_severity: MEDIUM
@@ -496,6 +1046,25 @@ entries:
     - Fingerprint-based queue ID format lacks a formal specification and has undocumented collision-suffix behavior
     - Compare-mode fingerprint hashes LLM-authored free text, which is not stable across runs of the same underlying
       finding
+    criteria: Qualifies when an identity or fingerprint used to match the same finding or record across runs
+      or systems is derived from unstable inputs (LLM free text, unordered data) or has an unspecified collision
+      rule, so the same entity gets different ids. When the producer and recovery paths apply different transforms
+      to a stable key, that is ARC-D1A; dedup on a too-coarse key that merges distinct entries is COD-E1A.
+    see_also:
+    - AGT-C1C
+    - ARC-D1A
+    - COD-C2D
+    - COD-E1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: The id is the key for automatic issue closure or mark-as-resolved reconciliation, so an
+          id change closes or resolves a still-present finding with no human review.
+      lower_when:
+      - to: LOW
+        condition: The id is used only for display or linking, never for matching, dedup or closure.
   ARC-D1D:
     name: id-format-schema-mismatch
     default_severity: MEDIUM
@@ -507,19 +1076,25 @@ entries:
     - CWE-436
     examples:
     - Finding-ID regex diverges between agent prompt templates and the report schema
-    criteria: >-
-      Qualifies when the SAME id or format is specified inconsistently across two
-      or more specification artifacts (schema pattern vs prompt template, or a
-      drifted authoritative validator) so the contract has no single format
-      authority — three or more artifacts disagree with no single authority, not a
-      single schema-vs-producer rejection, and independent of any one rejected
-      instance. A live schema that actively rejects real output is
-      COD-D1B; inert over-precision that rejects nothing is QAL-C2A; a dead,
-      unimported stricter duplicate is QAL-E1B.
+    criteria: Qualifies when the SAME id or format is specified inconsistently across two or more specification
+      artifacts (a schema pattern, a prompt template, a validator), and either none is authoritative or the
+      declared authority has itself drifted from the others, so the contract has no single trustworthy format
+      authority, regardless of whether any one instance is rejected. A live schema that actively rejects real
+      output is COD-D1B; inert over-precision that rejects nothing is QAL-C2A; a dead, unimported stricter
+      duplicate is QAL-E1B; a format specified only by an informal parser is ARC-A2B.
     see_also:
+    - ARC-A2B
+    - ARC-D1B
     - COD-D1B
     - QAL-C2A
     - QAL-E1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Only human-facing prose artifacts disagree; no prompt template, schema or validator that
+          a producer or checker reads is among the disagreeing artifacts.
   ARC-D1E:
     name: redundant-independent-derivation-of-shared-fact
     default_severity: MEDIUM
@@ -531,6 +1106,21 @@ entries:
     - CWE-1041
     examples:
     - Fan-out coverage is derived from multiple independent sources that could disagree with no reconciliation step
+    criteria: Qualifies when one runtime fact (coverage, counts, status) is computed independently from two
+      or more sources with no reconciliation step, so the derivations can disagree and nothing notices. When
+      two sources have ALREADY diverged, cite ARC-G1B; a hand-kept structure that could be derived from another
+      is ARC-A5B; a mirror store contradicting its system of record is DAT-E1D.
+    see_also:
+    - ARC-A5B
+    - ARC-G1B
+    - DAT-E1D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: All derivations are reported side by side in the output, so a disagreement is visible to
+          the reader.
   ARC-D1F:
     name: unversioned-inter-phase-data-contract
     default_severity: LOW
@@ -541,6 +1131,18 @@ entries:
     examples:
     - Pipeline phase coordination (scout -> dispatch -> synthesize) relies on JSON artifact contracts with no version
       field
+    criteria: Qualifies when phases or processes within one run exchange structured artifacts (JSON passed
+      between pipeline stages) with no version field or compatibility check, so a producer change is silently
+      misread by a mismatched consumer. When the artifact outlives the run (it is persisted and later resumed,
+      replayed or compared by a different version), that is DAT-F2A.
+    see_also:
+    - DAT-F2A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: Producer and consumer always run from the same checkout within one process invocation.
   ARC-D2A:
     name: cli-interface-contract-drift
     default_severity: HIGH
@@ -562,6 +1164,13 @@ entries:
     see_also:
     - COD-D2B
     - QAL-C2C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The drifted manifest or frontmatter is documentation only; no tool parses it to build or
+          validate invocations.
   ARC-D2B:
     name: inconsistent-handling-of-equivalent-edge-case-inputs
     default_severity: MEDIUM
@@ -574,6 +1183,21 @@ entries:
     examples:
     - enrich_citations derives citation_quality differently depending on whether a finding's citations field is
       missing versus present-but-empty, with no documented rationale for the distinction
+    criteria: Qualifies when inputs the contract treats as equivalent (missing vs present-but-empty, null
+      vs absent) take different code paths with different outcomes, and the contract documents no rationale,
+      so the contract is ambiguous at its edges. When one of the paths crashes, that is COD-B2A; a missing
+      test for the boundary case is TST-A2D.
+    see_also:
+    - COD-B2A
+    - COD-D1C
+    - TST-A2D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Both outcomes look the same to every downstream consumer (e.g. both render or serialize
+          as empty).
   ARC-D2C:
     name: missing-coordination-contract-between-agents
     default_severity: MEDIUM
@@ -588,6 +1212,21 @@ entries:
       shared state
     - Panel-review lens-coverage fallback text conflates two opposite dispatch states, leaving readers unable to
       tell which one applies
+    criteria: Qualifies when two or more agents or processes write to shared state with no defined coordination
+      contract (ownership, ordering, locking), so their writes can conflict or be misread. An unsynchronized
+      shared structure inside one process is COD-F1C; concurrent file writes that lose updates are DAT-F1C;
+      ambiguous spec text about which state applies is ARC-D2F.
+    see_also:
+    - ARC-D2F
+    - COD-F1C
+    - DAT-F1C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The agents run strictly one after another by construction (enforced ordering in the orchestrator),
+          so writes cannot interleave.
   ARC-D2D:
     name: orphaned-schema-field-never-populated
     default_severity: MEDIUM
@@ -598,6 +1237,18 @@ entries:
     examples:
     - The scout prompt never populates several ScopeProfile fields, orphaning the facet feature the schema was built
       to support
+    criteria: Qualifies when a schema declares an optional field (or a family of fields) that no producer
+      instruction or code ever populates, so the feature it was built to support is dead. A REQUIRED field
+      never emitted is ARC-D2E; a configuration setting nothing reads is QAL-E1A.
+    see_also:
+    - ARC-D2E
+    - QAL-E1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The schema documents the field as reserved for a future or optional producer.
   ARC-D2E:
     name: required-field-never-emitted-by-producer
     default_severity: MEDIUM
@@ -610,6 +1261,21 @@ entries:
     examples:
     - report-schema.json requires findings[].confidence but neither lens-sweep.md nor panel-review.md ever instructs
       agents to write it
+    criteria: Qualifies when a schema marks a field required but the producer's specification (prompt, template,
+      code path) never instructs or emits it, so conforming output is impossible by construction. An observed
+      output instance missing the field is COD-C3A; a documented-required field absent from the schema's required
+      list (the inverse) is COD-D1D; an optional field never populated is ARC-D2D.
+    see_also:
+    - ARC-D1B
+    - ARC-D2D
+    - COD-C3A
+    - COD-D1D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Nothing in the pipeline validates output against this schema.
   ARC-D2F:
     name: undefined-or-ambiguous-spec-terminology
     default_severity: MEDIUM
@@ -624,6 +1290,23 @@ entries:
     - '''repo-scope'' is used but never defined in architecture panel scheduling docs'
     - Scout's default-lens cheat sheet omits the redteam panel that the same document instructs it to schedule under
       security_mode=redteam
+    criteria: Qualifies when a spec or instruction uses a term, step or option it never defines, or describes
+      one ambiguously enough that two readers (or agents) would act differently. One document stating both
+      X and not-X is QAL-C2B; two documents contradicting each other is ARC-G1B; an omission from a reference
+      inventory is ARC-G1C.
+    see_also:
+    - ARC-D2C
+    - ARC-G1B
+    - ARC-G1C
+    - QAL-A1C
+    - QAL-C2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The ambiguity is in human-facing prose only and no agent prompt or automated step reads
+          the passage.
   ARC-D3A:
     name: missing-referenced-file
     default_severity: HIGH
@@ -641,6 +1324,15 @@ entries:
       is absent but breaks nothing is the inert ARC-D3B.
     see_also:
     - ARC-D3B
+    - QAL-C1C
+    - TST-E1A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The missing file is referenced only by an optional, opt-in code path (a non-default flag
+          or mode), so default runs never touch it.
   ARC-D3B:
     name: documented-artifact-not-present-in-repo
     default_severity: MEDIUM
@@ -665,7 +1357,15 @@ entries:
       that no longer resolves) is the inert QAL-C1C.
     see_also:
     - ARC-D3A
+    - ARC-G1C
     - QAL-C1C
+    - SEC-G3D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The documentation marks the artifact as planned or optional.
   ARC-E1A:
     name: hardcoded-absolute-path-in-source
     default_severity: HIGH
@@ -679,7 +1379,19 @@ entries:
     - REPO_ROOT is a hardcoded absolute filesystem path baked into production code, breaking on any other machine
       or checkout location
     see_also:
+    - ARC-E1B
+    - COD-E2B
     - TST-E2C
+    criteria: Qualifies when shipped source hardcodes an absolute filesystem path tied to one machine or checkout
+      (a user home directory, a mount point), so the code fails or misbehaves anywhere else. A relative but
+      run- or date-specific artifact path is ARC-E1B; a machine-specific path in test fixture data is TST-E2C;
+      a path resolved against the wrong base directory is COD-E2B.
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The hardcoded path is only a default that an environment variable or CLI flag overrides.
   ARC-E1B:
     name: hardcoded-environment-specific-artifact-path
     default_severity: HIGH
@@ -692,6 +1404,19 @@ entries:
     examples:
     - DOC and DOC_URL hardcode a specific date-stamped artifact path (docs/superpowers/2026-08-04-run2-fixmes.md),
       preventing reuse for any other run
+    criteria: Qualifies when code hardcodes the path or URL of one specific run's or date's artifact, so the
+      tool cannot be reused for any other run without editing source. A machine-specific absolute path is
+      ARC-E1A; the same identifier copied across several modules is ARC-E1C.
+    see_also:
+    - ARC-E1A
+    - ARC-E1C
+    - TST-E2C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: A CLI argument or config value overrides the hardcoded artifact path.
   ARC-E1C:
     name: hardcoded-identifier-scattered-across-modules
     default_severity: MEDIUM
@@ -712,8 +1437,16 @@ entries:
       or not any copy is currently stale. A single out-of-date URL is staleness:
       QAL-C1A for doc/code references, ARC-B1C for packaging-manifest URLs.
     see_also:
+    - ARC-A5A
     - ARC-B1C
+    - ARC-E1B
     - QAL-C1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Exactly two copies exist, in the same package, and a test asserts they are equal.
   ARC-E2A:
     name: durable-state-in-ephemeral-scratch-location
     default_severity: MEDIUM
@@ -724,6 +1457,24 @@ entries:
     examples:
     - triage-ledger.jsonl and filed-issues.json - durable audit ledgers - live inside the fully gitignored, run-scratch
       .panopticon/ directory alongside disposable state
+    criteria: Qualifies when durable records (ledgers, audit trails, filed-issue maps) are stored in a location
+      the project treats as disposable (gitignored scratch, temp or cache directories) next to throwaway state,
+      so routine cleanup destroys them. An audit trail destroyed by a delete operation is SEC-C4C; a rewrite
+      with no backup is DAT-F1A.
+    see_also:
+    - DAT-F1A
+    - SEC-C4C
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: The project's own documented cleanup command or workflow deletes that directory, and the
+          durable records have no other copy.
+      lower_when:
+      - to: LOW
+        condition: The project's clean command explicitly excludes the durable files, and the docs name them
+          as durable.
   ARC-E2B:
     name: global-scope-write-conflicts-with-project-scoped-model
     default_severity: MEDIUM
@@ -734,6 +1485,18 @@ entries:
     examples:
     - Generated host-native agent registration writes to a global, non-project-scoped directory, in tension with
       the project's otherwise project-scoped configuration model
+    criteria: Qualifies when a component writes generated configuration or registrations to a global (user-
+      or machine-wide) location although the project's configuration model is otherwise project-scoped, so
+      projects collide or leak into each other. Silent config auto-discovery is ARC-E2D.
+    see_also:
+    - ARC-E2D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Global writes are namespaced per project (by path hash or project id), so two projects
+          cannot overwrite each other.
   ARC-E2C:
     name: implicit-runtime-contract-unenforced
     default_severity: MEDIUM
@@ -744,6 +1507,22 @@ entries:
     examples:
     - SKILL.md documents that the pipeline MUST run from the repo root where .panopticon/ lives, but nothing in
       code checks or enforces this precondition at runtime
+    criteria: Qualifies when documentation states an environmental runtime precondition (working directory,
+      environment, invocation ordering, consistent flags across runs) that the code relies on but never checks,
+      so violating it makes the program fail late or silently misbehave. When the unenforced statement is
+      a policy or verdict whose violation the program simply permits, that is ARC-F1E; startup configuration
+      consumed without validation is OPS-C1A; a path resolved against the wrong base is COD-E2B.
+    see_also:
+    - ARC-F1E
+    - COD-E2B
+    - OPS-C1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Violating the precondition fails immediately with a clear OS or library error naming the
+          missing path or variable.
   ARC-E2D:
     name: implicit-config-discovery-action-at-a-distance
     default_severity: LOW
@@ -754,6 +1533,25 @@ entries:
     examples:
     - main() silently auto-discovers .panopticon/groups.json when no --groups argument is given, with no log line
       indicating the fallback fired
+    criteria: Qualifies when code silently auto-discovers a config or input file when none is given, with
+      no log line or notice that the fallback fired, so behavior depends on whatever files happen to be present.
+      Configuration behavior that is merely undocumented is QAL-C2F; a missing or corrupt config treated as
+      permissive is COD-B1A.
+    see_also:
+    - ARC-E2B
+    - COD-B1A
+    - QAL-C2F
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The auto-discovered file is read from a directory whose contents come from untrusted input
+          (e.g. the tree of a repository being scanned).
+      lower_when:
+      - to: INFO
+        condition: The discovery rule is documented in --help and the discovered path is echoed in normal
+          output.
   ARC-E3A:
     name: orthogonal-config-axes-increase-complexity
     default_severity: MEDIUM
@@ -766,6 +1564,18 @@ entries:
     examples:
     - Write-guard enforcement mode (WHERE writes go) and tool-policy mode (enforcement vs. advisory) are independent
       axes whose cross-product is never enumerated or tested
+    criteria: Qualifies when two or more independent configuration axes combine into a cross-product that
+      is never enumerated, validated or tested, so some combinations have undefined behavior. A per-host configuration
+      gap is ARC-E3C; a narrow test scenario matrix is TST-A3C.
+    see_also:
+    - ARC-E3C
+    - TST-A3C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Unsupported combinations are rejected at config load with an explicit error.
   ARC-E3B:
     name: asymmetric-domain-coverage-across-artifacts
     default_severity: LOW
@@ -776,6 +1586,15 @@ entries:
     examples:
     - There is no architecture-panel equivalent of security-checklists.md, so the architecture lens has less supporting
       reference material than the security lens
+    criteria: Qualifies when one domain, lens or component has supporting reference material (checklists,
+      guides, profiles) that a parallel peer lacks, so the peer operates with less guidance. A reference document
+      missing items it should list is ARC-G1C.
+    see_also:
+    - ARC-G1C
+    - SEC-G2A
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   ARC-E3C:
     name: cross-host-config-parity-gap
     default_severity: LOW
@@ -787,6 +1606,25 @@ entries:
     - model-profiles.yml's openrouter host profile has no corresponding hardcoded fallback in model_resolver.py,
       unlike kimi and claude
     - Tool policy mode has no cross-host validation, so hosts can silently diverge in enforcement behavior
+    criteria: Qualifies when a per-host (or per-platform) configuration exists for some hosts but is missing
+      its fallback, validation or field set for others, so hosts silently diverge. Divergent execution paths
+      across CI and image environments are ARC-B3A; inconsistent field NAMING across hosts is QAL-F3C.
+    see_also:
+    - ARC-B3A
+    - ARC-E3A
+    - QAL-C2F
+    - QAL-F3C
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The diverging setting is an enforcement or security policy mode, so one host enforces while
+          another runs advisory.
+      lower_when:
+      - to: INFO
+        condition: The missing per-host entry falls back to a shared default whose value is identical to the
+          other hosts' explicit entries.
   ARC-F1A:
     name: enforcement-relies-on-stale-flag-not-live-verification
     default_severity: HIGH
@@ -802,6 +1640,23 @@ entries:
       state
     - The primary plan-emission path never binds the unenforced-ack to plan content, silently defeating the stale-flag
       guard it was meant to backstop
+    criteria: Qualifies when an enforcement decision trusts a persisted flag or an earlier check instead of
+      re-verifying the live state that flag describes, so the gate passes after the state has changed (a TOCTOU
+      in an enforcement path). A generic check-then-act race outside enforcement is COD-F1B; a control that
+      is never applied to a class of invocations is AGT-B1A.
+    see_also:
+    - AGT-B1A
+    - AGT-D1A
+    - COD-F1B
+    - COD-F3A
+    - DAT-E1D
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The flag is written and checked in the same process invocation with no step in between
+          that can change the underlying state.
   ARC-F1B:
     name: audit-accounting-excludes-in-scope-actors
     default_severity: MEDIUM
@@ -814,6 +1669,18 @@ entries:
     examples:
     - meta.tool_policy_mode audit field excludes scout and advisor from enforcement accounting despite their equal
       exposure to the same policy
+    criteria: Qualifies when an audit or accounting record of enforcement covers only some of the actors subject
+      to the policy, so the record understates exposure. A sensitive action with no audit logging at all is
+      SEC-C4B; an audit trail destroyed by deletion is SEC-C4C.
+    see_also:
+    - SEC-C4B
+    - SEC-C4C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The excluded actors hold no write or tool capability that the policy governs.
   ARC-F1C:
     name: inconsistent-authorization-gate-across-sibling-scripts
     default_severity: MEDIUM
@@ -826,6 +1693,19 @@ entries:
     examples:
     - Only reconcile_apply.py pins --repo and gates on admin permission; triage.py/file_issues.py/file_fixmes.py
       rely on ambient gh defaults with no equivalent check
+    criteria: Qualifies when sibling scripts or commands perform comparable privileged actions but only some
+      pin their target and check authorization, so the others rely on ambient defaults. A single operation
+      with no function-level authorization is SEC-C1C; mutation through ambient credentials with no scoping
+      is SEC-C1D.
+    see_also:
+    - SEC-C1C
+    - SEC-C1D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The ungated siblings perform only read operations against the remote.
   ARC-F1D:
     name: partial-batch-operation-lacks-failure-recovery-path
     default_severity: MEDIUM
@@ -838,6 +1718,20 @@ entries:
     examples:
     - reconcile_apply.apply()'s batch loop has no recovery path for a mid-batch GitHub API failure, unlike its sibling
       function
+    criteria: Qualifies when a batch of remote or persistent operations has no recovery path (resume, rollback,
+      or a record of progress) for a mid-batch failure, leaving partial state, while a sibling path in the
+      same codebase does recover. A compound operation that is not atomic is COD-F1A; a missing database transaction
+      boundary is DAT-D1B; retry without backoff is OPS-A1B.
+    see_also:
+    - COD-F1A
+    - DAT-D1B
+    - OPS-A1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Every operation in the batch is idempotent, so a plain rerun completes it.
   ARC-F1E:
     name: policy-or-verdict-not-enforced-by-code
     default_severity: MEDIUM
@@ -856,6 +1750,24 @@ entries:
       the code does not enforce it (an enforcement gap, not a stale reference).
       Distinct from a security/enforcement CONTROL that degrades to permit on
       misconfiguration (ARC-F2E), and from a merely stale doc (QAL-C1x / ARC-G2x).
+    see_also:
+    - AGT-C1B
+    - ARC-E2C
+    - ARC-F2E
+    - QAL-E1A
+    - SEC-G3C
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: The unenforced rule is the only control between attacker-controlled input (e.g. content
+          of the repository under review) and a write, network or tool action, and that code path executes
+          in a default run with no other gate.
+      lower_when:
+      - to: LOW
+        condition: The unenforced rule governs only formatting, naming or report presentation, not any gate,
+          permission or data path.
   ARC-F2A:
     name: compensating-control-has-scope-blind-spot
     default_severity: HIGH
@@ -868,6 +1780,19 @@ entries:
     examples:
     - The post-fan-out clean-tree check only flags modifications 'outside .panopticon/', exempting the exact directory
       a compromised unenforced reviewer would use to poison downstream synthesis
+    criteria: Qualifies when a compensating control exists but its scope exempts exactly the location or class
+      that an attacker or compromised actor would use, so the control misses the case it exists for. A primary
+      mediation control that skips a class of invocations is AGT-B1A; a control that mis-parses an input shape
+      is ARC-F2C.
+    see_also:
+    - AGT-B1A
+    - ARC-F2C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: No downstream step reads files from the exempted scope.
   ARC-F2B:
     name: enforcement-hook-cannot-scope-to-individual-actor
     default_severity: HIGH
@@ -880,6 +1805,20 @@ entries:
     examples:
     - A harness spike confirmed the session-wide write-guard hook cannot distinguish which subagent fired it, blocking
       per-agent tightening as a documented architectural limitation
+    criteria: Qualifies when an enforcement mechanism (hook, guard) can only apply session- or process-wide
+      and cannot tell which actor triggered it, so per-actor least privilege is impossible. A control missing
+      a class of invocations is AGT-B1A; a tool grant broader than the task needs is AGT-B1D.
+    see_also:
+    - AGT-B1A
+    - AGT-B1D
+    - COD-B1C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: All actors sharing the session are meant to hold the same privilege, so per-actor scoping
+          would grant nothing narrower.
   ARC-F2C:
     name: security-control-assumes-undocumented-input-shape
     default_severity: HIGH
@@ -902,6 +1841,13 @@ entries:
       write-guard) is AGT-B1A.
     see_also:
     - AGT-B1A
+    - ARC-F2A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The mis-shaped payload belongs to a tool that no actor under the control is granted.
   ARC-F2D:
     name: component-fails-open-on-malformed-input
     default_severity: MEDIUM
@@ -923,9 +1869,19 @@ entries:
       fail-open incident); the config-load fail-open choice viewed as a
       correctness defect is COD-B1A.
     see_also:
+    - AGT-C1D
+    - ARC-A4D
     - ARC-F2E
     - COD-B1A
+    - COD-B2A
+    - SEC-F1A
     - SEC-G2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Skipped items are counted and reported in the run's output or summary.
   ARC-F2E:
     name: security-control-fails-open-on-misconfiguration
     default_severity: MEDIUM
@@ -948,10 +1904,22 @@ entries:
       fail-open choice viewed as a correctness defect is COD-B1A; a detection /
       scan tool that silently loses coverage is SEC-G2B.
     see_also:
+    - ARC-F1E
     - ARC-F2D
     - COD-B1A
-    - SEC-G2B
     - SEC-F1B
+    - SEC-G2B
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: An untrusted input in a normal run can produce the missing, malformed or unregistered condition
+          (e.g. a scanned repository or an agent can delete or corrupt the allowlist), so the gate opens when
+          an attacker wants it to.
+      lower_when:
+      - to: LOW
+        condition: The degraded mode emits a visible warning and the run's output is stamped unenforced/advisory.
   ARC-F2G:
     name: overbroad-exception-handling-masks-errors
     default_severity: LOW
@@ -972,6 +1940,15 @@ entries:
       SEC-F1B.
     see_also:
     - COD-B2C
+    - OPS-E1A
+    - QAL-F3B
+    - SEC-F1B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The blanket handler logs the full traceback or re-raises after cleanup.
   ARC-G1A:
     name: contributor-instructions-diverge-from-ci
     default_severity: MEDIUM
@@ -984,6 +1961,20 @@ entries:
     examples:
     - CONTRIBUTING.md's test/lint instructions omit dependency installation steps and diverge from what ci.yml actually
       runs
+    criteria: Qualifies when contributor-facing instructions (CONTRIBUTING, development docs) prescribe test,
+      lint or setup steps that differ from what CI actually runs, so a contributor who follows them gets a
+      different result from CI. A general doc-vs-code disagreement is ARC-G1B; stale CLI flag documentation
+      is QAL-C2C.
+    see_also:
+    - ARC-G1B
+    - QAL-C2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The only divergence is a missing setup step that fails loudly (e.g. a missing dependency
+          import) the first time a contributor follows the instructions.
   ARC-G1B:
     name: divergent-duplicate-source-of-truth
     default_severity: MEDIUM
@@ -1003,7 +1994,18 @@ entries:
       the code it documents (specs disagree → ARC). A single document contradicting
       itself is QAL-C2B; a design doc merely superseded or drifted is ARC-G2A/ARC-G2B.
     see_also:
+    - ARC-D1E
+    - ARC-D2F
+    - ARC-G1A
+    - ARC-G2A
+    - COD-D2C
     - QAL-C2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: One of the two sources is explicitly labelled canonical and the other points to it.
   ARC-G1C:
     name: reference-documentation-incomplete
     default_severity: LOW
@@ -1017,6 +2019,26 @@ entries:
     - DEVELOPMENT.md's Architecture section under-describes the Dockerfile's actual tool set
     - DEVELOPMENT.md's skill/reference/ inventory omits model-profiles.yml despite the versioning contract requiring
       it to be bumped together
+    criteria: Qualifies when reference documentation (an architecture section, a file inventory) omits components
+      or artifacts that exist, so readers get an incomplete picture. An implemented capability with no documentation
+      at all is COD-D2D; undocumented configuration behavior is QAL-C2F; docs asserting an artifact that does
+      not exist (the inverse) is ARC-D3B.
+    see_also:
+    - ARC-D2F
+    - ARC-D3B
+    - ARC-E3B
+    - COD-D2D
+    - QAL-C2F
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The omitted item is named by a versioning or release contract that requires it to be updated
+          together with the documented items.
+      lower_when:
+      - to: INFO
+        condition: The omitted item is internal-only and the doc states it lists public components only.
   ARC-G2A:
     name: superseded-doc-without-deprecation-marker
     default_severity: MEDIUM
@@ -1035,7 +2057,16 @@ entries:
       drifted from the delivered scope (still 'current' but wrong) is the sibling
       ARC-G2B.
     see_also:
+    - ARC-G1B
     - ARC-G2B
+    - COD-D2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The superseded doc is not linked from any current README, index or agent prompt, so a reader
+          reaches it only by browsing the tree.
   ARC-G2B:
     name: design-doc-drifts-from-delivered-scope
     default_severity: LOW
@@ -1056,6 +2087,13 @@ entries:
       unmarked is the sibling ARC-G2A.
     see_also:
     - ARC-G2A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The doc is dated and framed as a plan or roadmap rather than a description of the current
+          system.
   ARC-G3B:
     name: tracked-file-violates-own-gitignore-rule
     default_severity: LOW
@@ -1065,3 +2103,12 @@ entries:
     recurrence: 2
     examples:
     - skill/.DS_Store is tracked in git despite .gitignore's own 'OS / editor noise' rule listing .DS_Store
+    criteria: Qualifies when a file is tracked in version control although the repository's own ignore rules
+      exclude it, so the tree contradicts its declared hygiene. A tracked file that exposes a credential is
+      SEC-B3A; an orphaned, unused asset is QAL-E2C.
+    see_also:
+    - QAL-E2C
+    - SEC-B3A
+    severity_range:
+      floor: LOW
+      ceiling: LOW

@@ -23,11 +23,15 @@ Each domain lives in `domains/<dom>.yml`:
 ```yaml
 domain: SEC
 name: security
-areas:                       # hierarchy naming — areas and categories carry names only
+guide: "…"                   # helper text for agents choosing a code — broad, points lower (0.7.0)
+areas:                       # hierarchy naming, plus helper text at each level
   A:
     name: injection-and-unsafe-execution
+    guide: "…"               # what belongs in this area; points at its categories
     categories:
       1: command-execution
+    category_guides:         # per category: points at its codes, names the easy confusions
+      1: "…"
 entries:                     # one entry per issue code
   SEC-A1A:
     # ---- required core ----
@@ -54,6 +58,11 @@ entries:                     # one entry per issue code
     automated_by: [ruff:E401]         # linter/formatter rule that catches it mechanically;
                                       #   absent/empty = requires human/agent judgment
     see_also: [COD-A1A]               # cross-references to the single home of a related hazard
+    severity_range:                   # permitted per-instance grades (0.7.0) — see "Severity range"
+      floor: MEDIUM
+      ceiling: CRITICAL
+      raise_when: [{to: CRITICAL, condition: "…observable fact about the instance…"}]
+      lower_when: [{to: MEDIUM, condition: "…"}]
     examples: ["…"]                   # illustrative finding titles (bad), and/or {bad: …, good: …}
     remediation: "…"
     notes: "…"                        # curation notes, contested classifications
@@ -66,6 +75,21 @@ Names the linter/formatter rule that would catch the issue mechanically (e.g. `r
 ### `see_also` (0.1)
 
 Cross-references the single home of a related hazard (per the single-homing rule in the charter). A `COD` leak entry may `see_also` the `TST` test-code-leak variant; a domain that declines a hazard points at the domain that owns it. `see_also` never creates a second identity for the same hazard — it is a pointer, not a duplicate.
+
+### Guides (0.7.0)
+
+`guide` (domain and area) and `category_guides` (per category, keyed like `categories`) are short helper texts for review agents choosing a code. They read top-down: the domain guide says what the domain covers, when to choose it over its nearest neighbouring domains, and which areas to look in; an area guide names what belongs there and points at its categories; a category guide points at its codes and names the ones that are easy to confuse. A guide **routes, it never redefines**: where it and an entry's `criteria` disagree, the criteria win.
+
+### `severity_range` (0.7.0)
+
+The grades an instance of this type may carry, and the observable conditions that move it off `default_severity`:
+
+- `floor <= default_severity <= ceiling`.
+- Every `raise_when` rung `{to, condition}` lands above the default and at most at the ceiling. Every `lower_when` rung lands below the default and at least at the floor.
+- A ceiling above the default needs a rung that reaches it, and so does a floor below it. **A grade with no rung is not permitted.** That is the point of the field: a reviewer may not promote an instance above the default without the explicit carve-out that names when.
+- A `condition` is an observable fact about the instance, such as "reachable from an unauthenticated request" or "the lost data has no other copy". It is never "if severe". A raise to HIGH or CRITICAL must meet the grading bar (see *Severity scale*).
+- `lower_when` rungs are code-specific. The generic per-instance reasons stay in the *Severity-modifier vocabulary* and apply catalog-wide; rungs do not restate them.
+- `tools/validate.py` enforces all of the above. The field is optional while the catalog is pre-1.0; every 0.7.0 entry carries one.
 
 ### `character` (from the agentic-skills survey)
 
@@ -82,7 +106,7 @@ Emitting skills default to `character: opportunity` unless explicitly running in
 
 `INFO < LOW < MEDIUM < HIGH < CRITICAL`. `default_severity` is the *typical* grade for the defect type — never a per-instance verdict. Consumers may override per instance under their own disclosed discipline (panopticon: `severity_override {from, to, reason}`, advisor-checked). Trend lines anchor to the catalog default so overrides never bend history.
 
-**Normative grading rule (R2 bar):** grade `default_severity` against a single bar — *exploitable now, data loss, or silently wrong results at scale*. CRITICAL/HIGH are reserved for hazards meeting the bar; a hazard that is real but does not (dead config, style/metadata drift, hygiene) grades MEDIUM or below. Severity is a property of the defect type, never the instance.
+**Normative grading rule (R2 bar):** grade `default_severity` against a single bar — *exploitable now, data loss, silently wrong results at scale, or a user blocked from completing a task* (0.7.0: an accessibility or usability barrier that stops a user group — screen-reader, keyboard-only, low-vision — from progressing at all is HIGH+, not "real but below the bar"). CRITICAL/HIGH are reserved for hazards meeting the bar; a hazard that is real but does not (dead config, style/metadata drift, hygiene) grades MEDIUM or below. Severity is a property of the defect type, never the instance.
 
 ## Stability contract (activates at 1.0)
 
@@ -110,6 +134,7 @@ The four-stage ladder, the version history, the promotion gates, and the 0.0.0 /
 - `tool-observed` — surfaced by automated review tooling or review skills. Deliberately vendor-neutral: the taxonomy is a public, CC-BY-SA-licensed catalog and does not name specific commercial tools or internal run/skill identifiers as provenance values.
 - `gap-review` — added by a systematic gap-analysis pass over the taxonomy (e.g. filling a missing precursor/exploited-form pairing).
 - `prior-art` — completed from an external taxonomy/standard to fill an obvious asymmetry (e.g. the exploited form of a defect whose precursor was observed). Budget-capped: entries grounded ONLY by prior-art (provenance carries `prior-art` and neither `corpus` nor `tool-observed`) must be ≤ 25% of a domain's entries. An entry that later gains a real corpus/tool observation no longer counts against the cap. `tools/validate.py` enforces this — a WARNING while the catalog is pre-1.0, a hard error at 1.0.
+- `proof-backed` — a ground-truth-corpus finding with an executable exploit proof (e.g. a planted vulnerability in a calibration app): the hazard is proven reachable. Such an entry must carry the proof as an example; `tools/validate.py` enforces that.
 - `owasp-align` / `asvs-align` / `openssf-align` / `cwe-align` — crosswalk alignment to a named open standard (OWASP Top 10, OWASP ASVS, OpenSSF, CWE respectively). `cwe-align` is reserved for future crosswalk-driven additions.
 
 No other values are permitted. This is a pre-1.0 breaking change from the 0.1 vocabulary, which leaked vendor names (`coderabbit`, `copilot`), internal run/skill identifiers (`pr945`, `skills-class`, `simplify-skill`, `code-simplifier-agent`, `receiving-code-review-skill`), version-qualified corpus tags (`corpus-4x`, `corpus-2.3.0`), and source-specific gap-review tags (`deep-gap-review`, `gemini-gap-review`) into the public catalog; all of these now collapse to the neutral tiers above.

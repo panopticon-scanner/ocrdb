@@ -175,6 +175,59 @@ def _has_control_char(value):
     return isinstance(value, str) and bool(_CTRL_RE.search(value))
 
 
+SEVERITY_ORDER = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+
+
+def _clean_text(value):
+    """A non-empty string with no control character (guides, rung conditions)."""
+    return isinstance(value, str) and bool(value.strip()) and not _has_control_char(value)
+
+
+def severity_range_errors(ctx, default, rng):
+    """Errors in one entry's `severity_range` (0.7.0, SCHEMA "Severity range").
+
+    floor <= default_severity <= ceiling; every raise_when rung lands above the
+    default and at most the ceiling, every lower_when rung below the default and
+    at least the floor; a ceiling above the default needs a rung that reaches
+    it (so no grade is permitted without its carve-out), and likewise a floor
+    below it. Each rung's condition is clean, non-empty text."""
+    errors = []
+    if not isinstance(rng, dict):
+        return [f"{ctx}: severity_range must be a mapping"]
+    unknown = set(rng) - {"floor", "ceiling", "raise_when", "lower_when"}
+    if unknown:
+        errors.append(f"{ctx}: severity_range has unknown keys {sorted(unknown)}")
+    floor, ceiling = rng.get("floor"), rng.get("ceiling")
+    if floor not in SEVERITIES or ceiling not in SEVERITIES or default not in SEVERITIES:
+        return errors + [f"{ctx}: severity_range floor/ceiling must be in {sorted(SEVERITIES)}"]
+    lo, d, hi = (SEVERITY_ORDER.index(x) for x in (floor, default, ceiling))
+    if not lo <= d <= hi:
+        errors.append(f"{ctx}: severity_range must satisfy floor <= default_severity <= "
+                      f"ceiling ({floor} / {default} / {ceiling})")
+    reached = {"raise_when": set(), "lower_when": set()}
+    for key, ok in (("raise_when", lambda t: d < t <= hi), ("lower_when", lambda t: lo <= t < d)):
+        rungs = rng.get(key) or []
+        if not isinstance(rungs, list):
+            errors.append(f"{ctx}: severity_range.{key} must be a list")
+            continue
+        for i, r in enumerate(rungs):
+            if not isinstance(r, dict) or set(r) != {"to", "condition"}:
+                errors.append(f"{ctx}: severity_range.{key}[{i}] must be {{to, condition}}")
+                continue
+            if r["to"] not in SEVERITIES or not ok(SEVERITY_ORDER.index(r["to"])):
+                errors.append(f"{ctx}: severity_range.{key}[{i}] to {r['to']!r} is outside "
+                              f"its side of the range")
+            else:
+                reached[key].add(SEVERITY_ORDER.index(r["to"]))
+            if not _clean_text(r["condition"]):
+                errors.append(f"{ctx}: severity_range.{key}[{i}] condition must be clean text")
+    if hi > d and hi not in reached["raise_when"]:
+        errors.append(f"{ctx}: severity_range ceiling {ceiling} has no raise_when rung reaching it")
+    if lo < d and lo not in reached["lower_when"]:
+        errors.append(f"{ctx}: severity_range floor {floor} has no lower_when rung reaching it")
+    return errors
+
+
 def validate_schema(docs):
     errors, warnings = [], []
     all_codes = {}
@@ -191,6 +244,8 @@ def validate_schema(docs):
         domains_seen[dom] = fn
         areas = doc.get("areas") or {}
         entries = doc.get("entries") or {}
+        if "guide" in doc and not _clean_text(doc["guide"]):
+            errors.append(f"{fn}: domain 'guide' must be clean text")
         if not doc.get("name"):
             errors.append(f"{fn}: missing domain display 'name'")
         elif _has_control_char(doc["name"]):
@@ -205,6 +260,18 @@ def validate_schema(docs):
                 continue
             if _has_control_char(a["name"]):
                 errors.append(f"{fn}: area {al} display 'name' has a control character")
+            if "guide" in a and not _clean_text(a["guide"]):
+                errors.append(f"{fn}: area {al} 'guide' must be clean text")
+            cguides = a.get("category_guides") or {}
+            if not isinstance(cguides, dict):
+                errors.append(f"{fn}: area {al} category_guides must be a mapping")
+                cguides = {}
+            cats = {str(k) for k in (a.get("categories") or {})}
+            for ck, g in cguides.items():
+                if str(ck) not in cats:
+                    errors.append(f"{fn}: area {al} category_guides {ck} is not a category")
+                elif not _clean_text(g):
+                    errors.append(f"{fn}: area {al} category_guides {ck} must be clean text")
             for ck, cn in (a.get("categories") or {}).items():
                 if not isinstance(cn, str) or not cn:
                     errors.append(f"{fn}: area {al} category {ck} "
@@ -276,6 +343,12 @@ def validate_schema(docs):
                         if not (isinstance(r, str) and AUTOMATED_BY_RE.match(r)):
                             errors.append(f"{ctx}: automated_by {r!r} must be "
                                           f"'tool:rule-id'")
+            if "severity_range" in e:
+                errors += severity_range_errors(ctx, e.get("default_severity"),
+                                                e["severity_range"])
+            crit = e.get("criteria")
+            if crit is not None and not _clean_text(crit):
+                errors.append(f"{ctx}: criteria must be clean text")
             if "recurrence" in e and (not isinstance(e["recurrence"], int)
                                       or e["recurrence"] < 1):
                 errors.append(f"{ctx}: recurrence must be a positive int")

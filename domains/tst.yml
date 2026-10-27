@@ -1,49 +1,166 @@
 # OCRDb domain file — PRE-1.0: no domain is ratified until 1.0; this domain's lifecycle stage is derived, not stored here — see RATIFICATION.md.
 domain: TST
 name: testing
+guide: 'TST covers defects in test code and test infrastructure: behaviour nobody tests, tests too weak
+  to fail, tests that are fragile, non-hermetic or nondeterministic, fixtures that rot or misrepresent
+  reality, and suite organisation that hides or drops tests. Choose TST when the finding is about whether
+  the tests would catch a regression; when the production code itself is wrong, cite COD; when the gap
+  is a missing negative test for a security guard, SEC-G3B; when CI never runs a test path, ARC-C1C; when
+  the same import/path hack lives in production code, ARC-A2C or QAL-F1A. Look in A (what is untested),
+  B (what the assertions actually check), C (test structure and doubles), D (cleanup and paths), E (fixtures),
+  F (skips and determinism) and G (suite-wide organisation).'
 areas:
   A:
     name: coverage
+    guide: 'Coverage: behaviour or paths that no test exercises. Use A1 when a whole unit (script, function,
+      entrypoint) has no test, A2 when a tested unit has an unexercised branch, A3 when tests exist but only
+      in mocked or narrow scenarios, and A4 when test tooling consumes tool or fixture output without validating
+      it. If a test exists but its assertion is weak, go to area B instead.'
     categories:
       '1': untested-units
       '2': partial-branch-coverage
       '3': shallow-scenario-coverage
       '4': tooling-and-output-validation
+    category_guides:
+      '1': 'Whole units with no test: a script (TST-A1A), a function or method (TST-A1B), a recovery/data-persistence
+        function (TST-A1C), or CLI flag/entrypoint wiring (TST-A1D). TST-A1B vs TST-A1C turns on whether the
+        unit writes or restores durable state; a single untested branch inside a tested unit is A2.'
+      '2': 'Unexercised branches inside a tested unit: error handlers (TST-A2B), fallback/default arms (TST-A2C),
+        malformed or boundary input (TST-A2D), enum/mapping arms beyond one case (TST-A2E), the false side
+        of a boolean gate (TST-A2F), and registry-wide invariants that new members escape (TST-A2A). Easy
+        to confuse TST-A2C with TST-A2B (error vs default path) and TST-A2E with TST-A3C (mapping arms vs
+        scenario combinations).'
+      '3': 'Tests exist but in unrealistic scenarios: the integration path is only mocked (TST-A3A), a planted
+        fixture''s expected detection is never asserted (TST-A3B), or only a sliver of the supported configuration
+        matrix runs (TST-A3C). A security-critical path tested only in-process is TST-G3E; CI never running
+        the integration tests is ARC-C1C.'
+      '4': 'Test tooling that trusts its inputs: subprocess output consumed without checking format or success
+        (TST-A4A), tool/fixture output never validated against a schema (TST-A4B), and fixture-presence checks
+        that silently skip (TST-A4C). TST-A4C vs TST-E1A is silence vs a loud-but-misleading I/O error; TST-A4B
+        vs TST-G3D is output schema vs hand-built fixture shape.'
   B:
     name: assertion-quality
+    guide: 'Assertion quality: a test runs the code but its assertions would not fail on a real regression.
+      Use B1 for assertions that are real but insufficient, B2 for assertions that cannot fail or cover nothing,
+      B3 for assertions that fail for the wrong reason or can be satisfied by editing the expectation. TST-G3F
+      is the residual weak-assertion code when no B code fits.'
     categories:
       '1': weak-and-incomplete-assertions
       '2': vacuous-and-tautological-tests
       '3': fragile-and-gameable-assertions
+    category_guides:
+      '1': 'Real but insufficient assertions: wrong property (TST-B1A), substring instead of structure (TST-B1B),
+        presence/truthiness only (TST-B1C), mock called but key argument unchecked (TST-B1D), no positive
+        assertion at all (TST-B1E), and a universal invariant checked on one example (TST-B1F). TST-B1C vs
+        TST-B1E vs TST-B1A is the common confusion; TST-G3F is the residual.'
+      '2': 'Assertions that cannot fail or verify nothing: tautologies (TST-B2A), tests whose every environment
+        branch is vacuous (TST-B2B), loops that assert on only some iterations (TST-B2C), and assertions whose
+        logic is inverted (TST-B2D). TST-B2B vs TST-F1B: B2B passes without checking anything, F1B skips.'
+      '3': 'Fragile or gameable assertions: index lookups that raise instead of failing cleanly (TST-B3A)
+        and golden snapshots with no regeneration or provenance discipline, which can be ''fixed'' by editing
+        the expected file (TST-B3B). Hand-built fixtures never validated against an authoritative schema are
+        TST-G3D; a substring check on stringified output is TST-B1B.'
   C:
     name: test-design
+    guide: 'Test design: how individual tests and their doubles are built. C1 discovery (tests that never
+      run), C2 duplication and module size, C3 names and inputs that mislead about what is tested, C4 test-double
+      fidelity, C5 local hygiene inside test files. Suite-wide convention drift belongs in area G.'
     categories:
       '1': discovery-and-organization
       '2': duplication-and-reuse
       '3': naming-and-intent-mismatch
       '4': test-double-fidelity
       '5': test-hygiene-and-setup
+    category_guides:
+      '1': 'Tests that exist but are never collected: defined after a `__main__` guard (TST-C1A) or outside
+        the runner''s discovery pattern (TST-C1B). Production code after a misplaced guard is COD-E2A; a cosmetic
+        misplacement with nothing dropped is QAL-F2B.'
+      '2': 'Duplication and size inside the test tree: one oversized module of unrelated cases (TST-C2A) and
+        behavioural helpers or fakes reimplemented across cases (TST-C2B). Inert scaffolding duplicated across
+        files is TST-G1B; duplicated literals are TST-G2D.'
+      '3': 'Names and inputs that misrepresent what a test covers: an input production can never produce (TST-C3A),
+        a test name that over-claims (TST-C3B), a helper whose name inverts its semantics (TST-C3C), and a
+        misnamed test file or class (TST-C3D). TST-C3A vs TST-E2D: C3A is one test''s input, E2D a shared
+        fixture''s realism.'
+      '4': 'Test doubles: an incomplete double that silently masks behaviour (TST-C4A), inconsistent mocking
+        idioms (TST-C4B), mocks that assert internal calls instead of outputs (TST-C4C), and doubles with
+        no stated contract (TST-C4D). TST-C4C is the opposite failure of TST-B1D (over-specifying internals
+        vs under-checking a critical argument).'
+      '5': 'Local hygiene inside a test file: a symbol used but not imported (TST-C5A), an over-engineered
+        fixture builder (TST-C5B), imports inside test bodies (TST-C5C), and unexplained literals (TST-C5D).
+        Suite-wide import-convention drift is TST-G2A. In test code cite the TST code even though QAL-F1B
+        and QAL-B1B carry test-code examples of TST-C5A and TST-C5C; production-code forms are QAL-F1B, QAL-B1B
+        and QAL-A2C.'
   D:
     name: isolation-hermeticity
+    guide: 'Isolation and hermeticity: a test leaks state or depends on where and how it is run. D1 is state
+      and resources a test fails to restore or release; D2 is filesystem paths that tie the test to a cwd
+      or a shared location. Order-dependent outcomes caused by the leak are TST-F2C.'
     categories:
       '1': state-and-resource-cleanup
       '2': filesystem-path-hermeticity
+    category_guides:
+      '1': 'State and resources not cleaned up: hand-rolled patch/restore instead of a scoped patcher (TST-D1A),
+        file handles left open (TST-D1B), and os.environ mutated without restore (TST-D1C). The production-code
+        leak is COD-A1A; the resulting order-coupling is TST-F2C.'
+      '2': 'Paths that break hermeticity: fixture paths resolved against the invocation cwd (TST-D2A) and
+        hardcoded shared temp paths (TST-D2B). A machine-specific absolute path baked into fixture DATA is
+        TST-E2C; the production-code wrong-base path is COD-E2B.'
   E:
     name: fixtures-test-data
+    guide: 'Fixtures and test data: the files and records tests load. E1 is fixture lifecycle (missing-without-validation,
+      orphaned); E2 is whether fixture content is faithful to what production sees. A presence check that
+      silently skips is TST-A4C.'
     categories:
       '1': fixture-hygiene
       '2': fixture-fidelity-and-drift
+    category_guides:
+      '1': 'Fixture lifecycle: tests that assume a fixture exists and fail with a misleading I/O error (TST-E1A)
+        and fixtures no test consumes (TST-E1B). Silent skipping on absence is TST-A4C.'
+      '2': 'Fixture fidelity: degenerate empty/placeholder values (TST-E2A), lockfile drift inside fixture
+        projects (TST-E2B), machine-specific absolute paths in fixture data (TST-E2C), and synthetic data
+        that could never occur (TST-E2D). Hand-built fixtures never validated against the authoritative schema
+        are TST-G3D; a single test''s unreachable input is TST-C3A.'
   F:
     name: flakiness-determinism
+    guide: 'Flakiness and determinism: whether a green result means the tests ran and passed. F1 covers skips,
+      environment gates and nondeterministic inputs (randomness, clock, network); F2 covers pass signals that
+      cannot tell ''passed'' from ''nothing ran'', or that depend on test order. A test that can hang without
+      a timeout currently homes in TST-G3B.'
     categories:
       '1': skip-and-environment-gated-execution
       '2': ambiguous-pass-signals
+    category_guides:
+      '1': 'Skip and environment-gated execution plus nondeterministic inputs: chained skip guards that leave
+        a test near-permanently skipped (TST-F1A), a single environment/tool gate (TST-F1B), an unexpected
+        outcome turned into a skip (TST-F1C), unseeded randomness (TST-F1D), wall-clock dependence (TST-F1E),
+        and live calls to external services (TST-F1F). TST-F1A vs TST-F1B is chain vs single gate; a vacuous
+        body that runs on every branch is TST-B2B; a subprocess-based test that can hang with no timeout is
+        currently TST-G3B.'
+      '2': 'Ambiguous pass signals: a test-selection filter never checked to match anything (TST-F2A), an
+        exit code that reads ''no tests ran'' as success (TST-F2B), and outcomes that depend on test execution
+        order (TST-F2C). TST-F2A and TST-F2B often co-occur; cite F2A when the cause is the selector, F2B
+        when it is the exit-code interpretation.'
   G:
     name: suite-architecture
+    guide: 'Suite architecture: suite-wide structure and convention rather than one test. G1 is how the suite
+      is organised and imported, G2 is consistency across test files, G3 holds residual verification gaps
+      (several of which have a more specific home in areas A, B, E or F; check those first).'
     categories:
       '1': organization
       '2': hygiene-and-consistency
       '3': coverage-and-verification-gaps
+    category_guides:
+      '1': 'Organisation: sys.path injection to import the code under test (TST-G1A), fixture scaffolding
+        redefined across files (TST-G1B), and unit and integration tests mixed with no separation (TST-G1C).
+        The production-code import hack is ARC-A2C; behavioural helper duplication is TST-C2B.'
+      '2': 'Consistency across test files: import convention (TST-G2A), duplicated test literals (TST-G2D),
+        assertion style (TST-G2E), and missing module documentation (TST-G2F). Mocking-idiom drift is TST-C4B;
+        a single file''s inline import is TST-C5C.'
+      '3': 'Residual verification gaps: an exit-code remap never exercised (TST-G3A), a subprocess test with
+        no timeout (TST-G3B), hand-built fixtures never validated against the authoritative source (TST-G3D),
+        a security path only unit-tested (TST-G3E), and the residual weak assertion (TST-G3F). Prefer TST-A2B
+        over TST-G3A, TST-A3A over TST-G3E and the specific TST-B codes over TST-G3F when they fit.'
 entries:
   TST-A1A:
     name: zero-coverage-script
@@ -56,6 +173,24 @@ entries:
     - smoke_adapters.py has zero automated test coverage
     - run_fixture_tests.py has no unit tests and no injectable subprocess seam
     - Untested error handling in _run_adapter.main()
+    criteria: Qualifies when an entire executable script or module (its main path and helpers) has no automated
+      test at all, so any regression in it ships unseen. Evidence names the script and confirms no test imports
+      or invokes it. When the module is tested but one function in it is not, that is TST-A1B; when only the
+      CLI flag wiring is untested, TST-A1D; when tests exist but only against mocks, TST-A3A.
+    see_also:
+    - ARC-C1C
+    - QAL-F2A
+    - TST-A1B
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The script is a thin wrapper whose logic lives in imported modules that are themselves
+          covered by tests; only the wrapper's argument plumbing is untested.
+      - to: LOW
+        condition: The script is a diagnostic or smoke script whose output is not consumed by any other step,
+          gate, or persisted artifact.
   TST-A1B:
     name: uncovered-function-or-method
     default_severity: MEDIUM
@@ -67,6 +202,22 @@ entries:
     - cargo-audit's dict-shaped CVSS severity branch has no test coverage
     - No test exercises DependencyCheckAdapter.is_applicable()
     - is_architecture_file() function lacks unit test coverage
+    criteria: Qualifies when a specific production function, method, or branch-bearing helper in an otherwise
+      tested module has no test that calls it, directly or through a caller whose test reaches it. Evidence
+      names the function and the test file that would own it. A whole untested script is TST-A1A; an untested
+      function that writes or restores durable state is TST-A1C; a function that is called but whose error/default
+      arm is never reached is TST-A2B or TST-A2C.
+    see_also:
+    - TST-A1A
+    - TST-A1C
+    - TST-A2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The function is a pure formatter, accessor, or presentation helper with no branching and
+          its output feeds no gate, verdict, or persisted record.
   TST-A1C:
     name: untested-critical-recovery-function
     default_severity: MEDIUM
@@ -79,6 +230,21 @@ entries:
     - build_verify_queue() lacks direct test coverage
     - apply_verdict() lacks direct test coverage
     - load_verdicts_detailed() lacks direct test coverage
+    criteria: Qualifies when a function that persists, recovers, replays, or applies durable state (a ledger
+      save, a recovery/restore routine, a verdict or queue builder whose output is written) has no direct
+      test, so a regression could corrupt or lose state without a failing test. Evidence names the function
+      and what state it writes. An untested function with no durable side effect is TST-A1B; the recovery
+      path being lossy in fact is ARC-D1A.
+    see_also:
+    - ARC-D1A
+    - TST-A1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The function is exercised indirectly by an end-to-end test that asserts on the state it
+          writes, so only the direct unit test is missing.
   TST-A1D:
     name: untested-cli-flag-or-entrypoint-wiring
     default_severity: LOW
@@ -90,6 +256,22 @@ entries:
     - --tools-exclude CLI wiring in synthesize.py has no end-to-end test
     - dispatch.main()'s --model-lens-sweep/--model-panel-review/--model-advisor and --agents-dir CLI flags are never
       exercised
+    criteria: Qualifies when a CLI flag, subcommand, or entrypoint's argument wiring (parse to dispatch) is
+      never exercised by a test, even though the handler it reaches may be unit-tested, so a mis-wired or
+      dropped flag passes the suite. Evidence names the flag and the handler. A wholly untested script is
+      TST-A1A; a documented flag that is not implemented at all is COD-D2B; flag documentation drifting from
+      the parser is QAL-C2C.
+    see_also:
+    - COD-D2B
+    - QAL-C2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The untested flag enables or disables an enforcement or containment control (a sandbox,
+          a write guard, a failing gate), so a dropped or mis-wired flag silently changes the security posture
+          with the suite green.
   TST-A2A:
     name: growth-blind-invariant-check
     default_severity: MEDIUM
@@ -101,6 +283,21 @@ entries:
     - No systemic test guards against a future adapter-prefix collision in the ADAPTERS registry
     - Dockerfile tests only cover a stale subset of bundled tools; several later-added tool stages have no assertion
       coverage
+    criteria: Qualifies when a test checks an invariant over a registry, list, or set of stages by enumerating
+      the members that existed when it was written, so members added later (a new adapter, a new image stage)
+      escape the invariant with no failure. Evidence names the hardcoded subset and an existing member it
+      misses. A universal property checked on hand-picked example inputs (not registry members) is TST-B1F;
+      no invariant test at all is TST-A1B; a shadow registry with no parity enforcement in production is ARC-A4C.
+    see_also:
+    - ARC-A4C
+    - TST-B1F
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: 'The registry is closed: members are added only by a documented process whose checklist
+          also updates the enumerating test.'
   TST-A2B:
     name: untested-error-handling-path
     default_severity: MEDIUM
@@ -112,6 +309,23 @@ entries:
     - run_tool tests do not cover timeout exception path
     - roslyn_secguard.py invoke() error handling not covered
     - Missing exception handling tests for JSON parsing in adapter parsers
+    criteria: Qualifies when a tested unit's exception, timeout, or error-return path is never driven by any
+      test, so the error handling could be broken or removed with the suite still green. Evidence names the
+      handler and the trigger no test supplies. A default/fallback arm reached on normal input is TST-A2C;
+      malformed-input handling is TST-A2D; an exit-code remap never exercised is TST-G3A; a security guard's
+      untested rejection path is SEC-G3B; production code that fails to check or swallows the error at all
+      is COD-B2C.
+    see_also:
+    - SEC-G3B
+    - TST-A2C
+    - TST-G3A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The handler only logs and re-raises (no recovery, translation, or fallback logic), so a
+          regression in it would still surface as a failure.
   TST-A2C:
     name: untested-fallback-default-branch
     default_severity: MEDIUM
@@ -123,6 +337,22 @@ entries:
     - cargo_audit.parse's default-severity branch is reached by the module's own fixture but never asserted
     - YAML parsing fallback in load_catalog() not tested
     - 'brakeman.py: is_applicable()''s .gemspec fallback path is unreachable by the existing tests'
+    criteria: Qualifies when a fallback or default branch (default severity, missing-key default, alternate
+      file lookup, secondary parser) is never reached, or is reached but never asserted, by any test. Evidence
+      names the branch and why existing fixtures do not trigger it. An exception/timeout path is TST-A2B;
+      a mapping with several arms of which one is tested is TST-A2E; a production fallback that silently masks
+      a failure is ARC-C2A or COD-C3B.
+    see_also:
+    - COD-C3B
+    - TST-A1B
+    - TST-A2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The default value is a constant with no further logic and is stated in the schema or docs
+          that a separate test validates.
   TST-A2D:
     name: untested-malformed-or-boundary-input
     default_severity: MEDIUM
@@ -134,6 +364,18 @@ entries:
     - BrakemanAdapter parse() lacks empty findings test
     - Malformed/truncated (non-empty) XML tool output is untested, unlike other adapters' tests in this codebase
     - No-CWE-mapping branch (citations key omitted) is never tested
+    criteria: Qualifies when a parser or input-handling unit is never tested with empty, truncated, malformed,
+      or boundary input (empty findings list, non-empty but truncated XML, a missing optional key), so its
+      behaviour on those inputs is unverified. Evidence names the input class and the unit. When the missing
+      case is a security guard's adversarial input, cite SEC-G3B; when the unit demonstrably crashes on that
+      input, SEC-F1A; when a malformed record is silently skipped in production, ARC-F2D.
+    see_also:
+    - ARC-D2B
+    - SEC-F1A
+    - SEC-G3B
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   TST-A2E:
     name: single-case-enum-mapping-coverage
     default_severity: LOW
@@ -145,6 +387,24 @@ entries:
     - SpotBugs priority-to-severity mapping only exercised for priority "1"
     - BrakemanAdapter._normalize_confidence only has test coverage for one of its four branches
     - Category-derived CWE fallback is only tested for one of twelve categories
+    criteria: Qualifies when a mapping, switch, or enum translation with several arms is tested for only one
+      (or a small minority) of its arms, so the untested arms could be wrong with the suite green. Evidence
+      names the mapping and the count of arms tested vs total. Untested combinations of independent configuration
+      axes are TST-A3C; a schema enum missing values is COD-D1A.
+    see_also:
+    - TST-A3C
+    - TST-B2C
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: An untested arm maps to a value at or above the configured gate threshold (it decides whether
+          a required CI check fails), and no other test pins that arm.
+      lower_when:
+      - to: INFO
+        condition: The mapping is table-driven data with no per-arm logic and one test already iterates the
+          whole table.
   TST-A2F:
     name: untested-negative-boolean-branch
     default_severity: LOW
@@ -156,6 +416,19 @@ entries:
     - is_applicable() false-path untested in bundler-audit and cargo-audit adapter tests
     - is_applicable() only tested for the pom.xml true path
     - SpotBugsAdapter.is_applicable test coverage is asymmetric compared to every sibling adapter
+    criteria: Qualifies when a boolean predicate (an applicability check, a filter, a feature gate) is tested
+      only on its true path, so a regression that makes it always-true passes the suite. Evidence names the
+      predicate and the missing false-path case. When the predicate guards a security decision, cite SEC-G3B;
+      an untested error branch is TST-A2B.
+    see_also:
+    - SEC-G3B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The false path is a trivial negation of the tested true path in a single expression with
+          no other inputs.
   TST-A3A:
     name: mocked-or-absent-integration-path
     default_severity: MEDIUM
@@ -169,6 +442,22 @@ entries:
       fixtures
     - diff_map._mk_worktree_dir's realpath normalization is only ever mocked out, never exercised against a real
       filesystem
+    criteria: Qualifies when the only tests of a path that talks to a real tool, filesystem, or service replace
+      that dependency with a mock, so the integration contract (real output format, real path normalisation)
+      is never exercised. Evidence names the mocked seam and the real behaviour left untested. When integration
+      tests exist but CI never runs them, that is ARC-C1C; when they exist but are skipped by environment
+      gates, TST-F1A or TST-F1B; when the path is security-critical and only unit-tested, TST-G3E.
+    see_also:
+    - ARC-C1C
+    - TST-F1A
+    - TST-G3E
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The mocked dependency's output is pinned by a recorded real-output fixture that the mock
+          replays, so only live-version drift is untested.
   TST-A3B:
     name: unverified-planted-fixture-detection
     default_severity: MEDIUM
@@ -181,6 +470,21 @@ entries:
       nowhere
     - main.rs's ~20 planted source-level CWE patterns have no adapter/tool able to detect them
     - hostile-csproj's weak-Random() fixture is opt-in-only and gated, and its consuming test never asserts a finding
+    criteria: Qualifies when a fixture deliberately plants a defect or hostile behaviour (a vulnerable dependency,
+      a malicious build file, a containment probe) but no test asserts the expected outcome (the finding is
+      detected, egress fails, the marker stays out), so the fixture can silently stop proving anything. Evidence
+      names the planted item and the absent assertion. A fixture no test consumes at all is TST-E1B; a consuming
+      test that is gated off is TST-F1A or TST-F1B; a planted pattern that no available scanner could detect
+      is a scanner-capability gap, not this code.
+    see_also:
+    - TST-E1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The planted fixture is documented as a manual demo or reviewer aid, not as an automated
+          regression check.
   TST-A3C:
     name: narrow-scenario-matrix
     default_severity: LOW
@@ -192,6 +496,24 @@ entries:
     - Golden-render regression suite exercises only one (panel, depth, security_mode) combination
     - Limited path traversal edge case testing
     - Sparse dispatch integration test coverage
+    criteria: Qualifies when a unit with several independent configuration axes or input dimensions (mode
+      x depth x panel, path variants) is tested in one or a few combinations, so interactions in the untested
+      combinations are unverified. Evidence names the axes and the combinations covered. A single mapping
+      with untested arms is TST-A2E; one test using an input production cannot produce is TST-C3A.
+    see_also:
+    - ARC-E3A
+    - TST-A2E
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: An untested combination includes a setting that changes enforcement or containment (e.g.
+          a security_mode value), and no test exercises that setting together with the other axes.
+      lower_when:
+      - to: INFO
+        condition: The axes are shown to be independent in code (no branch reads more than one axis), so per-axis
+          tests already cover the behaviour.
   TST-A4A:
     name: unvalidated-subprocess-output-format
     default_severity: MEDIUM
@@ -202,6 +524,22 @@ entries:
     examples:
     - No validation of Docker command output format; check_fixtures assumes docker run output is well-formed and
       never validates the command succeeded
+    criteria: Qualifies when test-harness or fixture tooling runs a subprocess (docker, a scanner, a build)
+      and consumes its output without checking the exit status or the output's format, so a failed or partial
+      run is read as valid test input. Evidence names the harness call and the unchecked assumption. The same
+      unchecked call in production code is COD-B2C; a production crash on the malformed output is SEC-F1A;
+      reading a runner's exit 0 as 'tests passed' is TST-F2B; output that is checked but not against a schema
+      is TST-A4B.
+    see_also:
+    - COD-B2C
+    - TST-F2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: A downstream assertion in the same test fails loudly on the malformed output, so the gap
+          only degrades the diagnostic rather than producing a false pass.
   TST-A4B:
     name: unvalidated-tool-output-schema
     default_severity: MEDIUM
@@ -212,6 +550,20 @@ entries:
     examples:
     - Missing schema validation for adapter/tool output files
     - tests/fixtures/manifest.json has no automated validation of its own shape or content
+    criteria: Qualifies when files produced or consumed by tests (tool output, a fixture manifest) have a
+      defined shape but no test validates them against it, so a shape change goes unnoticed. Evidence names
+      the file and the shape it should satisfy. Hand-built fixtures that omit schema-required fields are TST-G3D;
+      a schema that disagrees with its producer is ARC-D1B or COD-D1A.
+    see_also:
+    - ARC-D1B
+    - TST-G3D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Every consuming test reads each field it relies on with an explicit key access that fails
+          on absence, so a shape change still produces a failing test, only without a schema-level message.
   TST-A4C:
     name: unenforced-fixture-presence-check
     default_severity: LOW
@@ -229,7 +581,20 @@ entries:
       missing fixture instead surfaces as a confusing low-level I/O error rather
       than a clear test failure, that is TST-E1A.
     see_also:
+    - SEC-G2B
     - TST-E1A
+    - TST-F1C
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The silently skipped fixtures back the only test of a security or containment property,
+          so the skip removes that property's sole verification.
+      lower_when:
+      - to: INFO
+        condition: The skip emits a reason that the CI summary surfaces and counts, so fixture loss is visible
+          even though it does not fail.
   TST-B1A:
     name: regression-test-verifies-wrong-property
     default_severity: MEDIUM
@@ -247,7 +612,13 @@ entries:
       Distinct from a presence-only assertion (TST-B1C) and a tautology
       (TST-B2A).
     see_also:
+    - TST-B1C
+    - TST-B2A
+    - TST-C3B
     - TST-G3F
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   TST-B1B:
     name: substring-instead-of-structural-assertion
     default_severity: MEDIUM
@@ -258,6 +629,22 @@ entries:
     examples:
     - 'Weak assertion: checks for substring instead of validating citation structure'
     - Fragile stringified-dict substring assertion instead of structural check on citations
+    criteria: Qualifies when a test checks a structured result (dict, list, JSON, citation record) by substring-matching
+      its string form, so wrong structure that happens to contain the substring passes. Evidence names the
+      substring check and the structure it stands in for. A truthy/presence-only check is TST-B1C; a byte-exact
+      snapshot of prose is TST-B3B; tests regex-scanning documentation prose for architecture rules fall to
+      TST-G3F.
+    see_also:
+    - TST-B1C
+    - TST-B3B
+    - TST-G3F
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The substring is unique enough that only a structurally correct result can contain it (e.g.
+          a full serialised key-value pair with delimiters), and the result is a flat string by contract.
   TST-B1C:
     name: truthy-or-presence-only-assertion
     default_severity: MEDIUM
@@ -275,8 +662,18 @@ entries:
       is). Distinct from asserting the WRONG property (TST-B1A) and from
       making NO positive assertion at all (TST-B1E).
     see_also:
+    - TST-B1A
+    - TST-B1B
+    - TST-B1D
     - TST-B1E
     - TST-G3F
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The asserted value has only one non-falsy value the unit can return (e.g. a boolean-returning
+          predicate), so truthiness IS the content.
   TST-B1D:
     name: unverified-critical-mock-argument
     default_severity: MEDIUM
@@ -287,6 +684,22 @@ entries:
     examples:
     - Test does not verify comment body argument passed to gh command
     - Incomplete verification of command structure in mock assertion
+    criteria: Qualifies when a test asserts that a mock was called but never checks the argument that carries
+      the behaviour under test (the comment body sent to gh, the command vector, the path written), so a wrong
+      argument passes. Evidence names the mock and the unchecked argument. Over-specifying internal call sequences
+      instead of outputs is the opposite failure, TST-C4C; a double that silently returns defaults for unexpected
+      calls is TST-C4A.
+    see_also:
+    - TST-B1C
+    - TST-C4A
+    - TST-C4C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The unchecked argument is a literal constant in the unit's source with no computation,
+          so it cannot regress independently of the code path the test already asserts.
   TST-B1E:
     name: missing-positive-assertion
     default_severity: LOW
@@ -305,12 +718,40 @@ entries:
     see_also:
     - TST-B1C
     - TST-G3F
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The test is named or documented as verifying a security, containment, or gate property
+          and no other test asserts that property positively.
+      lower_when:
+      - to: INFO
+        condition: The test is an explicit smoke test (named and documented as 'does not raise') and a separate
+          test asserts the outcome.
   TST-B1F:
     name: universal-invariant-only-example-tested
     default_severity: LOW
     status: active
     provenance:
     - prior-art
+    criteria: Qualifies when a property that must hold for all inputs (round-trip identity, ordering, idempotence,
+      a sanitiser rejecting every dangerous input) is tested only with one or a few hand-picked examples,
+      with no property-based, generated, or exhaustive check. Evidence names the universal property and the
+      examples used. A registry invariant that misses later members is TST-A2A; a mapping with untested arms
+      is TST-A2E. No corpus instance yet; enrich when observed.
+    see_also:
+    - TST-A2A
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The universal property is a security or data-integrity invariant (sanitiser, encoder, round-trip
+          of persisted data) over an input space that includes untrusted input.
+      lower_when:
+      - to: INFO
+        condition: The input domain is small and finite and the examples enumerate all of it.
   TST-B2A:
     name: always-true-assertion
     default_severity: HIGH
@@ -327,7 +768,20 @@ entries:
       a test asserts something real but insufficient, use the specific
       TST-B1x codes; TST-G3F is the residual.
     see_also:
+    - TST-B1A
+    - TST-B2B
+    - TST-B2D
     - TST-G3F
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The tautological assertion sits beside real assertions in the same test, so the test still
+          verifies something.
+      - to: LOW
+        condition: The always-true assertion is an explicit placeholder in a test marked skip/xfail/TODO,
+          so it is not counted as coverage.
   TST-B2B:
     name: environment-branch-vacuous-test
     default_severity: MEDIUM
@@ -338,6 +792,20 @@ entries:
     examples:
     - test_cargo_audit_skips_without_rust is a tautological test that never verifies adapter behavior regardless
       of which branch executes
+    criteria: Qualifies when a test branches on the environment (tool installed or not, platform) and every
+      branch it can take passes without asserting the adapter's actual behaviour, so the test is green everywhere
+      and verifies nothing anywhere. Evidence names the branches and shows none asserts real output. A test
+      that is skipped (not run) when the environment is missing is TST-F1B; a single tautological assertion
+      is TST-B2A.
+    see_also:
+    - TST-B2A
+    - TST-F1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: One branch does assert real behaviour and that branch is the one CI takes.
   TST-B2C:
     name: incomplete-loop-assertion-coverage
     default_severity: MEDIUM
@@ -347,6 +815,20 @@ entries:
     recurrence: 1
     examples:
     - 'Test loop with redundant assertions: does not validate all rule mappings'
+    criteria: Qualifies when a test loops over cases (rule mappings, inputs) but its assertion only covers
+      some iterations (asserts after the loop on the last value, breaks early, or asserts a redundant condition
+      each time), so most cases are unverified despite appearing covered. Evidence names the loop and which
+      iterations go unchecked. A mapping whose arms are simply not enumerated is TST-A2E.
+    see_also:
+    - COD-E1B
+    - TST-A2E
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The unchecked iterations exercise the same code path as a checked one (table data with
+          no per-case logic).
   TST-B2D:
     name: inverted-logic-assertion
     default_severity: MEDIUM
@@ -356,6 +838,19 @@ entries:
     recurrence: 1
     examples:
     - Test with inverted logic and meaningless assertion
+    criteria: Qualifies when an assertion's logic is inverted or negated so it passes in the failure case
+      it was written to catch (assertNotIn where assertIn was meant, a double negation, a comparison flipped).
+      Evidence shows the input under which the assertion passes although the behaviour is wrong. An assertion
+      that can never fail at all is TST-B2A; a helper whose name inverts its semantics is TST-C3C.
+    see_also:
+    - TST-B2A
+    - TST-C3C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The inverted assertion is redundant with a correct assertion in the same test.
   TST-B3A:
     name: unsafe-index-based-assertion
     default_severity: HIGH
@@ -367,6 +862,27 @@ entries:
     - 'Brittle test assertion using unsafe list.index(): cmd.index(''--network'') without error handling raises
       ValueError instead of a clear assertion failure'
     - Fragile test with unsafe list indexing on command array
+    criteria: Qualifies when a test locates its target with an operation that raises on absence (list.index,
+      a bare [i] on a possibly short list, dict[key]) so a regression surfaces as an unrelated ValueError/IndexError
+      instead of a clear assertion failure naming the missing element. Evidence names the lookup and the assertion
+      it should have been. The same unchecked index in production code is COD-A2C; a fixed magic index in
+      production is QAL-A2C.
+    see_also:
+    - COD-A2C
+    - QAL-A2C
+    severity_range:
+      floor: INFO
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The lookup is a dict access on a literal key, so the resulting KeyError names the missing
+          element and the failure is attributable without a custom message.
+      - to: LOW
+        condition: The indexed position is fixed by the unit's return type (a fixed-arity tuple or a dataclass
+          field), so absence implies a signature change that other tests of the unit also fail on.
+      - to: INFO
+        condition: The lookup is preceded by an assertIn (or equivalent) on the same element, so a clear assertion
+          failure is produced before the index call.
   TST-B3B:
     name: unmanaged-golden-snapshot-assertion
     default_severity: LOW
@@ -377,6 +893,27 @@ entries:
     examples:
     - Golden fixtures are hand-maintained with no regeneration tooling or documented provenance
     - Byte-exact prose snapshots can be satisfied by editing the fixture instead of fixing the regression
+    criteria: Qualifies when golden/snapshot fixtures are compared byte-exactly but have no regeneration tooling,
+      no recorded provenance, or no review step, so a regression can be 'fixed' by editing the expected file
+      and stale goldens cannot be refreshed safely. Evidence names the golden set and the missing discipline.
+      Goldens that drift from an authoritative schema are TST-G3D; substring checks are TST-B1B; generated
+      artifacts in the build (not tests) are ARC-C1F.
+    see_also:
+    - ARC-C1F
+    - TST-B1B
+    - TST-G3D
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The snapshot is the only regression check for output a gate or security reviewer relies
+          on (a rendered report's escaping, a verdict summary) and goldens are updated by a blind overwrite
+          command with no diff review.
+      lower_when:
+      - to: INFO
+        condition: Goldens are tiny and hand-written by design and the expected values are restated in the
+          test as literals.
   TST-C1A:
     name: test-defined-after-main-guard
     default_severity: MEDIUM
@@ -396,6 +933,10 @@ entries:
     see_also:
     - COD-E2A
     - QAL-F2B
+    - TST-C1B
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   TST-C1B:
     name: undiscoverable-test-function
     default_severity: LOW
@@ -406,6 +947,20 @@ entries:
     examples:
     - Test function defined outside unittest.TestCase class
     - Module-level test_multi_model_fields_in_schemas is invisible to unittest's own discovery
+    criteria: Qualifies when a test function or class sits where the project's runner does not collect it
+      (a module-level function under unittest, a name missing the test_ prefix, a file outside the discovery
+      pattern), so it never runs. Evidence names the test and the runner's rule it misses. Tests dropped because
+      they follow a `__main__` guard are TST-C1A; tests that are collected but skipped are TST-F1A/TST-F1B.
+    see_also:
+    - TST-C1A
+    - TST-F2A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: CI's actual runner fails to collect the test and it is the only test of the unit it exercises,
+          so coverage of that unit is lost in CI.
   TST-C2A:
     name: monolithic-test-module
     default_severity: MEDIUM
@@ -420,6 +975,21 @@ entries:
       synthesize.py
     - test_roslyn_secguard.py contains three unrelated test classes (TestRoslynSecGuardAdapter, TestSafeCopytree,
       TestScsOnlyFilter) with no semantic grouping
+    criteria: Qualifies when one test module bundles many unrelated concerns (dozens of independent TestCase
+      classes, or classes for different production units) so failures are hard to localise and the file is
+      hard to change. Evidence names the module and its unrelated groupings. The production-code analogue
+      is ARC-A1B; unit and integration tests mixed in one directory is TST-G1C.
+    see_also:
+    - ARC-A1B
+    - TST-G1C
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The module is large but tests a single production module whose structure it mirrors.
+      - to: INFO
+        condition: The module is large only because of data tables or parameterised cases, not distinct concerns.
   TST-C2B:
     name: duplicated-test-helper-across-cases
     default_severity: LOW
@@ -439,7 +1009,18 @@ entries:
       more consequential than inert scaffolding despite this code's lower default
       severity — grade the instance on consequence.)
     see_also:
+    - QAL-D1C
     - TST-G1B
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The duplicated fakes or helpers have already diverged in behaviour (different return shape,
+          missing method), so different cases test against inconsistent doubles.
+      lower_when:
+      - to: INFO
+        condition: The duplicated helper is two or three lines with no branching.
   TST-C3A:
     name: unrepresentative-test-input
     default_severity: MEDIUM
@@ -450,6 +1031,17 @@ entries:
     examples:
     - test_clean_group_is_shallow exercises a panels input that build_result can never actually produce, masking
       that the real code path is untested
+    criteria: Qualifies when a test feeds the unit an input that production can never produce (a shape, combination,
+      or value unreachable from the real caller), so the test passes while the path real inputs take is untested.
+      Evidence names the input and why production cannot produce it. A shared fixture file with implausible
+      data is TST-E2D; a fixture with empty/placeholder values is TST-E2A.
+    see_also:
+    - TST-E2A
+    - TST-E2D
+    - TST-G3D
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   TST-C3B:
     name: misleading-test-name
     default_severity: LOW
@@ -460,7 +1052,25 @@ entries:
     examples:
     - Test name claims coverage of all four dispatch roles but only pins tokens for two
     see_also:
+    - TST-B1A
     - TST-C3C
+    - TST-C3D
+    - TST-G2F
+    criteria: Qualifies when a test's name or docstring claims more coverage than its body provides (all four
+      roles, but only two are pinned), so readers believe a behaviour is protected when it is not. Evidence
+      names the claim and the gap. A helper whose name states the opposite of its behaviour is TST-C3C; a
+      misnamed test file or class is TST-C3D; a test whose assertion checks the wrong property is TST-B1A.
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The over-claimed behaviour is a security or gate property and no other test covers the
+          unclaimed part.
+      lower_when:
+      - to: INFO
+        condition: The over-claim is in a docstring or comment only and the test function name itself accurately
+          describes what is asserted.
   TST-C3C:
     name: misnamed-helper-inverted-semantics
     default_severity: LOW
@@ -473,7 +1083,20 @@ entries:
     examples:
     - Helper function _depth_gte is named for the opposite comparison it actually implements
     see_also:
+    - TST-B2D
     - TST-C3B
+    criteria: Qualifies when a test helper's name states the opposite comparison or polarity of what it implements
+      (`_depth_gte` that computes less-than), so tests using it read as asserting something other than what
+      they check. Evidence names the helper, its name, and its actual semantics. When the inversion makes
+      an assertion pass in the failure case it should catch, cite that assertion as TST-B2D; an over-claiming
+      test name is TST-C3B.
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The helper is used only to build inputs, and every caller passes arguments that make the
+          inversion irrelevant.
   TST-C3D:
     name: misnamed-test-artifact
     default_severity: LOW
@@ -486,6 +1109,18 @@ entries:
     - CWE-1041
     examples:
     - File/class name references a non-existent 'cs' scope and duplicates test_rust_integration.py
+    criteria: Qualifies when a test file, class, or module name refers to a scope, language, or unit it does
+      not test (or duplicates another file's scope under a different name), misleading navigation and ownership.
+      Evidence names the artifact and what it actually tests. An individual test's over-claiming name is TST-C3B;
+      a production name collision is QAL-A1C.
+    see_also:
+    - TST-C3B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The misname is a casing or abbreviation difference that does not point to a different scope.
   TST-C4A:
     name: incomplete-test-double-masks-behavior
     default_severity: MEDIUM
@@ -496,6 +1131,22 @@ entries:
     examples:
     - 'Incomplete mock_exists function masks unintended behavior: only explicitly returns True for the expected
       path, silently returning False for everything else'
+    criteria: Qualifies when a hand-written double (a fake exists(), a stub client) handles only the calls
+      the test author expected and returns a permissive default for everything else, so unintended calls by
+      the unit pass silently instead of failing. Evidence names the double and the default it returns for
+      unexpected input. A double with no documented contract is TST-C4D; a mock whose critical argument is
+      not asserted is TST-B1D; a global mock that blinds every path is TST-G3F.
+    see_also:
+    - TST-B1D
+    - TST-C4D
+    - TST-G3F
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The permissive default matches the real dependency's behaviour for the unexpected inputs
+          (e.g. a real exists() would also return False).
   TST-C4B:
     name: inconsistent-mocking-pattern
     default_severity: MEDIUM
@@ -512,13 +1163,41 @@ entries:
     - A test locally does `from unittest import mock` and nests four levels of `with mock.patch(...)`, diverging
       from every sibling adapter test's mocking idiom
     see_also:
+    - QAL-F1B
+    - TST-G2A
     - TST-G2E
+    criteria: Qualifies when sibling tests patch the same dependency with different idioms or targets (patch.object
+      on the module vs patch of the import path, nested vs decorator patches), so a refactor of the import
+      path silently un-patches some tests. Evidence names the divergent patch sites. Inconsistent assertion
+      style is TST-G2E; inconsistent imports across test files is TST-G2A; the production analogue is QAL-F1B.
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: All variants resolve to the same patched object today and no test patches a re-exported
+          name, so the drift is stylistic only.
   TST-C4C:
     name: mock-asserts-internal-behavior-not-output
     default_severity: LOW
     status: active
     provenance:
     - prior-art
+    criteria: Qualifies when a test verifies the unit by asserting internal calls on mocks (call order, private
+      helper invocations) instead of its observable output, so behaviour-preserving refactors break the test
+      while behavioural regressions with the same call pattern pass. Evidence names the internal call asserted
+      and the output left unasserted. Failing to assert a critical argument is the opposite, TST-B1D. No corpus
+      instance yet; enrich when observed.
+    see_also:
+    - TST-B1D
+    - TST-D1A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The asserted internal call is itself the contract (an adapter that must invoke the tool
+          exactly once), so it is an output in disguise.
   TST-C4D:
     name: undocumented-test-double-contract
     default_severity: LOW
@@ -528,6 +1207,19 @@ entries:
     recurrence: 1
     examples:
     - Undocumented test double lacks contract specification
+    criteria: Qualifies when a non-trivial test double (fake service, stub client) does not state which real
+      interface or behaviours it mimics, so drift between the double and the real dependency cannot be checked.
+      Evidence names the double and the real interface. A double that is demonstrably incomplete and masks
+      behaviour is TST-C4A.
+    see_also:
+    - TST-C4A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The double subclasses or is spec'd from the real interface (autospec, Protocol), so its
+          contract is enforced mechanically.
   TST-C5A:
     name: missing-import-for-referenced-symbol
     default_severity: MEDIUM
@@ -537,6 +1229,20 @@ entries:
     recurrence: 1
     examples:
     - test_synthesize.py calls unittest.mock.patch without importing unittest.mock
+    criteria: Qualifies when a test file uses a symbol or submodule it never imports (unittest.mock via `import
+      unittest`), working only because another import happened to load it, so test success depends on import
+      order. Evidence names the symbol and the accidental provider. Imports placed inside test bodies are
+      TST-C5C; the same import inconsistency across production modules is QAL-F1B.
+    see_also:
+    - QAL-F1B
+    - TST-C5C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The missing import makes the test error out deterministically when run alone, so the failure
+          is loud rather than order-dependent.
   TST-C5B:
     name: overengineered-fixture-builder
     default_severity: MEDIUM
@@ -546,6 +1252,21 @@ entries:
     recurrence: 1
     examples:
     - Overly complex test fixture builder with conditional branching
+    criteria: Qualifies when a test fixture builder carries its own conditional logic and options to the point
+      that the builder itself needs testing, so a bug in it can make tests pass or fail for reasons unrelated
+      to the unit under test. Evidence names the branches in the builder. A duplicated helper is TST-C2B;
+      needless abstraction in production is QAL-H2C.
+    see_also:
+    - QAL-H2C
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The builder's branches are each exercised by at least one test and produce visibly different
+          fixtures.
+      - to: INFO
+        condition: The complexity is a short chain of optional keyword overrides with no branching.
   TST-C5C:
     name: nonstandard-import-placement
     default_severity: LOW
@@ -556,6 +1277,22 @@ entries:
     examples:
     - 'Late imports: module imports inside test function'
     - Redundant import shadowing module-level import
+    criteria: Qualifies when a test file imports inside test function bodies or re-imports and shadows a module-level
+      import, for no isolation reason (no optional dependency, no import-time side effect under test). Evidence
+      names the import site. A suite-wide divergence in import convention is TST-G2A; the same pattern in
+      production code is QAL-B1B or QAL-B1C.
+    see_also:
+    - QAL-B1B
+    - QAL-B1C
+    - TST-C5A
+    - TST-G2A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The inline import is mechanically flagged by a configured linter rule, so it is a free
+          lint rather than a review finding.
   TST-C5D:
     name: unexplained-magic-value-in-test
     default_severity: LOW
@@ -565,6 +1302,19 @@ entries:
     recurrence: 1
     examples:
     - Magic number without explanation in test
+    criteria: Qualifies when a test uses a bare literal (an expected count, timeout, offset) whose origin
+      is not explained, so a reader cannot tell whether a change to it is a fix or a weakening. Evidence names
+      the literal. The same literal duplicated across many test files is TST-G2D; the production form is QAL-A2C.
+    see_also:
+    - QAL-A2C
+    - TST-G2D
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The literal is the obvious expected value of the input in the same test (e.g. len of a
+          three-item list is 3).
   TST-D1A:
     name: manual-state-patch-without-context-manager
     default_severity: MEDIUM
@@ -577,6 +1327,22 @@ entries:
       via try/finally'
     - Mock patch scope too broad; test depends on internal module structure
     - Test mock restoration pattern creates isolation risk
+    criteria: Qualifies when a test replaces module or global state by direct assignment and restores it by
+      hand (save original, try/finally) instead of a scoped patcher, so an early failure, a missed restore,
+      or parallel execution leaks the replacement into other tests. Evidence names the patched attribute and
+      the restore path. Environment-variable mutation is TST-D1C; asserting internal calls on the patched
+      object is TST-C4C; the resulting order-dependence is TST-F2C.
+    see_also:
+    - TST-C4C
+    - TST-D1C
+    - TST-F2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The restore is in a finally (or tearDown/addCleanup) that runs on every exit path and the
+          suite does not run tests in parallel within a process.
   TST-D1B:
     name: unclosed-file-handle
     default_severity: MEDIUM
@@ -588,6 +1354,21 @@ entries:
     - 'Resource leak: files opened without context manager'
     - 'Unclosed file handle in test assertion: json.load(open(actions_path)) without context manager'
     - Multiple unclosed file handles in test method
+    criteria: Qualifies when test code opens a file (often `json.load(open(p))`) without a context manager
+      or close, leaking the handle until garbage collection and raising ResourceWarnings or exhausting descriptors
+      in long suites. Evidence names the open call. The same leak in production code is COD-A1A; cite COD-A1A
+      (not D1B) when the leaking helper is shared production code called by tests.
+    see_also:
+    - COD-A1A
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The leak is a single read-only open in a short test on CPython (reference-counted close),
+          with no loop.
+      - to: INFO
+        condition: The suite is run with ResourceWarning as error and the instance is already caught by it.
   TST-D1C:
     name: unscoped-env-var-mutation
     default_severity: MEDIUM
@@ -598,6 +1379,20 @@ entries:
     examples:
     - 'Test isolation violation: os.environ mutated without proper cleanup'
     - test_env_override / test_cli_beats_env mutate os.environ directly instead of using mock.patch.dict
+    criteria: Qualifies when a test sets or deletes os.environ entries directly without a scoped mechanism
+      (mock.patch.dict, monkeypatch.setenv) or an unconditional restore, so the change leaks into later tests.
+      Evidence names the variable and the missing restore. Other module/global state patched by hand is TST-D1A;
+      production inheriting the whole environment into a subprocess is SEC-B3B.
+    see_also:
+    - TST-D1A
+    - TST-F2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The test restores the variable in tearDown/addCleanup that runs on every exit path, and
+          only the idiom is non-standard.
   TST-D2A:
     name: cwd-relative-fixture-path
     default_severity: MEDIUM
@@ -613,6 +1408,20 @@ entries:
     - test_status_is_in_schema_enum opens a bare CWD-relative path instead of anchoring to __file__/repo root
     see_also:
     - COD-E2B
+    - TST-E2C
+    criteria: Qualifies when a test opens a fixture or repository file by a path relative to the invocation
+      cwd rather than anchoring it to the test file or repo root, so the test fails or reads the wrong file
+      when run from another directory. Evidence names the relative path. Production code resolving a path
+      against the wrong base is COD-E2B; a machine-specific absolute path in fixture data is TST-E2C; a shared
+      /tmp path is TST-D2B.
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Every supported way to run the suite (the CI workflow and the documented make/tox/script
+          entrypoint) changes directory to the repo root before invoking the runner, and the runner is never
+          invoked directly by the documented workflow.
   TST-D2B:
     name: hardcoded-shared-tmp-path
     default_severity: MEDIUM
@@ -622,6 +1431,20 @@ entries:
     recurrence: 1
     examples:
     - Hardcoded /tmp path in test bypasses test isolation
+    criteria: Qualifies when a test writes to or reads from a fixed shared path (/tmp/foo, a literal scratch
+      directory) instead of a per-test temporary directory, so parallel runs, reruns, or other users collide.
+      Evidence names the path. A machine-specific path in committed fixture data is TST-E2C; an unsafe symlink-following
+      copy into such a path is SEC-D1C; durable state kept in scratch is ARC-E2A.
+    see_also:
+    - SEC-D1C
+    - TST-E2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The path includes a per-process unique component (pid, uuid) and is removed in cleanup,
+          so only the base directory is shared.
   TST-E1A:
     name: unvalidated-fixture-existence-assumption
     default_severity: HIGH
@@ -639,7 +1462,21 @@ entries:
       check exists and instead silently skips (masking fixture rot with no alert),
       that is TST-A4C.
     see_also:
+    - ARC-D3A
     - TST-A4C
+    severity_range:
+      floor: INFO
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The fixture path is built from the test file's own location (__file__ or a fixtures-root
+          constant next to it), so the I/O error names the expected file beside the test that needs it.
+      - to: LOW
+        condition: The fixture is loaded through the framework's fixture mechanism (a pytest fixture, a loader
+          helper) that already raises a named fixture-missing error, so only this direct read lacks the check.
+      - to: INFO
+        condition: The fixture is generated in setUp by the same test, so its absence means a setUp failure
+          that is already reported.
   TST-E1B:
     name: orphaned-unused-fixture
     default_severity: LOW
@@ -653,6 +1490,20 @@ entries:
     - Fixture file vulnerable-python/requirements.txt exists but is unused by specified tests
     - tests/fixtures/semgrep.sarif is an orphaned fixture with no consuming test
     - Fixture file manifest.json exists but is unused by specified tests
+    criteria: Qualifies when a committed fixture file is consumed by no test (no path reference, no glob that
+      reaches it), so it rots unnoticed and misleads readers about what is covered. Evidence names the fixture
+      and confirms no consumer. A planted fixture that is consumed but whose expected outcome is never asserted
+      is TST-A3B; dead production code is QAL-E3A.
+    see_also:
+    - QAL-E2C
+    - QAL-E3A
+    - TST-A3B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The fixture is documented as an example or reserved for a manual or external harness.
   TST-E2A:
     name: degenerate-fixture-values
     default_severity: MEDIUM
@@ -664,6 +1515,23 @@ entries:
     - 'Test fixture with incomplete field values for reconciliation edge case: empty strings for severity, panel,
       category, title'
     - Test fixture contains intentionally degenerate/empty findings
+    criteria: Qualifies when fixture records carry empty strings, zeros, or placeholder values in fields the
+      unit branches on (severity, category, title), so tests pass on degenerate data while realistic values
+      follow untested paths. Evidence names the fields and the branches they skip. Data that is plausible-looking
+      but impossible is TST-E2D; a single test's unreachable input is TST-C3A.
+    see_also:
+    - TST-C3A
+    - TST-E2D
+    - TST-G3D
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The degenerate values are in fields the unit only passes through without branching.
+      - to: INFO
+        condition: The fixture is deliberately degenerate to test empty-input handling, and its name or a
+          comment says so.
   TST-E2B:
     name: fixture-lockfile-version-drift
     default_severity: MEDIUM
@@ -673,6 +1541,20 @@ entries:
     recurrence: 2
     examples:
     - Cargo.lock has time version mismatch with Cargo.toml (0.1.44 declared vs. 0.1.45 locked)
+    criteria: Qualifies when a fixture project's lockfile and manifest disagree (declared vs locked version),
+      so the fixture does not represent a state a real package manager would produce and tests of lockfile-reading
+      tools exercise an impossible input. Evidence names both versions. Other impossible synthetic fixture
+      content is TST-E2D; a stale version string in docs is QAL-C1D.
+    see_also:
+    - TST-E2D
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: No test parses the drifted field (the lockfile is only scanned for package names).
+      - to: INFO
+        condition: The drift is deliberate to test drift detection and is documented as such.
   TST-E2C:
     name: hardcoded-machine-specific-path-in-fixture-data
     default_severity: LOW
@@ -684,6 +1566,24 @@ entries:
     - Hardcoded, machine-specific absolute path embedded in committed test fixture data
     see_also:
     - ARC-E1A
+    - ARC-E1B
+    - TST-D2A
+    - TST-D2B
+    criteria: Qualifies when committed fixture DATA embeds a machine-specific absolute path (a developer's
+      home directory, a CI workspace), so the data is non-portable and may leak workstation details. Evidence
+      names the path and file. A hardcoded absolute path in production source is ARC-E1A; a test's runtime
+      cwd-relative path is TST-D2A; a shared runtime /tmp path is TST-D2B.
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: A test reads the embedded path at runtime (opens, resolves, or compares it), so the test
+          fails or skips on every machine but the author's.
+      lower_when:
+      - to: INFO
+        condition: The path is an opaque string the unit treats as data (e.g. a sample 'file' field in tool
+          output) and never resolves.
   TST-E2D:
     name: unrealistic-synthetic-fixture-data
     default_severity: LOW
@@ -694,6 +1594,20 @@ entries:
     examples:
     - Synthetic dependency in Cargo.lock fixture may not reflect realistic resolution behavior (serde depending
       on a package that isn't a real dependency)
+    criteria: Qualifies when shared fixture data is synthetic in a way the real ecosystem could not produce
+      (a dependency edge that does not exist, a structure a tool never emits), so tests may pass against data
+      the real input never resembles. Evidence names the impossible element. Empty or placeholder values are
+      TST-E2A; lockfile/manifest version disagreement is TST-E2B; a single test's unreachable input is TST-C3A.
+    see_also:
+    - TST-C3A
+    - TST-E2A
+    - TST-E2B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The unrealistic element is in a part of the fixture no assertion or branch depends on.
   TST-F1A:
     name: cascading-skip-guard-chain
     default_severity: HIGH
@@ -705,6 +1619,26 @@ entries:
     - Integration tests have cascading skipTest guards making coverage uncertain
     - Five cascading skip conditions plus an implicit network dependency reduce this test to a near-permanent skip
     - Containment probe test has multiple exit paths that skip validation
+    criteria: Qualifies when a test sits behind two or more chained skip conditions (tool present, image built,
+      network reachable, env flag set) such that in practice it skips on every CI runner and most developer
+      machines, so the coverage it claims is near-permanently absent while the suite reports green. Evidence
+      lists the guards and an environment where all hold. A single environment gate is TST-F1B; an unexpected
+      tool outcome converted to a skip is TST-F1C; integration tests CI never schedules are ARC-C1C.
+    see_also:
+    - ARC-C1C
+    - TST-A3A
+    - TST-F1B
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: Every guard in the chain is a local-availability check (tool installed, image built) that
+          the project's documented developer setup satisfies; none depends on network reachability or an opt-in
+          env flag.
+      - to: LOW
+        condition: Skips are reported with reasons in the CI summary and a documented scheduled or manual
+          job exists in which every guard holds, so the gap is visible and has a named place to run.
   TST-F1B:
     name: environment-gated-test-execution
     default_severity: MEDIUM
@@ -716,6 +1650,27 @@ entries:
     - Docker availability tests depend on runtime environment
     - Conditional test execution based on external tool availability
     - Schema validation tests skipped when jsonschema not installed
+    criteria: Qualifies when a test runs only if a single environmental condition holds (a tool installed,
+      Docker available, an optional library importable) and otherwise skips, so whether it executes depends
+      on the machine. Evidence names the gate and whether CI satisfies it. Two or more chained gates that
+      make the test near-permanently skipped is TST-F1A; a test that runs on every branch but asserts nothing
+      is TST-B2B; an unexpected tool result turned into a skip is TST-F1C.
+    see_also:
+    - ARC-B3A
+    - ARC-C1C
+    - TST-B2B
+    - TST-F1A
+    - TST-F1F
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The required CI job provides the gated dependency, so the test always runs in CI and only
+          skips locally.
+      - to: INFO
+        condition: The gate is an optional extra declared in the project's packaging (an extras_require/optional
+          dependency group) and the skip reason names that extra.
   TST-F1C:
     name: unexpected-outcome-silently-skipped
     default_severity: MEDIUM
@@ -725,18 +1680,64 @@ entries:
     recurrence: 2
     examples:
     - Unexpected cargo-audit exit codes are silently skipped instead of failing the test
+    criteria: Qualifies when a test treats an unexpected outcome from the system under test (an unrecognised
+      exit code, an error result) as a reason to skip rather than fail, so genuine regressions are reported
+      as skips. Evidence names the outcome and the skip. A skip because a prerequisite is absent is TST-F1B;
+      a fixture-presence check that silently skips is TST-A4C; a production fallback that masks failure is
+      ARC-C2A.
+    see_also:
+    - ARC-C2A
+    - TST-A4C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The unexpected outcomes skipped are documented tool-environment failures (e.g. a registry
+          outage code) distinct from the codes the unit under test produces.
   TST-F1D:
     name: unseeded-randomness-dependent-test
     default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
+    criteria: Qualifies when a test's input or expected value depends on an unseeded random source (random,
+      uuid4, hash ordering of a randomised set) so it can pass or fail between runs on identical code. Evidence
+      names the random source and the assertion it affects. Time-dependent behaviour is TST-F1E; dependence
+      on execution order is TST-F2C; a weak PRNG in production security code is SEC-C3A. No corpus instance
+      yet; enrich when observed.
+    see_also:
+    - SEC-C3A
+    - TST-F1E
+    - TST-F2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The randomness affects only values the assertions do not inspect (e.g. a random temp name),
+          so outcomes are stable.
   TST-F1E:
     name: wall-clock-dependent-test
     default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
+    criteria: Qualifies when a test's outcome depends on the real clock (current date, elapsed-time thresholds,
+      timezone of the runner, a sleep-based wait) with no frozen or injected time, so it fails at certain
+      times, on slow runners, or in other timezones. Evidence names the time read and the assertion. Production
+      code using wall-clock for elapsed time is COD-G1D; unseeded randomness is TST-F1D. No corpus instance
+      yet; enrich when observed.
+    see_also:
+    - COD-G1D
+    - TST-F1D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The time dependence has a margin of minutes or more and no date/timezone boundary is involved,
+          so failure requires an extreme runner stall.
   TST-F1F:
     name: unisolated-external-service-call
     default_severity: LOW
@@ -746,6 +1747,24 @@ entries:
     recurrence: 1
     examples:
     - pip-audit/npm-audit integration tests make live network calls to third-party services with no opt-out marker
+    criteria: Qualifies when a test makes live calls to a third-party service or registry (package audit APIs,
+      a remote advisory DB) with no recorded response, mock, or opt-in marker, so results depend on network
+      and the service's current data. Evidence names the call and the absent isolation. Missing timeouts on
+      the call are OPS-A1A; gating such tests on network availability is TST-F1B.
+    see_also:
+    - OPS-A1A
+    - TST-F1B
+    - TST-G3B
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The test runs in a required CI check, so a third-party outage or data change blocks or
+          flips merges.
+      lower_when:
+      - to: INFO
+        condition: The test is behind an explicit opt-in marker excluded from the default and CI runs.
   TST-F2A:
     name: unverified-test-selection-filter
     default_severity: HIGH
@@ -756,6 +1775,21 @@ entries:
     examples:
     - 'Fragile test discovery with assumed pytest naming convention: pytest -k ''test_{test}_integration'' never
       validates that matching tests exist'
+    criteria: Qualifies when a harness selects tests by a filter (pytest -k, a name pattern, a marker) and
+      never verifies that the filter matched at least one test, so a renamed or missing test makes the run
+      select nothing and still pass. Evidence names the filter and the missing count check. When the cause
+      is reading the runner's exit code as pass without distinguishing 'no tests collected', that is TST-F2B;
+      a test the runner never collects at all is TST-C1B.
+    see_also:
+    - ARC-C1B
+    - TST-C1B
+    - TST-F2B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The filtered run is not a required gate (an advisory job or a local helper only).
   TST-F2B:
     name: exit-code-conflates-pass-with-no-op
     default_severity: MEDIUM
@@ -767,12 +1801,48 @@ entries:
     - 'No validation that tests actually executed: a returncode of 0 could mean tests passed OR pytest -k matched
       nothing'
     - Non-zero exit code handling in run_adapters not fully tested
+    criteria: Qualifies when a harness treats the test runner's exit code 0 (or any non-failure code) as proof
+      the tests passed, though that code is also returned when nothing ran (no tests collected, all skipped,
+      filter matched nothing). Evidence names the exit-code check. When the root cause is an unvalidated selection
+      filter, cite TST-F2A; an untested non-zero exit path in production code is TST-A2B; a CI step whose
+      failure is swallowed is ARC-C2B.
+    see_also:
+    - ARC-C2B
+    - TST-A4A
+    - TST-F2A
+    - TST-G3A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: The exit code is the sole pass/fail signal of a required CI gate, and the evidence shows
+          the gate executing zero tests while green, either now or after a routine named change (a test rename,
+          a moved directory) that is reproduced in the finding.
+      lower_when:
+      - to: LOW
+        condition: The harness also checks a collected/passed count from the runner's report, so only the
+          exit-code reading is redundant.
   TST-F2C:
     name: test-order-coupling
     default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
+    criteria: Qualifies when a test passes only if another test ran first (it relies on state, files, or patched
+      globals left behind) or fails only after a particular predecessor, so reordering, selection, or parallelism
+      changes the result. Evidence names the two tests and the shared state. The leaking cause is TST-D1A,
+      TST-D1C, or TST-D1B; randomness-driven flakiness is TST-F1D. No corpus instance yet; enrich when observed.
+    see_also:
+    - TST-D1A
+    - TST-D1C
+    - TST-F1D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The coupling only causes a spurious failure (never a spurious pass) when order changes.
   TST-G1A:
     name: test-suite-sys-path-import-hack
     default_severity: HIGH
@@ -788,6 +1858,22 @@ entries:
       on an installable package
     see_also:
     - ARC-A2C
+    - QAL-F1A
+    criteria: Qualifies when the TEST SUITE imports the code under test by injecting directories into sys.path
+      at module level (across many test files) instead of installing or packaging the project, so tests exercise
+      an import layout the shipped package does not have. Evidence names the injection and its spread. The
+      same hack in production entrypoints is ARC-A2C; a single module relying on an implicit path someone
+      else set is QAL-F1A.
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The project is also installed in CI and at least one job runs the tests against the installed
+          package.
+      - to: LOW
+        condition: The injection is centralised in one conftest/bootstrap file rather than repeated, and points
+          at the same root the package installs from.
   TST-G1B:
     name: test-fixture-scaffolding-duplicated-across-files
     default_severity: MEDIUM
@@ -808,7 +1894,17 @@ entries:
       the duplicated unit is not behavior. A duplicated behavioral helper method
       or fake/stub class across cases is TST-C2B.
     see_also:
+    - QAL-D1B
     - TST-C2B
+    - TST-G2D
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The duplicated scaffolding is a single path constant that is identical in every copy.
+      - to: INFO
+        condition: The duplication is two files only.
   TST-G1C:
     name: unit-and-integration-tests-not-separated
     default_severity: MEDIUM
@@ -821,6 +1917,22 @@ entries:
     examples:
     - tests/tools/ mixes fast unit tests and slower real-tool integration tests in one directory with no structural
       separation
+    criteria: Qualifies when fast unit tests and slow real-tool or end-to-end tests share a directory and
+      runner selection with no marker or structural split, so developers cannot run the fast set alone and
+      CI cannot schedule them differently. Evidence names the directory and examples of each kind. One oversized
+      module of unrelated cases is TST-C2A; CI never running the integration subset is ARC-C1C.
+    see_also:
+    - ARC-C1C
+    - TST-C2A
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Integration tests are distinguishable by a marker or naming convention even though they
+          share the directory.
+      - to: INFO
+        condition: The whole suite runs in under a few minutes, so the separation has no practical cost.
   TST-G2A:
     name: inconsistent-import-convention-in-test-methods
     default_severity: MEDIUM
@@ -833,6 +1945,24 @@ entries:
     examples:
     - test_dependency_check.py imports unittest.mock inside a test method body while every other test file imports
       it at module level
+    criteria: Qualifies when the test suite as a whole uses two or more competing import conventions for the
+      same modules (module-level vs in-method, `import x` vs `from x import y`) with no rule, so readers and
+      patchers cannot rely on one. Evidence names files on each side. A single file importing inside a test
+      body is TST-C5C; production-code inconsistency is QAL-F1B.
+    see_also:
+    - QAL-B1C
+    - QAL-F1B
+    - TST-C4B
+    - TST-C5C
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The divergence is confined to one or two files.
+      - to: INFO
+        condition: A configured import-sorting linter already enforces one style and the instance is a lint
+          finding.
   TST-G2D:
     name: hardcoded-test-constant-duplicated
     default_severity: LOW
@@ -845,6 +1975,22 @@ entries:
     examples:
     - The subprocess timeout value 300 is hardcoded identically as a literal in test assertions across a dozen adapter
       test files
+    criteria: Qualifies when the same expected value (a timeout, a limit, an exit code) is hardcoded as a
+      literal in assertions across many test files instead of imported from the production constant or a shared
+      test constant, so changing the production value requires a scattered test edit. Evidence names the literal
+      and its spread. Duplicated fixture scaffolding is TST-G1B; a single unexplained literal is TST-C5D;
+      production duplicated constants are QAL-D1B.
+    see_also:
+    - QAL-D1B
+    - TST-C5D
+    - TST-G1B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The literal is part of an external contract that must not change silently, so restating
+          it in tests is deliberate pinning.
   TST-G2E:
     name: inconsistent-assertion-style-in-test-suite
     default_severity: LOW
@@ -858,7 +2004,19 @@ entries:
     - TestPanelPriority uses bare assert statements instead of self.assertEqual/self.assertIn inside a unittest.TestCase,
       unlike every other test method in the suite
     see_also:
+    - SEC-G3C
     - TST-C4B
+    criteria: Qualifies when tests in the same framework mix assertion styles (bare assert inside unittest.TestCase
+      vs self.assert*) without reason, degrading failure messages and consistency. Evidence names the divergent
+      tests. When the bare asserts guard a security invariant in production code (stripped by -O), that is
+      SEC-G3C; inconsistent mocking idioms are TST-C4B.
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The runner is pytest, which rewrites bare asserts with full introspection, so failure messages
+          do not degrade.
   TST-G2F:
     name: missing-test-module-documentation
     default_severity: LOW
@@ -870,6 +2028,18 @@ entries:
     - CWE-1059
     examples:
     - Only 2 of 15 assigned test files contain a meaningful module- or class-level docstring
+    criteria: Qualifies when most test modules or classes have no docstring stating what unit or behaviour
+      they cover, so ownership and intent must be reverse-engineered. Evidence gives the proportion lacking
+      documentation. A docstring that misstates what the test covers is TST-C3B.
+    see_also:
+    - TST-C3B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: Test file and class names map one-to-one to production modules, so intent is evident without
+          docstrings.
   TST-G3A:
     name: exit-code-remap-path-never-exercised-by-tests
     default_severity: MEDIUM
@@ -880,6 +2050,20 @@ entries:
     examples:
     - BrakemanAdapter's exit-code remap (2/3 -> 0) and its ok_codes=(0,1,2,3) wiring into run_tool are never exercised
       by any test
+    criteria: Qualifies when an adapter remaps a tool's exit codes (treating some non-zero codes as success)
+      and no test drives those codes through the remap and the runner's ok-codes wiring. Evidence names the
+      remap and the untested codes. The general untested error path is TST-A2B; reading exit 0 as 'tests passed'
+      is TST-F2B.
+    see_also:
+    - TST-A2B
+    - TST-F2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The remapped codes are documented by the tool as informational (e.g. 'findings present')
+          and the adapter's parse step is tested on output produced under those codes.
   TST-G3B:
     name: long-running-subprocess-test-has-no-timeout
     default_severity: MEDIUM
@@ -892,6 +2076,20 @@ entries:
     examples:
     - TestEndToEnd shells out to the real orchestrator.py and synthesize.py entry points via subprocess.run with
       no timeout, so a hang in either script hangs the whole test suite/CI
+    criteria: Qualifies when a test shells out to a real entrypoint or tool via subprocess with no timeout,
+      so a hang in the child hangs the whole suite or CI job until an outer kill. Evidence names the subprocess
+      call. A missing timeout on a production external call is OPS-A1A; a live call to a third-party service
+      is TST-F1F.
+    see_also:
+    - OPS-A1A
+    - TST-F1F
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The runner or CI job enforces a per-test timeout (pytest-timeout, job timeout-minutes in
+          minutes rather than hours).
   TST-G3D:
     name: test-fixture-not-validated-against-authoritative-source
     default_severity: MEDIUM
@@ -903,6 +2101,23 @@ entries:
     - Hand-built ScopeProfile test fixtures omit schema-required fields and are never validated against scope-profile-schema.json
     - Model-resolution precedence tests can't distinguish the YAML-config tier from the hardcoded-fallback tier
       because fixtures don't isolate them
+    criteria: Qualifies when hand-built test fixtures stand in for data that has an authoritative definition
+      (a JSON schema, a real producer) but are never validated against it, so fixtures can omit required fields
+      or carry shapes production never emits while tests stay green. Evidence names the fixture and the authoritative
+      source. Tool-output files lacking schema validation are TST-A4B; a single test's unreachable input is
+      TST-C3A.
+    see_also:
+    - ARC-C1F
+    - TST-A4B
+    - TST-B3B
+    - TST-C3A
+    - TST-E2A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The omitted fields are optional in the schema or not read by the unit under test.
   TST-G3E:
     name: security-critical-path-only-unit-tested-never-e2e
     default_severity: LOW
@@ -913,6 +2128,22 @@ entries:
     examples:
     - The write-guard hook's live enforcement path is only exercised via its in-process decide() function - the
       harness actually denying an out-of-scope Write call is never tested end-to-end
+    criteria: Qualifies when a security or enforcement mechanism (a write-guard hook, a sandbox policy) is
+      tested only by calling its decision function in-process, never through the harness that actually wires
+      and enforces it, so a broken registration or wiring leaves all tests green. Evidence names the in-process
+      test and the untested wiring. Non-security integration paths only mocked are TST-A3A; missing negative
+      tests for the guard's decision logic are SEC-G3B; an enforcement gap in the control itself is AGT-B1A.
+    see_also:
+    - AGT-B1A
+    - SEC-G3B
+    - TST-A3A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: A static test validates the registration/config that wires the in-process function, so
+          only the live harness round-trip is untested.
   TST-G3F:
     name: weak-test-assertion-doesnt-verify-real-behavior
     default_severity: LOW
@@ -933,7 +2164,20 @@ entries:
       wrong-property TST-B1A, no-assertion TST-B1E; use G3F only when none
       of those applies.
     see_also:
-    - TST-B2A
-    - TST-B1C
     - TST-B1A
+    - TST-B1B
+    - TST-B1C
     - TST-B1E
+    - TST-B2A
+    - TST-C4A
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The weakly asserted behaviour is a security, gate, or data-integrity property and no other
+          test asserts it more strongly.
+      lower_when:
+      - to: INFO
+        condition: The weak assertion is a pre-check inside a test whose later assertions verify the behaviour
+          in full, so the weakness is local to one line rather than the test.

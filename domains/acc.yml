@@ -1,31 +1,81 @@
 # OCRDb domain file — PRE-1.0: no domain is ratified until 1.0; this domain's lifecycle stage is derived, not stored here — see RATIFICATION.md.
 domain: ACC
 name: accessibility
+guide: 'ACC (accessibility) covers user-facing defects that stop people using assistive technology (screen
+  readers, keyboard-only navigation, reduced-motion settings) or with perceptual differences (colour vision,
+  motion sensitivity) from perceiving or operating the UI, each tied to a WCAG success criterion. Choose
+  ACC over QAL for any UI regression that is an assistive-technology defect (SCHEMA routing: ACC exclusively
+  owns these); choose LNG instead when the problem is translation, locale formatting or text direction,
+  even if the string is an aria-label or alt text. Look in A (semantics) for missing names and text alternatives,
+  B (keyboard) for operability and visible focus, C (forms) for unlabeled inputs, D (live-regions) for
+  unannounced runtime changes, E (contrast) for colour-only information, and F (motion) for animation
+  that ignores user preference.'
 areas:
   A:
     name: semantics
+    guide: 'Semantics: whether elements expose what assistive technology needs to announce them, chiefly an
+      accessible name for controls and a text alternative for informational non-text content. Category 1 holds
+      the missing-name code (ACC-A1A) and the missing-alternative code (ACC-A1B).'
     categories:
       '1': accessible-names
+    category_guides:
+      '1': 'An operable control (button, link, icon toggle) with no accessible name is ACC-A1A; an informational
+        image, icon, chart or media item with no text alternative is ACC-A1B. Easy to confuse: an unlabeled
+        form input is ACC-C1A, not ACC-A1A; a clickable div with no role is ACC-B1A even if it also lacks
+        a name; a name that exists but is hardcoded outside the i18n layer is LNG-A1A.'
   B:
     name: keyboard
+    guide: 'Keyboard: whether every control can be reached and operated without a pointer and whether the
+      user can see where focus is. Category 1 holds the non-interactive-element-as-control code (ACC-B1A)
+      and the suppressed-focus-indicator code (ACC-B1B).'
     categories:
       '1': keyboard-operability
+    category_guides:
+      '1': 'A div/span (or other non-interactive element) wired as a control without role and keyboard handling
+        is ACC-B1A; a focusable control whose focus outline is removed with no visible replacement is ACC-B1B.
+        The test that separates them: if the element cannot receive or act on keyboard input it is B1A; if
+        it can but focus is invisible it is B1B. A native control that merely lacks a name is ACC-A1A.'
   C:
     name: forms
+    guide: 'Forms: whether form fields expose their purpose to assistive technology through a programmatic
+      label. Category 1 holds the unlabeled-input code (ACC-C1A).'
     categories:
       '1': form-labeling
+    category_guides:
+      '1': A form input with no programmatically associated label (no <label for>, aria-label or aria-labelledby)
+        is ACC-C1A, including a visible label that is not associated. A non-form control with no name is ACC-A1A;
+        a validation error that appears but is never announced is ACC-D1A.
   D:
     name: live-regions
+    guide: 'Live regions: whether content that changes at runtime (errors, toasts, async results) is announced
+      to screen-reader users. Category 1 holds the unannounced-status code (ACC-D1A).'
     categories:
       '1': dynamic-announcements
+    category_guides:
+      '1': A dynamic status update rendered into the DOM with no aria-live or role=status/alert, and no focus
+        move to it, is ACC-D1A. If the status is never rendered at all because the error was swallowed, that
+        is a correctness defect (COD-B2C), not ACC; a field label missing from the start is ACC-C1A.
   E:
     name: contrast
+    guide: 'Contrast and perceivable distinction: whether information survives for users who cannot perceive
+      colour differences. Category 1 currently holds only the colour-alone code (ACC-E1A); note there is no
+      code yet for insufficient text or non-text contrast ratio despite the area name (see cross_domain_notes).'
     categories:
       '1': perceivable-distinction
+    category_guides:
+      '1': Colour as the only cue for state, error, link or selection is ACC-E1A. An informational chart or
+        icon that has no text alternative at all is ACC-A1B; low contrast ratio (WCAG 1.4.3/1.4.11) has no
+        code in 0.6.0 and should not be forced into ACC-E1A.
   F:
     name: motion
+    guide: 'Motion: whether animation and auto-playing movement respect the user''s reduced-motion preference
+      and can be stopped. Category 1 holds the reduced-motion code (ACC-F1A).'
     categories:
       '1': motion-preferences
+    category_guides:
+      '1': Non-essential animation that ignores prefers-reduced-motion, or auto-playing motion with no pause
+        control, is ACC-F1A. Flashing content (WCAG 2.3.1 seizure risk) has no code in 0.6.0 and is a different,
+        more severe hazard; do not file it as ACC-F1A.
 entries:
   ACC-A1A:
     name: icon-only-control-missing-accessible-name
@@ -34,13 +84,33 @@ entries:
     provenance:
     - corpus
     recurrence: 52
-    criteria: >-
-      Qualifies when a control exposes no programmatic accessible name to
-      assistive technology, violating WCAG 4.1.2 Name, Role, Value.
-      A user relying on a screen reader cannot identify the control's purpose.
+    criteria: Qualifies when an operable control (button, link, toggle, menu trigger), typically icon-only
+      or graphic, exposes no programmatic accessible name (no text content, aria-label, aria-labelledby or
+      title that the accessible-name computation resolves), so a screen-reader user hears only its role and
+      cannot identify its purpose, violating WCAG 4.1.2 Name, Role, Value. Evidence names the control and
+      the action it performs. A form input with no associated label is ACC-C1A; a div/span wired as a control
+      without role or keyboard support is ACC-B1A (cite A1A only if the name is the sole missing piece); informational
+      non-text content with no alternative is ACC-A1B; a name that exists but is a hardcoded untranslated
+      string is LNG-A1A.
     examples:
     - icon-only-control-missing-accessible-name
     - icon-only-button-missing-accessible-name
+    see_also:
+    - ACC-A1B
+    - ACC-B1A
+    - ACC-C1A
+    - LNG-A1A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: A named, keyboard-reachable control performing the same action exists on the same view
+          (e.g. an unlabeled toolbar icon duplicated by a labelled menu item), so the action is still discoverable
+          to assistive-technology users.
+      - to: MEDIUM
+        condition: The control is a secondary affordance whose action has no effect on task completion (e.g.
+          a collapse/expand chevron on content that is also reachable unexpanded).
   ACC-A1B:
     name: non-text-content-missing-alternative
     default_severity: MEDIUM
@@ -57,6 +127,23 @@ entries:
     examples:
     - image-missing-alt-text
     - non-text-content-missing-text-alternative
+    see_also:
+    - ACC-A1A
+    - ACC-E1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: The non-text content is the only carrier of information required to complete a task on
+          that view (e.g. an image CAPTCHA with no alternative modality, or a chart whose values are needed
+          to act and appear nowhere else as text), so an assistive-technology user cannot complete the task
+          at all.
+      lower_when:
+      - to: LOW
+        condition: The same information is present as text adjacent to the image on the same view, so the
+          defect is announcement noise (a filename or 'image' read aloud) rather than lost information; the
+          correct fix is alt="".
   ACC-B1A:
     name: non-interactive-element-used-as-control
     default_severity: HIGH
@@ -64,14 +151,28 @@ entries:
     provenance:
     - corpus
     recurrence: 32
-    criteria: >-
-      Qualifies when a div/span or other non-interactive element is wired as
-      a control without role and keyboard operability, violating WCAG 2.1.1
-      Keyboard. Keyboard and assistive-technology users cannot operate the
-      control.
+    criteria: Qualifies when a div, span or other non-interactive element is wired as a control (click handler)
+      without a native element or the full ARIA pattern (role, tabindex=0, and Enter/Space key handling),
+      so keyboard and assistive-technology users cannot reach, identify or operate it, violating WCAG 2.1.1
+      Keyboard and 4.1.2 Name, Role, Value. Evidence names the element and its handler. A native, focusable
+      control whose focus is merely invisible is ACC-B1B; a native control that is operable but has no accessible
+      name is ACC-A1A.
     examples:
     - div-clickable-lacks-role-and-tabindex
     - non-interactive-element-used-as-control
+    see_also:
+    - ACC-A1A
+    - ACC-B1B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: An equivalent native, keyboard-operable control for the same action exists on the same
+          view, so keyboard users can still perform the action.
+      - to: MEDIUM
+        condition: The element is focusable and keyboard-operable (tabindex and key handler present) but lacks
+          only the role, so it works from the keyboard but is misannounced to screen readers.
   ACC-B1B:
     name: focus-indicator-suppressed
     default_severity: MEDIUM
@@ -88,6 +189,20 @@ entries:
     examples:
     - focus-indicator-suppressed
     - outline-none-without-replacement
+    see_also:
+    - ACC-B1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: 'The suppression is a global selector (a base reset such as *:focus or :focus { outline:
+          none }) that applies to every focusable element, with no :focus-visible or other visible replacement
+          anywhere in the stylesheet, so the whole application is unusable for sighted keyboard users.'
+      lower_when:
+      - to: LOW
+        condition: The suppression is limited to elements that receive focus only programmatically (tabindex=-1
+          containers such as a heading focused after route change), not tab-stop controls.
   ACC-C1A:
     name: input-missing-programmatic-label
     default_severity: MEDIUM
@@ -95,15 +210,31 @@ entries:
     provenance:
     - corpus
     recurrence: 22
-    criteria: >-
-      Qualifies when a form input has no programmatically associated label (no
-      <label for>, aria-label, or aria-labelledby), so assistive technology
-      cannot announce the field's purpose, violating WCAG 1.3.1 and 4.1.2. The
-      form-field form of a missing accessible name; a non-form control missing
-      its name is ACC-A1A.
+    criteria: Qualifies when a form input (input, select, textarea, custom field) has no programmatically
+      associated label (no <label for>/wrapping label, aria-label or aria-labelledby), so assistive technology
+      cannot reliably announce the field's purpose, violating WCAG 1.3.1 and 4.1.2; includes a visible label
+      not associated with the field and a placeholder used as the only label (placeholder is a fragile accessible-name
+      fallback that disappears on input, WCAG 3.3.2). Evidence names the field. A non-form control missing
+      its name is ACC-A1A; an error message for the field that appears but is never announced is ACC-D1A.
     examples:
     - form-input-label-not-programmatically-associated
     - placeholder-used-as-label
+    see_also:
+    - ACC-A1A
+    - ACC-D1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: The field is a required input on the only path to complete a primary task (sign-in, checkout,
+          submit) and exposes no accessible name at all (no label, placeholder, title or aria fallback), so
+          a screen-reader user cannot complete the task.
+      lower_when:
+      - to: LOW
+        condition: A persistent visible text label sits adjacent to the field and the field's title or aria-describedby
+          exposes the same text, so the announced name matches the visible label and only the <label for>/aria-labelledby
+          association is missing. A placeholder-only label stays at the default.
   ACC-D1A:
     name: dynamic-status-not-announced
     default_severity: MEDIUM
@@ -111,15 +242,30 @@ entries:
     provenance:
     - corpus
     recurrence: 10
-    criteria: >-
-      Qualifies when a dynamic status change (validation error, toast, async
-      result) updates the DOM without a live region (aria-live /
-      role=status|alert), so screen-reader users are never notified, violating
-      WCAG 4.1.3 Status Messages. Distinct from a static missing name
-      (ACC-A1A); this is unannounced runtime change.
+    criteria: Qualifies when a dynamic status change (validation error, toast, async result, loading completion)
+      is rendered into the DOM without a live region (aria-live, role=status or role=alert) and without moving
+      focus to it, so screen-reader users are never notified, violating WCAG 4.1.3 Status Messages. Evidence
+      names the update site and the missing announcement. A status that is never rendered at all because the
+      underlying error was swallowed is COD-B2C; a field that was unlabeled from the start is ACC-C1A; a static
+      control missing its name is ACC-A1A.
     examples:
     - status-toast-not-announced
     - dynamic-region-missing-aria-live
+    see_also:
+    - ACC-C1A
+    - COD-B2C
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: The unannounced change is a blocking error that prevents a primary task from completing
+          (e.g. a submit rejected by validation) and focus does not move to it, so a screen-reader user cannot
+          learn why the task failed or how to fix it.
+      lower_when:
+      - to: LOW
+        condition: The status is a transient confirmation (e.g. 'Saved', 'Copied') whose outcome is verifiable
+          from the state of the focused control or page, so no information needed to proceed is lost.
   ACC-E1A:
     name: info-conveyed-by-color-alone
     default_severity: LOW
@@ -127,14 +273,25 @@ entries:
     provenance:
     - corpus
     recurrence: 11
-    criteria: >-
-      Qualifies when color is the only visual means of conveying information,
-      indicating an action, or distinguishing an element (e.g. red-only error
-      text), so users who cannot perceive the color lose the information,
-      violating WCAG 1.4.1 Use of Color.
+    criteria: Qualifies when colour is the only visual means of conveying information, indicating an action,
+      prompting a response or distinguishing an element (e.g. red-only error text, a link distinguished from
+      body text only by hue, selection shown only by colour), so users who cannot perceive the colour lose
+      the information, violating WCAG 1.4.1 Use of Color. Evidence names the cue and the information it carries.
+      Informational content with no text alternative at all is ACC-A1B; insufficient contrast ratio (WCAG
+      1.4.3/1.4.11) is not this code.
     examples:
     - selection-state-color-only
     - error-conveyed-by-color-alone
+    see_also:
+    - ACC-A1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The colour-only cue is the sole indicator of a validation error, required field or destructive/irreversible
+          state on a form or action the user must act on, so a user who cannot perceive the colour cannot
+          tell what to fix or what will happen.
   ACC-F1A:
     name: motion-ignores-reduced-motion-preference
     default_severity: LOW
@@ -142,10 +299,24 @@ entries:
     provenance:
     - corpus
     recurrence: 9
-    criteria: >-
-      Qualifies when non-essential animation runs without honoring the user's
-      reduced-motion preference (prefers-reduced-motion), risking discomfort
-      for motion-sensitive users, per WCAG 2.3.3 Animation from Interactions.
+    criteria: Qualifies when non-essential animation triggered by interaction or page state (transitions,
+      parallax, scroll-linked or zoom/slide motion) runs without honouring the user's reduced-motion preference
+      (prefers-reduced-motion), risking discomfort for motion-sensitive users, per WCAG 2.3.3 Animation from
+      Interactions. Evidence names the animation and the missing preference check. Auto-playing motion lasting
+      more than five seconds with no pause/stop control (WCAG 2.2.2) is the proposed split code; flashing
+      content (WCAG 2.3.1) is not this code.
     examples:
     - animation-ignores-prefers-reduced-motion
     - autoplay-motion-no-user-control
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The motion auto-plays for more than five seconds alongside other content with no pause/stop/hide
+          control (WCAG 2.2.2, Level A), or is a large-area vestibular trigger (parallax scrolling, full-viewport
+          zoom/slide transition) with no reduced-motion branch.
+      lower_when:
+      - to: INFO
+        condition: The animation is a brief non-positional transition (opacity or colour fade, no movement
+          across the screen), which reduced-motion guidance does not require removing.

@@ -1,31 +1,88 @@
 # OCRDb domain file — PRE-1.0: no domain is ratified until 1.0; this domain's lifecycle stage is derived, not stored here — see RATIFICATION.md.
 domain: AGT
 name: agentic-trust
+guide: 'AGT covers hazards that exist because an LLM agent is in the loop: untrusted content reaching
+  the model''s context (A), what the agent''s tools are allowed to do (B), agent output trusted without
+  verification (C), unchecked agent claims, verdicts and secret-bearing outputs (D), unbounded agent loops
+  and spend (E), and data sent to a model provider (F). Choose SEC when the same defect would exist with
+  no model involved (classic injection, credentials printed by ordinary code, missing authorization, ambient-authority
+  mutation). Choose ARC when the defect is in the design of an enforcement control rather than in the
+  agent''s grant: a compensating control with a blind spot (ARC-F2A), a hook that cannot scope to an individual
+  actor (ARC-F2B), a control that mis-parses input (ARC-F2C), or a control that fails open on misconfiguration
+  (ARC-F2E). Choose OPS for generic resource overload, timeouts and retries.'
 areas:
   A:
     name: prompt-injection-surfaces
+    guide: 'Untrusted content (reviewed files, issue and PR text, fetched web pages, tool results and MCP
+      server responses, other agents'' output) that reaches an agent''s prompt or context. Category 1 splits
+      by evidence: a demonstrated steering attempt or effect (AGT-A1A) versus exposure alone (AGT-A1B).'
     categories:
       '1': injection-channels
+    category_guides:
+      '1': AGT-A1A needs demonstrated steering (an injection payload or its effect); AGT-A1B is the exposure
+        precursor where untrusted content reaches the context with no steering shown. Untrusted text rendered
+        unescaped into HTML or Markdown output, with no model involved, is SEC-B1C, not this category.
   B:
     name: tool-and-permission-scoping
+    guide: 'What an agent is allowed to do: tool grants, write scope, approval gates, and the enforcement
+      hooks that mediate tool calls. Category 1 is routed by what is absent: an incomplete control, a missing
+      approval gate, a missing scope bound, or too many tools.'
     categories:
       '1': authority-scope
+    category_guides:
+      '1': An existing control that misses a class of invocations is AGT-B1A; no human approval on a destructive
+        action is AGT-B1B; a write tool that can act outside its intended path, repo or tenant is AGT-B1C;
+        a tool set larger than the task needs is AGT-B1D. B1C and B1D are the pair most often confused (depth
+        of one grant versus breadth of the set). A control that fails open when its own config is missing
+        is ARC-F2E, one that mis-parses an invocation is ARC-F2C, and a hook that cannot tell actors apart
+        is ARC-F2B. Ambient-authority mutation by ordinary code is SEC-C1D, and a non-agent shared guard that
+        is too broad is COD-B1C.
   C:
     name: output-trust-boundaries
+    guide: 'Trust boundaries on agent-produced or agent-adjacent output: fields, files, mappings and free
+      text that the pipeline accepts as trusted without verifying them. Category 1 is routed by what is trusted:
+      a self-asserted field, a whole record from an undeclared source, a mapping rebuilt from external text,
+      or leniently parsed prose.'
     categories:
       '1': unverified-trust
+    category_guides:
+      '1': 'An agent-authored record that asserts its own trust fields (corroborated, source, cvss) is AGT-C1A;
+        output from an undeclared source that is detected but still merged is AGT-C1B; a trust mapping rebuilt
+        from unauthenticated external text (issue bodies) is AGT-C1C; leniently parsed free-text LLM output
+        that drives a control decision is AGT-C1D. C1A and C1D are easy to confuse: C1A is a structured field
+        that claims trust, C1D is unvalidated parsing of prose.'
   D:
     name: autonomy-and-oversight
+    guide: 'Oversight of what an agent claims, decides, or emits: reported actions that never happened, secrets
+      the agent writes into its outputs, and verifier verdicts that carry unchecked authority. Category 1
+      points at those three codes.'
     categories:
       '1': verifier-and-action-integrity
+    category_guides:
+      '1': A reported action or result that the execution record does not support, accepted unchecked, is
+        AGT-D1A; a secret written by the agent into a persisted or published output is AGT-D1B; one verifier's
+        verdict that can override other evidence alone is AGT-D1C. A leniently parsed verdict is AGT-C1D,
+        not D1C; a secret sent to the provider in a prompt is AGT-F1A, not D1B.
   E:
     name: resource-and-cost-safety
+    guide: Termination and spend bounds on agent runs. Category 1 splits a loop that may never end from a
+      run that ends but has no cap on tool calls, tokens, or cost.
     categories:
       '1': budget-and-loops
+    category_guides:
+      '1': No iteration cap, deadline or independent termination condition is AGT-E1A; a terminating run with
+        no cap on total tool calls, tokens or spend is AGT-E1B. Generic unbounded memory, connection or CPU
+        use is OPS-D1A; retries with no backoff are OPS-A1B.
   F:
     name: data-egress
+    guide: Data the agent sends out of the trust boundary to a model provider in prompts, context, or tool
+      results. Category 1 holds the provider-egress code.
     categories:
       '1': provider-egress
+    category_guides:
+      '1': Sensitive data in a prompt or context sent to a third-party provider is AGT-F1A. A secret the agent
+        writes into its own report, comment or commit is AGT-D1B; secrets or PII written to logs by ordinary
+        code are SEC-B2B or SEC-B4A.
 entries:
   AGT-A1A:
     name: indirect-prompt-injection-untrusted-content-in-agent-context
@@ -51,6 +108,20 @@ entries:
       consumer severity_modifier (`compensating-control-present`).
     see_also:
     - AGT-A1B
+    - AGT-C1D
+    - SEC-B1C
+    severity_range:
+      floor: MEDIUM
+      ceiling: CRITICAL
+      raise_when:
+      - to: CRITICAL
+        condition: the injection payload can be authored by an unauthenticated external party (a public PR,
+          issue, comment or fetched web page), AND the instruction it carries targets a shell-execution, unsandboxed-write
+          or network-egress tool that the steered agent holds and that runs with no human approval
+      lower_when:
+      - to: MEDIUM
+        condition: the steered agent has no write, execute or egress tool, AND its output is adjudicated by
+          a separate trusted step before any decision, so the steering can at worst skew one advisory output
   AGT-A1B:
     name: untrusted-content-in-agent-context
     default_severity: MEDIUM
@@ -60,13 +131,25 @@ entries:
     - gap-review
     cwe:
     - CWE-1427
-    criteria: >-
-      Qualifies when untrusted content REACHES the agent's context (a
-      prompt-injection exposure/precursor) but no steering of the agent is
-      demonstrated. When steering is demonstrated (an actual injection attempt
-      or effect), that is AGT-A1A per its evidentiary bar.
+    criteria: Qualifies when untrusted content (reviewed file text, issue or PR bodies, fetched pages, tool
+      results or MCP responses, another agent's output) reaches an agent's prompt or context but no steering
+      attempt or effect is demonstrated. Evidence names the untrusted source and the prompt or context site
+      it reaches. Delimiting, quoting or an untrusted-data instruction does not disqualify the instance; it
+      lowers it. When an injection payload or its effect is shown, the code is AGT-A1A. Untrusted text rendered
+      unescaped into generated HTML or Markdown output, with no model consuming it, is SEC-B1C.
     see_also:
     - AGT-A1A
+    - SEC-B1C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the content reaches only a tool-less, single-shot model call whose output is shown to a
+          human and is not parsed into any decision or action
+      - to: LOW
+        condition: the untrusted content is fenced or quoted as data AND the prompt instructs the model that
+          it is untrusted, AND the consuming agent has no write, execute or egress tool
   AGT-B1A:
     name: incomplete-mediation-coverage-gap
     default_severity: HIGH
@@ -98,7 +181,18 @@ entries:
     - AGT-B1B
     - AGT-B1C
     - AGT-B1D
+    - ARC-F1A
+    - ARC-F2A
+    - ARC-F2B
     - ARC-F2C
+    - TST-G3E
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the ungated invocation class is read-only (e.g. Read/Grep/Glob) and its output is adjudicated
+          by a trusted step, with no write, execute or egress channel (as the entry's criteria already state)
   AGT-B1B:
     name: missing-approval-gate-for-destructive-action
     default_severity: HIGH
@@ -108,16 +202,31 @@ entries:
     - gap-review
     cwe:
     - CWE-862
-    criteria: >-
-      Qualifies when a destructive or irreversible action executes with NO human
-      approval checkpoint at all, regardless of scoping — the gate is absent, not
-      merely incomplete. If a mediating control exists but has a coverage gap, that
-      is AGT-B1A; if the defect is a write tool lacking scope bounds, AGT-B1C; if
-      it is too many tools granted, AGT-B1D.
+    criteria: Qualifies when an agent can trigger a destructive or irreversible action (deleting files, branches
+      or data, force-pushing over shared history, merging to a protected branch, spending money, sending external
+      messages) with no human approval checkpoint on the path at all. The gate is absent, not incomplete.
+      Evidence names the action, the tool or call that performs it, and the path that reaches it with no checkpoint.
+      A mediating control that exists but misses a class of invocations is AGT-B1A; a write tool with no scope
+      bound is AGT-B1C; too many tools granted is AGT-B1D. A sensitive action with no audit record (agent
+      or not) is SEC-C4B.
     see_also:
     - AGT-B1A
     - AGT-B1C
     - AGT-B1D
+    - SEC-C4B
+    severity_range:
+      floor: MEDIUM
+      ceiling: CRITICAL
+      raise_when:
+      - to: CRITICAL
+        condition: the ungated destructive action targets shared production state that has no backup or other
+          copy (a production database without restorable backups, cloud resources, other users' records),
+          AND the same agent ingests content that an unauthenticated external party can author (public PR,
+          issue, comment or fetched page)
+      lower_when:
+      - to: MEDIUM
+        condition: the destructive action is confined to an ephemeral sandbox, worktree or scratch branch
+          that the agent created for this run and that nothing else reads
   AGT-B1C:
     name: unscoped-write-authority
     default_severity: HIGH
@@ -137,6 +246,17 @@ entries:
     - AGT-B1A
     - AGT-B1B
     - AGT-B1D
+    - COD-B1C
+    - SEC-C1A
+    - SEC-C1D
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the out-of-scope reach stays inside the same repository or tenant that the agent's principal
+          is already allowed to write, and cannot reach another tenant, repository, system path or credential
+          store
   AGT-B1D:
     name: overbroad-tool-grant
     default_severity: MEDIUM
@@ -156,6 +276,22 @@ entries:
     - AGT-B1A
     - AGT-B1B
     - AGT-B1C
+    - ARC-F2B
+    - COD-B1C
+    - SEC-B3B
+    - SEC-C1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: at least one excess tool can execute shell commands, write outside the task scope, or reach
+          the network and runs with no human approval, AND the same agent ingests content that an unauthenticated
+          external party can author (public PR, issue, comment or fetched page)
+      lower_when:
+      - to: LOW
+        condition: every tool beyond the task's needs is read-only and confined to the task's own inputs (e.g.
+          an extra Grep alongside a granted Read)
   AGT-C1A:
     name: self-asserted-trust-metadata-spoofing
     default_severity: HIGH
@@ -175,6 +311,22 @@ entries:
     - Self-asserted _group field can misattribute a finding to the wrong review group
     - corroborated/corroborated_by are self-assertable by agents even though the semantically-equivalent source/reinforced
       fields are explicitly stripped as forbidden, allowing spoofed cross-panel corroboration
+    criteria: '[audit text unchanged up to ''...free-text LLM output parsed leniently into a decision is AGT-C1D;'']
+      an agent''s unchecked prose claim that it performed an action or verification, with no self-asserted
+      field, is AGT-D1A.'
+    see_also:
+    - AGT-C1B
+    - AGT-C1C
+    - AGT-C1D
+    - AGT-D1A
+    - AGT-D1C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the spoofable field changes only display, grouping or ordering (e.g. a _group attribution)
+          and cannot change a gate verdict, suppression, severity, or verification status
   AGT-C1B:
     name: findings-from-undeclared-source-merged-despite-flagging
     default_severity: MEDIUM
@@ -186,6 +338,27 @@ entries:
     - CWE-693
     examples:
     - Findings from an undeclared/unexpected findings file are flagged in meta.integrity
+    criteria: Qualifies when the pipeline detects that an agent-produced record came from an undeclared or
+      unexpected source (an unregistered output file, an unknown producer, a path outside the dispatch plan)
+      and records that detection (an integrity flag, a warning), yet still merges the record into trusted
+      output with full weight. The defect is detection without enforcement. Evidence names the detection point
+      and the merge that ignores it. A record that forges its own trust fields is AGT-C1A. A stated policy
+      or verdict that no code enforces, with no agent-output detection involved, is ARC-F1E.
+    see_also:
+    - AGT-C1A
+    - ARC-F1E
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the merged records can remove, suppress, downgrade or mark as verified another source's
+          findings, or flip the gate verdict, AND the integrity flag is not surfaced to the gate or in the
+          delivered report
+      lower_when:
+      - to: LOW
+        condition: the merged records can only add new findings (never remove, downgrade or verify others),
+          and the integrity flag appears next to them in the delivered report
   AGT-C1C:
     name: unauthenticated-external-data-rebuilds-trust-mapping
     default_severity: MEDIUM
@@ -199,6 +372,29 @@ entries:
     examples:
     - recover-linkage rebuilds the fingerprint-to-issue trust mapping from unauthenticated issue body text
     - Ledger recovery trusts unauthenticated GitHub issue-body content to rebuild the fingerprint-to-issue linkage
+    criteria: Qualifies when a trust mapping that later decisions rely on (fingerprint to issue, finding to
+      ticket, identity to record) is rebuilt or recovered from external content that parties outside the trust
+      boundary can write (issue or PR body text, comments, remote metadata), with no check of the author or
+      of the content against a trusted record, so a third party can redirect or forge the mapping. Evidence
+      names the external source, the recovery path, and the decision the mapping feeds. Agent-authored fields
+      asserting their own trust are AGT-C1A; information lost in a producer-to-recovery round trip is ARC-D1A;
+      a fingerprint that is unstable across runs is ARC-D1C.
+    see_also:
+    - AGT-C1A
+    - ARC-D1A
+    - ARC-D1C
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the external text can be written by any user who is not a collaborator (e.g. issue bodies
+          on a public repository), AND the rebuilt mapping can close, suppress or mark as resolved a finding
+          or issue
+      lower_when:
+      - to: LOW
+        condition: a wrong mapping can only cause a duplicate issue or a lost link, never a suppressed, closed
+          or resolved finding
   AGT-C1D:
     name: unstructured-llm-output-trusted-for-control-decision
     default_severity: MEDIUM
@@ -210,12 +406,48 @@ entries:
     - CWE-345
     examples:
     - Advisor verdict ingestion trusts lenient, unauthenticated free-text LLM output
+    criteria: '[audit text unchanged up to ''...is AGT-D1C.''] A non-enforcement component that skips or tolerates
+      malformed non-LLM input is ARC-F2D; a hidden format contract enforced only by a regex is ARC-A2B.'
+    see_also:
+    - AGT-A1A
+    - AGT-C1A
+    - AGT-D1C
+    - ARC-F2D
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the parsed decision can suppress or downgrade findings or approve an action with write
+          or execute effect, AND unparseable or unrecognised output defaults to the permissive outcome (pass,
+          suppress, approve) rather than rejecting
+      lower_when:
+      - to: LOW
+        condition: the parsed output only annotates or ranks, and a parse failure rejects the output rather
+          than defaulting to a verdict
   AGT-D1A:
     name: agent-confabulated-action
     default_severity: HIGH
     status: active
     provenance:
     - corpus
+    criteria: Qualifies when a pipeline accepts an agent's report that it performed an action or obtained
+      a result (tests run, file written, claim verified, tool called) without checking the report against
+      the execution or tool-call record, and the record shows that the action did not happen or produced a
+      different result. Evidence names the claim, the consuming step, and the missing or contradicting record.
+      A structured trust field the agent asserts about itself (corroborated, tool_confirmed) is AGT-C1A; free-text
+      output parsed into a decision is AGT-C1D; an enforcement check that reads a stale persisted flag instead
+      of verifying live state is ARC-F1A.
+    see_also:
+    - AGT-C1A
+    - ARC-F1A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the accepted claim appears only in a narrative summary and no downstream step (gate, merge,
+          verdict, status update) consumes it
   AGT-D1B:
     name: secret-materialized-into-agent-output
     default_severity: HIGH
@@ -224,6 +456,20 @@ entries:
     - corpus
     cwe:
     - CWE-532
+    criteria: '[audit text unchanged, with the SEC-B2C clause replaced by:] when a redaction pass exists on
+      the agent''s output channel and misses the secret, the finding is SEC-B2C; D1B is for an agent output
+      channel with no redaction at all.'
+    see_also:
+    - AGT-F1A
+    - SEC-B2B
+    - SEC-B3A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the output channel is a local run artifact that is never committed, uploaded, posted or
+          shipped off the machine
   AGT-D1C:
     name: single-verifier-unilateral-override-authority
     default_severity: MEDIUM
@@ -235,6 +481,28 @@ entries:
     - CWE-863
     examples:
     - Evidence model gives a single advisor-LLM verdict unilateral, uncorroborated power
+    criteria: Qualifies when one model's or verifier's verdict alone can override, suppress or clear findings
+      or evidence from other sources (tool confirmations, multiple reviewers) with no corroboration, quorum,
+      tie-break or human check, so a single wrong or steered verdict flips the outcome. Evidence names the
+      verdict source and the evidence it can override. A verdict whose free-text output is parsed leniently
+      is AGT-C1D; an agent asserting its own corroboration is AGT-C1A; a CI gate that bypasses the domain
+      verdict model is ARC-C1A; a stated verdict policy that no code enforces is ARC-F1E.
+    see_also:
+    - AGT-C1A
+    - AGT-C1D
+    - ARC-C1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the single verdict can clear a tool-confirmed finding or a HIGH or CRITICAL finding from
+          the gating verdict, AND the cleared finding is not listed, with the overriding verdict, in the delivered
+          report
+      lower_when:
+      - to: LOW
+        condition: the single verdict can only add or upgrade findings and can never suppress, downgrade or
+          clear one
   AGT-E1A:
     name: unbounded-agent-loop
     default_severity: HIGH
@@ -244,12 +512,46 @@ entries:
     - gap-review
     cwe:
     - CWE-834
+    criteria: Qualifies when an agent's plan-act-observe, retry or self-correction loop has no iteration cap,
+      wall-clock deadline, or termination condition independent of the model's own judgment, so a model that
+      never declares itself done runs indefinitely. Evidence names the loop and the missing bound. A loop
+      that terminates but has no cap on total tool calls, tokens or spend is AGT-E1B; unbounded memory, connections
+      or CPU use in ordinary code is OPS-D1A; retries with no backoff or jitter are OPS-A1B.
+    see_also:
+    - AGT-E1B
+    - OPS-A1A
+    - OPS-D1A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: every iteration blocks on a human message or approval, so the loop cannot run unattended
   AGT-E1B:
     name: unbounded-tool-call-budget
     default_severity: MEDIUM
     status: active
     provenance:
     - prior-art
+    criteria: Qualifies when an agent run has no cap on total tool calls, tokens or spend (per run, per session
+      or per trigger), even though its loop terminates, so one task can consume unbounded cost or exhaust
+      a shared rate limit. Evidence names the run entry point and the missing budget. A loop with no termination
+      bound at all is AGT-E1A; unbounded resource use in ordinary code is OPS-D1A.
+    see_also:
+    - AGT-E1A
+    - OPS-D1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the run is started by an event an unauthenticated party can trigger (a public PR, issue
+          comment or webhook) with no maintainer-approval gate or per-trigger rate limit, and spends against
+          a billed or quota-limited account
+      lower_when:
+      - to: LOW
+        condition: the only uncapped dimension is free local tool calls (file reads, local search) with no
+          billed, metered or rate-limited call
   AGT-F1A:
     name: sensitive-data-sent-to-model-provider
     default_severity: MEDIUM
@@ -258,3 +560,26 @@ entries:
     - prior-art
     cwe:
     - CWE-200
+    criteria: Qualifies when sensitive data (secrets, credentials, personal data, regulated or customer data)
+      is included in a prompt, context or tool result sent to a third-party model provider with no redaction,
+      minimization or declared data-processing basis. Evidence names the data source and the call that sends
+      it. A secret the agent writes into its own persisted or published output is AGT-D1B; secrets or personal
+      data written to logs by ordinary code are SEC-B2B or SEC-B4A; a redaction pass that exists but misses
+      a pattern is SEC-B2C; collecting more data than needed at the source is SEC-B4B.
+    see_also:
+    - AGT-D1B
+    - SEC-B2C
+    - SEC-B4A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the payload contains credentials read from environment variables or credential files, or
+          health or payment records about people other than the operator, AND the request or client config
+          enables provider-side retention, logging or training use (or targets a consumer or free tier that
+          does)
+      lower_when:
+      - to: LOW
+        condition: the only sensitive data sent is the operator's own identifiers (username, local paths,
+          hostname)

@@ -282,7 +282,8 @@ class TestGovernanceDocs(unittest.TestCase):
 
     def test_schema_carries_r2_severity_rubric(self):
         schema = open(os.path.join(ROOT, "SCHEMA.md"), encoding="utf-8").read()
-        self.assertIn("exploitable now, data loss, or silently wrong", schema)
+        self.assertIn("exploitable now, data loss, silently wrong results at scale, "
+                      "or a user blocked from completing a task", schema)  # 0.7.0 blocking clause
 
     def test_renamed_incubating_domains_everywhere(self):
         for name in ("CHARTER.md", "CHANGELOG.md", "RATIFICATION.md", "SCHEMA.md"):
@@ -1076,3 +1077,62 @@ class TestReleaseIngestGuard(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestSeverityRangeAndGuides(unittest.TestCase):
+    """0.7.0: every entry carries a severity_range whose bounds each have a
+    rung, and every level carries guide text (SCHEMA "Guides", "severity_range")."""
+
+    def _errs(self, rng, default="MEDIUM"):
+        return validate.severity_range_errors("X", default, rng)
+
+    def test_real_catalog_has_a_range_and_guides_everywhere(self):
+        docs = _real_docs()
+        for doc in docs.values():
+            self.assertTrue(doc.get("guide"), doc["domain"])
+            for ak, a in doc["areas"].items():
+                self.assertTrue(a.get("guide"), (doc["domain"], ak))
+                self.assertEqual(set(map(str, a["categories"])),
+                                 set(map(str, a.get("category_guides") or {})),
+                                 (doc["domain"], ak))
+            for code, e in doc["entries"].items():
+                self.assertIn("severity_range", e, code)
+
+    def test_locked_range_is_valid(self):
+        self.assertEqual(self._errs({"floor": "MEDIUM", "ceiling": "MEDIUM"}), [])
+
+    def test_ceiling_above_default_needs_a_rung_that_reaches_it(self):
+        self.assertTrue(self._errs({"floor": "MEDIUM", "ceiling": "HIGH"}))
+        self.assertEqual(self._errs({"floor": "MEDIUM", "ceiling": "HIGH", "raise_when": [
+            {"to": "HIGH", "condition": "reachable from an unauthenticated request"}]}), [])
+
+    def test_floor_below_default_needs_a_rung_that_reaches_it(self):
+        self.assertTrue(self._errs({"floor": "LOW", "ceiling": "MEDIUM"}))
+
+    def test_default_outside_the_range_is_refused(self):
+        self.assertTrue(self._errs({"floor": "HIGH", "ceiling": "HIGH"}))
+
+    def test_rung_outside_its_side_is_refused(self):
+        self.assertTrue(self._errs({"floor": "MEDIUM", "ceiling": "HIGH", "raise_when": [
+            {"to": "HIGH", "condition": "x"}, {"to": "CRITICAL", "condition": "y"}]}))
+        self.assertTrue(self._errs({"floor": "LOW", "ceiling": "MEDIUM", "lower_when": [
+            {"to": "LOW", "condition": "x"}, {"to": "MEDIUM", "condition": "y"}]}))
+
+    def test_rung_shape_and_condition_text_are_checked(self):
+        self.assertTrue(self._errs({"floor": "MEDIUM", "ceiling": "HIGH", "raise_when": [
+            {"to": "HIGH", "condition": " "}]}))
+        self.assertTrue(self._errs({"floor": "MEDIUM", "ceiling": "HIGH", "raise_when": [
+            {"to": "HIGH"}]}))
+        self.assertTrue(self._errs({"floor": "MEDIUM", "ceiling": "MEDIUM", "bogus": 1}))
+
+    def test_category_guide_for_an_unknown_category_is_refused(self):
+        docs = copy.deepcopy(_real_docs())
+        doc = docs["acc.yml"] if "acc.yml" in docs else next(iter(docs.values()))
+        area = next(iter(doc["areas"].values()))
+        area["category_guides"]["9"] = "points nowhere"
+        self.assertTrue(any("category_guides 9" in e for e in validate.validate_schema(docs)[0]))
+
+    def test_bundle_carries_the_domain_guide(self):
+        bundle = build_bundle.build_bundle(_real_docs(), "0.0.0-test")
+        for dom in bundle["domains"].values():
+            self.assertTrue(dom.get("guide"))

@@ -2,6 +2,18 @@
 
 All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (pre-1.0); see SCHEMA.md stability contract.
 
+## [Unreleased] — 0.7.0 (in progress)
+
+Schema and content from the one-time 0.7.0 fit audit: one audit seat and one adversarial verify seat per domain over v0.6.0. The raw outputs are in the private ocrdb-docs repo (`audits/0.7.0-fit-audit/`). No code was renamed, moved, split or merged, and no `default_severity` changed: structural changes wait for the 0.8.0 overhaul. Gap codes from the X0X harvest are still to come.
+
+- **Schema: helper text at every level.** A domain `guide`, an area `guide`, and per-category `category_guides`: short routing text for review agents, broad at the top and pointing lower (SCHEMA "Guides"). Every domain, area and category now carries one.
+- **Schema: `severity_range` per entry.** `{floor, ceiling, raise_when, lower_when}`. A grade above or below the default is permitted only through a rung that names an observable condition (SCHEMA "`severity_range`"), so a reviewer cannot promote an instance without an explicit carve-out. All 398 entries carry one. 280 are locked at the default ceiling and 118 permit a raise.
+- **Grading bar: "a user blocked from completing a task" is HIGH+.** The R2 bar gains an accessibility and usability blocking clause. ACC-A1B, ACC-B1B, ACC-C1A and ACC-D1A may now be raised to HIGH on a concrete blocking condition, such as a required field with no accessible name on the only sign-in path.
+- **`criteria`** added to the 269 entries that had none, and rewritten for 43 whose text was weak. Every entry now has criteria.
+- **`see_also`** changed on 372 entries. Every link is reciprocal, and 2 links that weren't real neighbours were removed.
+- **Validator.** `tools/validate.py` checks guide text, `category_guides` keys, criteria text, and every `severity_range` rule.
+- **SCHEMA** documents the `proof-backed` provenance value, which the validator already accepted.
+
 ## [0.6.0] - 2026-10-26
 
 Entry-point release. FRN and LGL were admitted and calibrated over two rounds. FRN is absorbed into COD with 3 gap codes (395 → 398), and LGL holds at provisional. The stability contract holds: all 395 prior codes are byte-identical on `name` / `default_severity` against 0.5.1. 0 changed, 3 added, 0 removed. `validate.py`: 0 errors.

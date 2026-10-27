@@ -1,46 +1,148 @@
 # OCRDb domain file — PRE-1.0: no domain is ratified until 1.0; this domain's lifecycle stage is derived, not stored here — see RATIFICATION.md.
 domain: COD
 name: correctness
+guide: 'COD (correctness) is the home for an instance that produces a WRONG RESULT, crashes, hangs, or
+  breaks a contract at runtime: memory and bounds errors, unchecked failures, wrong parsing or value mapping,
+  schema-vs-output mismatches, control-flow and ordering mistakes, races and async misuse, and numeric/time/encoding
+  errors. Choose ARC instead when two specifications disagree with each other or the defect is structural
+  (ARC-D*, ARC-F2*, ARC-G1*), QAL when the problem is inert staleness or readability with no wrong behavior
+  (QAL-C*, QAL-E*), DAT when the wrong state is in a database or durable file (DAT-D*, DAT-F*), SEC when
+  the input is attacker-reachable and the harm is exploitation (SEC-F1A, SEC-D1C), OPS when the failure
+  is a capacity, timeout, or telemetry gap in production operation (OPS-A1A, OPS-D1A, OPS-E1A), and TST
+  when the defect lives in test code. Look in A for leaks and bounds, B for guards and swallowed failures,
+  C for value mapping and parsing, D for schema/doc/interface contracts, E for loop and ordering logic,
+  F for concurrency and async, G for time, numbers, encoding and units.'
 areas:
   A:
     name: resource-lifecycle
+    guide: 'Resource lifecycle and memory/bounds safety: a handle that is never released (A1) or an access
+      outside a buffer or sequence''s bounds (A2). A leak or out-of-bounds access in test code is TST (TST-D1B,
+      TST-B3A); capacity exhaustion under load with no cap is OPS-D1A.'
     categories:
       '1': handle-and-timing-safety
       '2': bounds-and-indexing-safety
+    category_guides:
+      '1': 'Handles never released: COD-A1A is the product-code file-handle leak; the test-code form is TST-D1B
+        and operational overload is OPS-D1A.'
+      '2': 'Bounds and indexing: COD-A2A is a write past a fixed buffer (memory corruption), COD-A2B an off-by-one
+        index, COD-A2C a read of an absent index or an empty sequence. Choose A2A only for a WRITE that can
+        corrupt memory; a crash on a bad index is A2C (or SEC-F1A when the input is attacker-supplied).'
   B:
     name: defensive-checking-discipline
+    guide: 'Defensive checks: guards that grant too much (B1) and failures that are unchecked, misreported,
+      or silently degrade results (B2). A security-relevant swallow is SEC-F1B, an overbroad catch clause
+      ARC-F2G, a security control that degrades to permit ARC-F2E, and an unlogged runtime swallow OPS-E1A.'
     categories:
       '1': guard-and-permission-scope
       '2': silent-failure-and-diagnostics
+    category_guides:
+      '1': 'Guard and permission scope: COD-B1A is a config loader that defaults to permissive on missing
+        or corrupt config; COD-B1C is a shared guard whose computed allowed set is too broad. B1A is easy
+        to confuse with ARC-F2E (the enforcement control itself fails open); B1C with AGT-B1C/AGT-B1D (agent
+        tool grants) and ARC-F2B (a hook that cannot tell actors apart).'
+      '2': 'Silent failure and diagnostics: COD-B2C is the default home for an unchecked auxiliary failure
+        that leaves wrong or missing data; COD-B2A a null that crashes downstream; COD-B2B an error message
+        that blames the wrong cause; COD-B2D a transformed result not re-checked against its constraint; COD-B2E
+        truncation with no warning; COD-B2F unguarded Web Storage access. B2C, B2D and B2E are the easiest
+        to confuse: unchecked call, unchecked output, and cut-off output. A component that deliberately skips
+        malformed input is ARC-F2D.'
   C:
     name: tool-adapter-normalization
+    guide: 'Value mapping and normalization when adapting one tool''s or source''s output into another''s
+      model: grade fields mapped wrongly (C1), wrong parsing or selection logic (C2), and output that does
+      not conform to its own contract (C3). Two specifications disagreeing is ARC; adapter inconsistency with
+      siblings is ARC-A4A.'
     categories:
       '1': severity-confidence-conflation
       '2': parsing-and-selection-logic
       '3': output-conformance-gaps
+    category_guides:
+      '1': 'Severity/grade mapping: COD-C1A conflates confidence with severity (one source value feeds both
+        fields), COD-C1B ignores the source''s value and hardcodes one. An unmapped value silently falling
+        back to a default is COD-C3B.'
+      '2': 'Parsing and selection: COD-C2A picks the wrong input file, COD-C2B loses state between lifecycle
+        phases, COD-C2C has a regex that rejects a valid variant, COD-C2D fails a lookup because an identifier
+        is not normalized. C2D and COD-G3D (Unicode normalization) overlap; C2C and COD-D1B (schema stricter
+        than producer) overlap when the regex is a validator.'
+      '3': 'Output conformance: COD-C3A emits a required field missing or empty, COD-C3B has an incomplete
+        lookup table with a silent fallback, COD-C3C emits a non-standard key that downstream drops. A mapping
+        that is sparse by design and only undocumented is QAL-C2F; a spec that never tells the producer to
+        emit the field is ARC-D2E.'
   D:
     name: interface-contract-drift
+    guide: 'Interface contracts that runtime behavior violates: schemas versus actual values (D1), documentation
+      versus implementation where a user following the docs breaks (D2), and type or protocol mismatches across
+      a call boundary (D3). Per the routing rule, spec-vs-spec disagreement is ARC (ARC-D1B, ARC-G1B) and
+      inert doc staleness is QAL (QAL-C2C).'
     categories:
       '1': schema-definition-drift
       '2': doc-implementation-divergence
       '3': boundary-type-and-protocol-mismatch
+    category_guides:
+      '1': 'Schema definition drift at the field level: COD-D1A value outside its enum, COD-D1B validator
+        stricter than the producer, COD-D1C records in one array with different shapes, COD-D1D schema omits
+        a documented-required field. Wholesale divergence is ARC-D1B; an id format specified differently across
+        artifacts is ARC-D1D.'
+      '2': 'Docs versus implementation: COD-D2B a documented feature that does not exist, COD-D2C specification
+        documents that contradict, COD-D2D an implemented capability missing from docs. When the flag exists
+        and only its docs are stale or under-cover it, that is QAL-C2C, not D2B or D2D. Two disagreeing specs
+        are ARC-G1B, a superseded spec with no marker is ARC-G2A, and one self-contradicting document is QAL-C2B.'
+      '3': 'Boundary type and protocol: COD-D3A calls an external API with the wrong parameter shape, COD-D3B
+        an adapter that does not satisfy its declared interface, COD-D3C one field emitted with different
+        types across paths. D3C versus COD-D1C: one field''s type versus a whole record''s shape.'
   E:
     name: control-flow-and-execution-order
+    guide: 'Control flow and execution order: loops and shortcuts that drop or skip valid work (E1) and code
+      that runs in the wrong place, order, or context (E2). A test-discovery gap is TST-C1A; a misplaced block
+      that skips nothing is QAL-F2B.'
     categories:
       '1': iteration-and-shortcut-logic
       '2': execution-context-and-ordering
+    category_guides:
+      '1': 'Iteration and shortcut logic: COD-E1A dedup that discards a distinct entry sharing a coarse key,
+        COD-E1B a loop that exits before processing all valid entries. Unstable identity keys across runs
+        are ARC-D1C; deliberate capping is COD-B2E.'
+      '2': 'Execution context and ordering: COD-E2A production code made unreachable by an earlier guard or
+        exit, COD-E2B a relative path resolved against the wrong base directory. The test-code cwd form of
+        E2B is TST-D2A.'
   F:
     name: concurrency-and-asynchrony
+    guide: 'Concurrency and asynchrony: unsynchronised shared state and races (F1), deadlock and blocking
+      of a loop or UI thread (F2), and misuse of async primitives, caches, and signals (F3). A race in a database
+      transaction is DAT-D1C, on a flat file DAT-F1C; partial multi-statement writes are DAT-D1B.'
     categories:
       '1': shared-state
       '2': liveness-and-blocking
       '3': async-correctness
+    category_guides:
+      '1': 'Shared state: COD-F1A a compound operation that is not atomic, COD-F1B check-then-act (TOCTOU),
+        COD-F1C shared mutable state with no synchronisation. F1B is a stale check, F1A a non-atomic sequence
+        of writes, F1C an unprotected shared variable; a repeated user action is COD-F3E.'
+      '2': 'Liveness and blocking: COD-F2A deadlock from lock ordering, COD-F2B a blocking call on an async
+        loop or UI thread, COD-F2C an unbounded collection rendered in one pass. A missing outbound timeout
+        is OPS-A1A.'
+      '3': 'Async correctness: COD-F3A a stale cache read, COD-F3B unsafe lazy initialization, COD-F3C an
+        unawaited async result, COD-F3D an unsafe signal handler, COD-F3E a user action re-entered while in
+        flight. F3B is a special case of COD-F1C, F3E is easy to confuse with COD-F1B, and an enforcement
+        gate trusting a stale cached value is ARC-F1A.'
   G:
     name: data-representation-and-time
+    guide: 'Data representation: time (G1), numbers (G2), and text encoding and units (G3). User-facing text
+      length and locale formatting is LNG (LNG-E1A, LNG-B1A); a database column whose type cannot hold the
+      value is DAT-A1A.'
     categories:
       '1': temporal
       '2': numeric
       '3': encoding-and-units
+    category_guides:
+      '1': 'Time: COD-G1A DST-unsafe arithmetic, COD-G1B epoch milliseconds vs seconds, COD-G1C naive mixed
+        with aware datetimes, COD-G1D wall clock used for elapsed time. G1B is the time-specific form of COD-G3C.'
+      '2': 'Numeric: COD-G2A money held in float, COD-G2B integer overflow or truncation, COD-G2C precision
+        lost in a numeric conversion, COD-G2D floats compared for equality. G2A wins over G2C when the value
+        is monetary.'
+      '3': 'Encoding and units: COD-G3A bytes and str conflated, COD-G3B a platform default encoding assumed,
+        COD-G3C a quantity in the wrong unit, COD-G3D strings compared without Unicode normalization. G3D
+        overlaps COD-C2D; user-facing byte-vs-character length is LNG-E1A.'
 entries:
   COD-A1A:
     name: unclosed-file-handle-leak
@@ -55,6 +157,26 @@ entries:
     - File opened without a context manager; handle never explicitly closed, relying on GC
     - json.load(open(...)) pattern never closes the underlying file handle
     - File resource leak in apply subcommand
+    criteria: Qualifies when product code opens a file handle (open(), a stream, a reader) with no context
+      manager, try/finally, or explicit close on every path, so release depends on garbage collection or process
+      exit. Evidence names the open site and the path that skips the close. The same leak in test code is
+      TST-D1B; unbounded growth of connections, threads or memory under load with no cap is OPS-D1A.
+    see_also:
+    - OPS-D1A
+    - TST-D1B
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the handle is opened once per request or loop iteration in a long-running service and is
+          kept referenced (stored on a long-lived object or in a list) or the runtime does not reclaim it
+          promptly, and any client can trigger the path, so open descriptors grow until the process hits its
+          fd limit and refuses work; evidence shows the per-request open and the retained reference
+      lower_when:
+      - to: LOW
+        condition: the handle is opened once in a short-lived process that exits right after, and the runtime
+          closes it promptly by reference counting
   COD-A2A:
     name: unbounded-buffer-write
     default_severity: CRITICAL
@@ -67,6 +189,24 @@ entries:
     - CWE-120
     examples:
     - Unsafe code writes user_input.len() bytes into a fixed 8-byte buffer with no bounds check
+    criteria: Qualifies when code writes into a fixed-size buffer a number of bytes taken from input or a
+      computed length with no check against the buffer's capacity, so the write can go past the end and corrupt
+      adjacent memory (unsafe/native code, CWE-787/120). Evidence names the buffer, its size, and the source
+      of the length. A read past the end or a crash on a bad index is COD-A2C; an index off by one that stays
+      in bounds is COD-A2B; an integer overflow that produces the bad length is COD-G2B.
+    see_also:
+    - COD-A2C
+    - COD-G2B
+    severity_range:
+      floor: MEDIUM
+      ceiling: CRITICAL
+      lower_when:
+      - to: HIGH
+        condition: the write length comes from a value the program computes itself (not from input) and can
+          exceed the buffer only on a path the evidence shows is reachable but not caller-controlled
+      - to: MEDIUM
+        condition: the language or runtime bounds-checks the write in the shipped build, so an overrun panics
+          or aborts instead of corrupting memory
   COD-A2B:
     name: off-by-one-argument-index-error
     default_severity: MEDIUM
@@ -79,6 +219,23 @@ entries:
     examples:
     - env::args().nth(1).unwrap() used to fetch the second CLI arg, but the function actually receives the first
       argument as its own parameter
+    criteria: Qualifies when an index, range end, loop bound or count is off by exactly one (using 1 where
+      0 is right, <= where < is right, nth(1) where the value is already shifted), so the code reads or processes
+      the wrong element or misses the first or last one, while staying inside the sequence. Evidence names
+      the expression and the element it should have reached. An access that goes outside the sequence or reads
+      an empty one is COD-A2C; a write past a buffer is COD-A2A; a loop that stops early for a reason other
+      than its bound is COD-E1B.
+    see_also:
+    - COD-A2C
+    - COD-E1B
+    - QAL-A2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the wrongly selected element only changes a display value or log line, not the data the
+          code goes on to process
   COD-A2C:
     name: unchecked-index-or-empty-sequence-access
     default_severity: MEDIUM
@@ -92,6 +249,25 @@ entries:
     - Missing bounds check on argv access
     - min() called on a potentially empty sequence in _max_severity
     - pip-audit adapter indexes fix_versions[0] with a default that never fires when the list is present-but-empty
+    criteria: Qualifies when code indexes a sequence, reads argv, or calls min/max/first on a collection without
+      checking that the index exists or the collection is non-empty, including a .get default that cannot
+      fire because the key is present but its list is empty. Evidence names the access and the input that
+      makes it empty or short. A null value dereferenced downstream is COD-B2A; when the short or empty input
+      comes from an untrusted source and the result is a crash, SEC-F1A; unsafe indexing inside a test assertion
+      is TST-B3A; an off-by-one that stays in bounds is COD-A2B.
+    see_also:
+    - COD-A2A
+    - COD-A2B
+    - COD-B2A
+    - SEC-F1A
+    - TST-B3A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the resulting exception is caught by an enclosing handler that reports the bad input and
+          the run continues with the remaining items
   COD-B1A:
     name: fail-open-on-missing-or-corrupt-config
     default_severity: HIGH
@@ -109,9 +285,18 @@ entries:
       single-homes in ARC-F2E; a general component that skips malformed runtime
       input is ARC-F2D.
     see_also:
+    - ARC-E2D
     - ARC-F2D
     - ARC-F2E
     - COD-B2C
+    - OPS-C1A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the permissive default only controls a non-enforcement behavior (a feature toggle, output
+          format, verbosity), so failing open grants no action that would otherwise be refused
   COD-B1C:
     name: overly-broad-permission-scope-in-shared-guard
     default_severity: MEDIUM
@@ -124,6 +309,27 @@ entries:
     examples:
     - Write-allowlist is built from the union of every dispatch-plan-*.json across the fan-out, so one reviewer
       can overwrite a sibling reviewer's findings file
+    criteria: Qualifies when a guard shared by several actors or callers computes its allowed set too broadly,
+      for example as the union of every actor's permissions instead of the current actor's, so one actor may
+      act on resources that belong to another. Evidence names how the allowed set is built and the cross-actor
+      action it permits. An agent tool whose write scope is missing altogether is AGT-B1C, and a grant of
+      more tools than the task needs is AGT-B1D; a hook that has no way to tell actors apart is ARC-F2B.
+    see_also:
+    - AGT-B1C
+    - AGT-B1D
+    - ARC-F2B
+    - SEC-C1C
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the over-granted scope lets a lower-trust actor overwrite or delete another actor's output
+          that a downstream step treats as authoritative, with no other copy kept
+      lower_when:
+      - to: LOW
+        condition: the extra scope only allows actions that cannot change another actor's resources (reads,
+          or creating new paths that no other actor reads)
   COD-B2A:
     name: unguarded-null-crashes-downstream
     default_severity: MEDIUM
@@ -136,6 +342,26 @@ entries:
     examples:
     - .get(key, default) + .startswith() crashes on an explicit JSON null, silently dropping the record instead
       of handling it
+    criteria: Qualifies when a value that can be null/None/undefined (an explicit JSON null, a .get(key, default)
+      whose default does not fire because the key is present with null, an optional return) is used without
+      a check, so a later operation raises or the record is silently skipped. Evidence names where the null
+      comes from and the operation that fails. An empty sequence or missing index is COD-A2C; when the null
+      arrives in attacker-supplied input and crashes a service, SEC-F1A; an auxiliary load whose failure is
+      not checked is COD-B2C.
+    see_also:
+    - ARC-D2B
+    - ARC-F2D
+    - COD-A2C
+    - COD-B2C
+    - DAT-A1D
+    - SEC-F1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the null makes the program fail loudly with an error that names the record, and it does
+          not drop or skip the record
   COD-B2B:
     name: error-message-misattributes-root-cause
     default_severity: LOW
@@ -145,6 +371,21 @@ entries:
     recurrence: 1
     examples:
     - --changes mode's error message blames 'not a git repository' when the real failure is a merge-base lookup
+    criteria: Qualifies when an error message or exit diagnostic names a cause that is not the one that actually
+      failed (for example, it reports 'not a git repository' when a merge-base lookup failed), sending the
+      operator to the wrong fix. Evidence names the real failing call and the message shown. A message that
+      is accurate but too vague is QAL-I1B; a docstring that promises the wrong exception type is QAL-C2D;
+      a failure that produces no message at all is COD-B2C or OPS-E1A.
+    see_also:
+    - QAL-C2D
+    - QAL-I1B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: the real cause is also reported in the same output (a chained exception or traceback shown
+          next to the misleading message)
   COD-B2C:
     name: missing-error-handling-around-auxiliary-load
     default_severity: LOW
@@ -166,11 +407,24 @@ entries:
       config-loader that fails open is COD-B1A. A Web Storage call with no
       handling for its throws is COD-B2F.
     see_also:
-    - SEC-F1B
+    - ACC-D1A
     - ARC-F2G
     - COD-B1A
-    - OPS-E1A
+    - COD-B2A
     - COD-B2F
+    - COD-F3C
+    - DAT-B1F
+    - OPS-E1A
+    - SEC-F1B
+    - SEC-G2B
+    - TST-A4A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the data the failed load should have supplied feeds a gate verdict, pass/fail status, or
+          persisted record, and the run reports success with no marker that the data is absent
   COD-B2D:
     name: result-not-revalidated-after-transform
     default_severity: LOW
@@ -181,6 +435,21 @@ entries:
     examples:
     - write_report()'s oversize split does one unbounded halving pass and never re-validates the result against
       the original size constraint
+    criteria: Qualifies when code transforms a result to meet a constraint (it splits, shrinks, filters, or
+      re-encodes it) and does not check the transformed result against that constraint again, so a single
+      pass that is not enough leaves output that still breaks the limit. Evidence names the constraint and
+      the transform that is not re-checked. Output cut short with no warning is COD-B2E; a required field
+      that ends up missing or empty in the output is COD-C3A.
+    see_also:
+    - COD-B2E
+    - COD-C3A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the over-limit result is passed on to a consumer that rejects or truncates it without telling
+          anyone (an API size cap, an issue body limit), so the data is lost
   COD-B2E:
     name: silent-truncation-without-warning
     default_severity: LOW
@@ -190,6 +459,25 @@ entries:
     recurrence: 1
     examples:
     - recover_linkage_from_github caps at --limit 1000 with no detection or warning that results were truncated
+    criteria: Qualifies when code caps, pages or truncates a result set or value (a --limit, a first-N slice,
+      a fixed-size buffer) and does not detect or report that more data was there, so the caller treats a
+      partial result as complete. Evidence names the cap and why the source can exceed it. A missing cap on
+      an endpoint or query is OPS-D1B; a scanner that drops findings silently is SEC-G2B; a persisted mirror
+      left durably partial is DAT-E1D; a loop that exits early by mistake, not because of a cap, is COD-E1B.
+    see_also:
+    - COD-B2D
+    - COD-E1B
+    - DAT-E1D
+    - LNG-E1A
+    - OPS-D1B
+    - SEC-G2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: 'the truncated result is used for a completeness claim or decision: a count, an ''all items
+          processed'' status, a reconciliation, or a gate'
   COD-B2F:
     name: unguarded-web-storage-access
     default_severity: LOW
@@ -214,6 +502,13 @@ entries:
       generic auxiliary load whose failure goes unchecked is COD-B2C.
     see_also:
     - COD-B2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the unguarded call runs in the application's root initialisation or first render, so a
+          browser with storage blocked gets a blank or broken app and not just one degraded widget
   COD-C1A:
     name: analyzer-confidence-conflated-with-severity
     default_severity: HIGH
@@ -228,6 +523,23 @@ entries:
       is hardcoded
     - osv-scanner adapter silently downgrades known vulnerabilities to INFO severity
     - Shared severity normalizer silently defaults unmapped/un-rated severity strings to INFO across every dependency
+    criteria: Qualifies when an adapter or normalizer takes one source value and uses it for both confidence
+      and severity, or puts the source's confidence/priority into the severity field, so the two axes stop
+      being independent and findings are graded by certainty instead of impact. Evidence names the source
+      field and both target fields. Ignoring the source's severity and hardcoding one value is COD-C1B; an
+      unmapped value that silently falls back to a default grade is COD-C3B.
+    see_also:
+    - ARC-C1A
+    - COD-C1B
+    - COD-C3B
+    - SEC-G1B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the wrongly derived severity only affects display or sort order and does not feed a gate,
+          filter threshold, or suppression rule
   COD-C1B:
     name: severity-hardcoded-ignoring-tool-value
     default_severity: HIGH
@@ -239,6 +551,22 @@ entries:
     - roslyn_secguard's parse() hardcodes severity to 'HIGH' for every SecurityCodeScan finding instead of reading
       the SARIF 'level' field
     - pip-audit adapter hardcodes severity to MEDIUM for essentially all findings, masking the true severity
+    criteria: Qualifies when an adapter sets a constant severity for every finding from a source that provides
+      its own per-finding severity or level (a SARIF level, a CVSS score), so the real spread of grades is
+      lost. Evidence names the source field that is ignored and the constant. Using the source's confidence
+      as the severity is COD-C1A; a mapping table that lacks some values and silently falls back is COD-C3B;
+      inconsistency between sibling adapters in fail-safe direction is ARC-A4A.
+    see_also:
+    - ARC-A4A
+    - COD-C1A
+    - SEC-G1B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the hardcoded value is at or above every grade the source can emit, so findings can only
+          be graded too high (noise) and none can fall below a gate
   COD-C2A:
     name: incorrect-source-file-selection-heuristic
     default_severity: HIGH
@@ -251,6 +579,22 @@ entries:
     examples:
     - pip-audit's _find_requirement globs requirements*.txt and takes the first sorted match, silently picking a
       dev/test requirements file over the primary requirements.txt
+    criteria: Qualifies when code picks which input file to process by a heuristic (the first glob match,
+      sort order, a name pattern) that can pick a secondary file (dev or test requirements, a backup, a fixture)
+      over the primary one, so the run analyses the wrong input and reports nothing about the right one. Evidence
+      names the heuristic and the competing candidate it can pick. A correct name resolved against the wrong
+      directory is COD-E2B; a scan tool that runs on no input at all and stays silent is SEC-G2B.
+    see_also:
+    - COD-E2B
+    - SEC-D1B
+    - SEC-G2B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the file it can wrongly pick is a superset of the intended one (for example it includes
+          the primary requirements), so results are noisier but nothing from the primary input is missed
   COD-C2B:
     name: instance-state-not-propagated-through-lifecycle
     default_severity: MEDIUM
@@ -262,6 +606,21 @@ entries:
     - PipAuditAdapter records the manifest into self._manifest_path in invoke(), but parse() runs in a separate
       process/instance and never sees it
     - PipAuditAdapter maintains mutable instance state, deviating from the stateless adapter pattern
+    criteria: Qualifies when one lifecycle phase (init, invoke, run) stores state on an instance or in a process
+      and a later phase reads it from a different instance, process or worker that never received it, so the
+      later phase falls back to a default or computes a wrong result. Evidence names where the state is written,
+      where it is read, and why they do not share it. A deviation from a stateless convention with no wrong
+      result is ARC-A4A; state shared between concurrent threads with no lock is COD-F1C.
+    see_also:
+    - ARC-A4A
+    - COD-F1C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the later phase rebuilds the missing state on its own from the same inputs, so only efficiency
+          is lost
   COD-C2C:
     name: regex-rejects-valid-input-variant
     default_severity: MEDIUM
@@ -273,6 +632,22 @@ entries:
     - LABEL_RE.fullmatch() only matches a single backtick-quoted label, silently failing on multi-label lines
     - 'bundle-audit block regex requires a CVE: line unconditionally while treating the sibling GHSA: line as optional,
       though either may be absent'
+    criteria: Qualifies when a parsing regex or pattern match fails on a legitimate variant of its input (more
+      than one item per line, an optional line that is absent, alternative quoting or ordering), so valid
+      records are silently not matched or fail to parse. Evidence names the pattern and the valid variant
+      it rejects. A schema or validator that rejects real producer output is COD-D1B; a pattern with catastrophic
+      backtracking is SEC-H4A; an identifier that matches only after normalization is COD-C2D.
+    see_also:
+    - ARC-A2B
+    - COD-D1B
+    - SEC-H4A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: a non-match raises a parse error that names the line, so the rejected variant is not silently
+          dropped
   COD-C2D:
     name: unnormalized-identifier-causes-lookup-mismatch
     default_severity: MEDIUM
@@ -284,6 +659,23 @@ entries:
     - CWE-706
     examples:
     - diff_map.classify() does not normalize a ./-prefixed location.file before matching it against the hunk map
+    criteria: Qualifies when an identifier (a path, key, name, id) is compared or looked up without first
+      being put into the same form as the table it is matched against (a ./ prefix, a trailing slash, letter
+      case, separators), so equal identifiers fail to match and the record is misclassified or dropped. Evidence
+      names both forms. A mismatch caused by Unicode normalization is COD-G3D; a fingerprint that changes
+      between runs is ARC-D1C; a scrub applied on one path but not its recovery path is ARC-D1A.
+    see_also:
+    - ARC-D1A
+    - ARC-D1C
+    - COD-E1A
+    - COD-G3D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: a lookup miss falls back to a conservative classification (treats the item as in scope
+          or unmatched-but-kept), so nothing is dropped
   COD-C3A:
     name: required-output-field-missing-or-empty
     default_severity: HIGH
@@ -295,6 +687,18 @@ entries:
     - Findings F-DUP-1/F-DUP-2 lack the required location.line_start field
     - Findings contain empty-string values for structurally required panel/category/title fields
     - sarif_to_findings() can emit an empty location object when a SARIF result has no locations
+    criteria: Qualifies when a producer emits a record that lacks a field its output contract marks as required,
+      or fills it with an empty string or empty object, so consumers get a non-conforming record. Evidence
+      names the field, the contract that requires it, and the code path that leaves it empty. A schema whose
+      required list omits a documented field is COD-D1D; a specification that never tells the producer to
+      emit the field is ARC-D2E; one field emitted with different types is COD-D3C.
+    see_also:
+    - ARC-D2E
+    - COD-B2D
+    - COD-D1D
+    severity_range:
+      floor: HIGH
+      ceiling: HIGH
   COD-C3B:
     name: incomplete-lookup-catalog-silent-fallback-gap
     default_severity: MEDIUM
@@ -309,6 +713,31 @@ entries:
     - cwe-catalog.json is missing CWE-16, CWE-778, CWE-693 needed by citations.py's category-derived CWE fallback
     - The cwe_owasp mapping omits 8 of the 34 CWEs listed in the main catalog, silently dropping OWASP derivation
       for those findings
+    criteria: Qualifies when a lookup or mapping table that the code relies on (CWE to OWASP, a severity map,
+      a catalog) is missing entries for values the program actually produces, and a lookup miss silently falls
+      back to a default or empty value, so enrichment or classification is quietly lost for those values.
+      Evidence names the missing keys and the fallback. A mapping that is sparse by design and only lacks
+      documentation of that is QAL-C2F; a handler that silently skips an unregistered format or extension
+      is ARC-A4D; the same table duplicated in two places is ARC-A3B.
+    see_also:
+    - ARC-A3B
+    - ARC-A4D
+    - COD-C1A
+    - COD-C3C
+    - QAL-C2F
+    - TST-A2C
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the fallback value is a grade or classification that a gate or filter acts on (for example
+          unmapped severities default to INFO and INFO is below the gate), so real findings pass the gate
+          unseen
+      lower_when:
+      - to: LOW
+        condition: a miss leaves the field empty and visibly marked unknown, and nothing downstream decides
+          anything from it
   COD-C3C:
     name: nonstandard-key-silently-dropped-downstream
     default_severity: LOW
@@ -319,6 +748,22 @@ entries:
     examples:
     - cargo-audit adapter's non-standard 'rustsec' citation key is dropped by the downstream citation pipeline with
       no error
+    criteria: Qualifies when a producer emits a key or field name outside the shared vocabulary (a tool-specific
+      citation key, a renamed field) and a downstream stage silently discards it, so the information is lost
+      without an error. Evidence names the key, the producer, and the stage that drops it. A shared lookup
+      table that lacks a value is COD-C3B; a schema field nobody populates is ARC-D2D; sibling adapters that
+      use different conventions are ARC-A4A.
+    see_also:
+    - ARC-A4A
+    - COD-C3B
+    - QAL-F3C
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: the same information also travels in a standard field of the same record, so dropping the
+          non-standard key loses nothing
   COD-D1A:
     name: schema-enum-incomplete-vs-actual-values
     default_severity: HIGH
@@ -338,6 +783,13 @@ entries:
     see_also:
     - ARC-D1B
     - COD-D1D
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the out-of-enum value appears only in documentation or prompts and no producer emits it
+          at runtime, so no real instance is rejected or misread
   COD-D1B:
     name: schema-pattern-stricter-than-producer-output
     default_severity: HIGH
@@ -358,8 +810,16 @@ entries:
       artifacts with no single authority, ARC-D1D.
     see_also:
     - ARC-D1D
+    - COD-C2C
     - QAL-C2A
     - QAL-E1B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the validator runs in advisory or warn-only mode, so real output is flagged but not dropped,
+          rejected, or blocked
   COD-D1C:
     name: inconsistent-record-shape-across-array
     default_severity: MEDIUM
@@ -370,6 +830,21 @@ entries:
     examples:
     - Finding object schema is inconsistent across the findings array
     - Provenance object field structure varies across findings
+    criteria: Qualifies when the elements of one array or collection in an emitted document have different
+      shapes (different key sets, nested structure, or optional sub-objects), so a consumer written for one
+      shape mishandles the others. Evidence names two elements and how their shapes differ. One field with
+      a different type across return paths is COD-D3C; a value outside an enum is COD-D1A; one equivalent
+      edge case (missing versus empty) handled differently is ARC-D2B.
+    see_also:
+    - ARC-D2B
+    - COD-D3C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: every shape present is valid under the published schema and the consumers in the repo handle
+          all of them, so the inconsistency is cosmetic
   COD-D1D:
     name: schema-omits-documented-required-fields
     default_severity: MEDIUM
@@ -387,7 +862,16 @@ entries:
       contract-vs-schema divergence spanning many fields or behaviors is ARC-D1B.
     see_also:
     - ARC-D1B
+    - ARC-D2E
+    - COD-C3A
     - COD-D1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: every producer in the repo always emits the field, so the gap only weakens validation and
+          no non-conforming record has been or can be produced by current code
   COD-D2B:
     name: documented-feature-or-flag-not-implemented
     default_severity: HIGH
@@ -409,7 +893,16 @@ entries:
       ARC-D2A.
     see_also:
     - ARC-D2A
+    - COD-D2D
     - QAL-C2C
+    - TST-A1D
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: invoking the missing feature fails at once and loudly (an unknown-flag or usage error),
+          so no run continues on a wrong assumption
   COD-D2C:
     name: self-contradicting-specification-documents
     default_severity: HIGH
@@ -420,6 +913,24 @@ entries:
     examples:
     - A spec's Advisor Confirmation Flow prescribes a severity-downgrade behavior that the same-day epistemics-core
       spec explicitly supersedes/contradicts
+    criteria: Qualifies (until re-homed) only when two specification documents that both claim to be current
+      prescribe incompatible behavior for the same feature and code was, or will be, implemented from one
+      of them. A single document that contradicts itself is QAL-C2B; two sources of truth that disagree in
+      general are ARC-G1B; a design document that drifted from what was delivered is ARC-G2B; a superseded
+      document left unmarked is ARC-G2A.
+    see_also:
+    - ARC-G1B
+    - ARC-G2A
+    - QAL-C2B
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: no code has been implemented from the losing document yet
+      - to: LOW
+        condition: one of the two documents is explicitly dated or marked as superseded by the other, so a
+          reader can tell which applies
   COD-D2D:
     name: implemented-capability-missing-from-docs
     default_severity: MEDIUM
@@ -430,6 +941,24 @@ entries:
     examples:
     - '''openrouter'' host profile has no corresponding documentation in SKILL.md''s Host dispatch section'
     - Step 5's --host hint omits 'codex', the newest first-class host
+    criteria: Qualifies (until re-homed) when a capability that exists in code (a host profile, flag, or mode)
+      is absent from the user-facing documentation that lists its siblings, so users cannot discover it. Reference
+      documentation that is incomplete in general is ARC-G1C; undocumented configuration behavior is QAL-C2F;
+      a documented capability that does not exist is COD-D2B.
+    see_also:
+    - ARC-G1C
+    - COD-D2B
+    - QAL-C2C
+    - QAL-C2F
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the capability is listed in --help or another shipped reference that users see, and only
+          the narrative documentation omits it
+      - to: INFO
+        condition: the capability is marked experimental or internal in code
   COD-D3A:
     name: external-api-invoked-with-wrong-parameter-shape
     default_severity: HIGH
@@ -442,6 +971,22 @@ entries:
     examples:
     - security.yml passes a directory path to the SARIF-upload action's sarif_file parameter, which expects a single
       file
+    criteria: Qualifies when code calls an external API, library, CI action or CLI with an argument whose
+      shape, type or kind differs from what that interface documents (a directory where a file is expected,
+      a list where a scalar is expected, a wrong unit or enum), so the call fails or quietly does something
+      else. Evidence cites the external interface's documented parameter. An internal adapter that does not
+      satisfy its own declared protocol is COD-D3B; a field whose type differs across the repo's own return
+      paths is COD-D3C; a quantity in the wrong unit is COD-G3C.
+    see_also:
+    - COD-D3B
+    - COD-G3C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the wrong shape makes the call fail with an error on every invocation, so the defect shows
+          up on the first run and cannot produce wrong results unseen
   COD-D3B:
     name: adapter-violates-declared-protocol-interface
     default_severity: MEDIUM
@@ -455,6 +1000,22 @@ entries:
     - LegacySarifAdapter violates the ToolAdapter protocol structure
     - Phase 1's module-level-function adapter protocol conflicts with the class-based protocol actually adopted
       elsewhere
+    criteria: Qualifies when a concrete adapter or implementation does not satisfy the protocol, interface,
+      or abstract base it is registered or typed as (missing or wrong-signature methods, wrong return type),
+      so the dispatcher's calls through that interface fail or misbehave. Evidence names the protocol member
+      and how the implementation differs. Adapters that satisfy the protocol but follow different conventions
+      are ARC-A4A; two documents describing incompatible protocols are ARC-G1B; a wrong call into a third-party
+      API is COD-D3A.
+    see_also:
+    - ARC-A4A
+    - COD-D3A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the dispatcher never calls the missing or mismatched member on this adapter in the paths
+          the repo uses (it is structural non-conformance only)
   COD-D3C:
     name: inconsistent-field-type-across-boundary
     default_severity: MEDIUM
@@ -467,6 +1028,20 @@ entries:
     examples:
     - derive_evidence() returns 'verified_by' as inconsistent types across return paths
     - location.line_start is emitted as a string instead of an integer
+    criteria: Qualifies when one field crossing a function, module, or serialization boundary has different
+      types on different paths (a string on one path and an int on another, a list or a scalar, a string or
+      null), so consumers that compare, sort, or do arithmetic on it get wrong results or raise. Evidence
+      names the field and two paths with their types. Whole records with different shapes are COD-D1C; a value
+      outside its declared enum is COD-D1A; bytes and text mixed up is COD-G3A.
+    see_also:
+    - COD-D1C
+    - COD-G3A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: every consumer in the repo coerces the field to one type before use
   COD-E1A:
     name: dedup-logic-drops-entry-sharing-coarse-key
     default_severity: MEDIUM
@@ -476,6 +1051,26 @@ entries:
     recurrence: 1
     examples:
     - build_diff silently drops a run3 finding that shares a coarse key with an already-exact-matched run2 fingerprint
+    criteria: Qualifies when deduplication or merge logic uses a key coarser than the entries' real identity
+      (or falls back to one after an exact match), so two different entries that share the coarse key collapse
+      and one is silently discarded. Evidence names the key, the two distinct entries, and the drop site.
+      An identity key that changes between runs is ARC-D1C; an id format specified inconsistently across artifacts
+      is ARC-D1D; a deliberate cap is COD-B2E.
+    see_also:
+    - ARC-D1C
+    - COD-C2D
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the discarded entries are records with no other copy (findings, transactions, user data),
+          the run reports success, and the evidence shows two distinct real or representative inputs that
+          share the coarse key
+      lower_when:
+      - to: LOW
+        condition: the discarded entry is also kept in a raw or unmerged output that is shipped next to the
+          deduplicated one
   COD-E1B:
     name: loop-exits-before-exhausting-valid-entries
     default_severity: LOW
@@ -485,6 +1080,21 @@ entries:
     recurrence: 1
     examples:
     - NODE_PATH loop breaks after the first global_node, leaving incomplete directory coverage
+    criteria: Qualifies when a loop meant to process every valid entry (search paths, candidates, pages) exits
+      early, through a break, a return, or a first-match condition, before reaching later valid entries, so
+      coverage is incomplete. Evidence names the exit and an entry it skips. An off-by-one in the loop bound
+      is COD-A2B; a deliberate cap with no warning is COD-B2E; dedup that discards entries is COD-E1A.
+    see_also:
+    - COD-A2B
+    - COD-B2E
+    - TST-B2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the skipped entries are inputs a security or completeness check is supposed to inspect,
+          so the check passes without examining them
   COD-E2A:
     name: unreachable-code-due-to-guard-placed-before-definition
     default_severity: CRITICAL
@@ -501,8 +1111,20 @@ entries:
       skipped definitions are test cases (a test-discovery gap), that is TST-C1A;
       if nothing after the guard is actually skipped (pure misplacement), QAL-F2B.
     see_also:
+    - QAL-E3A
     - QAL-F2B
     - TST-C1A
+    severity_range:
+      floor: MEDIUM
+      ceiling: CRITICAL
+      lower_when:
+      - to: HIGH
+        condition: the unreachable code is neither a security control, a data-write path, nor a validation
+          step (for example a reporting or feature path), so its absence gives wrong or missing output but
+          no exposure or data loss
+      - to: MEDIUM
+        condition: the unreachable code's absence is visible to the user at once (a command that does nothing,
+          a missing section), so it cannot go unnoticed
   COD-E2B:
     name: path-resolved-against-wrong-base-directory
     default_severity: MEDIUM
@@ -516,7 +1138,29 @@ entries:
     - Security-checklists reference is relative to the skill directory, but the reviewing agent's cwd is the target
       repo
     see_also:
+    - ARC-E1A
+    - ARC-E2C
+    - COD-C2A
+    - SEC-D1A
+    - SEC-D1B
     - TST-D2A
+    criteria: Qualifies when a relative path is resolved against a base the code does not intend (the process
+      cwd instead of the module or skill directory, or the repo root instead of the target), so the read or
+      write hits a different or missing file whenever the program is launched from somewhere else. Evidence
+      names the path, the base it resolves against, and the base intended. A hardcoded absolute path is ARC-E1A;
+      the test-fixture form is TST-D2A; a search path an attacker can plant files in is SEC-D1B; picking the
+      wrong file among several candidates is COD-C2A.
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the mis-resolved path is used as the target of a write, overwrite, or delete, so launching
+          from another directory changes or removes files outside the intended tree
+      lower_when:
+      - to: LOW
+        condition: the only supported launch method (a documented wrapper or entry point) always sets the
+          base to the intended directory
   COD-F1A:
     name: atomicity-violation-compound-operation
     default_severity: MEDIUM
@@ -526,6 +1170,24 @@ entries:
     - gap-review
     cwe:
     - CWE-362
+    criteria: Qualifies when a compound in-memory operation that must be indivisible (update two related fields,
+      increment then publish, pop then push) runs as separate steps that another thread or task can interleave
+      with, so observers see or produce an inconsistent intermediate state. Evidence names the steps and the
+      invariant that holds between them. A stale check followed by an act is COD-F1B; a single shared variable
+      with no lock is COD-F1C; related multi-statement database writes with no transaction are DAT-D1B; a
+      file write that can tear on crash is DAT-F1B.
+    see_also:
+    - ARC-F1D
+    - COD-F1B
+    - DAT-D1B
+    - DAT-F1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the inconsistent intermediate state is only visible to readers that display it (a progress
+          or status view) and is never read by code that writes or decides from it
   COD-F1B:
     name: check-then-act-race
     default_severity: MEDIUM
@@ -540,12 +1202,29 @@ entries:
     examples:
     - decide() validates a write target via os.path.islink()/os.path.realpath(), but the actual write happens later
       in a separate tool-call step, leaving a window for the target to change
-    criteria: >-
-      Qualifies when a condition is checked and then acted on non-atomically,
-      so the state can change between the check and the act. A repeatable user
-      action with no in-flight guard is COD-F3E.
+    criteria: Qualifies when code checks a condition (existence, type, symlink status, permission, value)
+      and later acts on the result as a separate step, so the state can change between the check and the act
+      and the act proceeds on a stale premise. Evidence names the check, the act, and what can change the
+      state between them. A repeatable user action with no in-flight guard is COD-F3E; a DB or KV read-modify-write
+      with no lock or CAS is DAT-D1C, and the flat-file form is DAT-F1C; a copy that dereferences attacker-controlled
+      symlinks is SEC-D1C; an enforcement gate that trusts a persisted flag instead of re-verifying is ARC-F1A.
     see_also:
+    - ARC-F1A
+    - COD-F1A
+    - COD-F3B
     - COD-F3E
+    - DAT-A1B
+    - DAT-D1C
+    - DAT-F1C
+    - OPS-C1B
+    - SEC-D1C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the check is a security decision (path confinement, symlink, permission) and a less-trusted
+          party can write the checked object during the window
   COD-F1C:
     name: shared-mutable-state-without-synchronization
     default_severity: MEDIUM
@@ -557,14 +1236,31 @@ entries:
     cwe:
     - CWE-362
     notes: 'single-homes COD/ARC/SEC thread-safety duplicates (big rock #0)'
-    criteria: >-
-      Qualifies when state shared between threads, tasks or concurrent async
-      continuations is read and written without synchronisation, so an
-      interleaving corrupts or overwrites it, including an older async result
-      applied over a newer one. A user action that can be re-entered while its
-      own request is in flight is COD-F3E.
+    criteria: Qualifies when state shared between threads, tasks, or concurrent async continuations is read
+      and written without synchronisation, so an interleaving corrupts or overwrites it, including an older
+      async result applied over a newer one. Evidence names the shared state and two concurrent writers. A
+      user action that can be re-entered while its own request is in flight is COD-F3E; one-time lazy initialization
+      that races is COD-F3B; database rows are DAT-D1C and shared flat files are DAT-F1C.
     see_also:
+    - ARC-D2C
+    - COD-C2B
+    - COD-F3A
+    - COD-F3B
     - COD-F3E
+    - DAT-D1C
+    - DAT-F1C
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the corrupted state is persisted or sent on (written to storage or returned to a client),
+          and the code runs with two or more concurrent writers in its default deployment (a thread pool,
+          multiple async tasks, or several workers sharing the state), as the evidence shows
+      lower_when:
+      - to: LOW
+        condition: the shared state is a cache or counter used only for display or metrics, and a lost update
+          is corrected the next time it is read
   COD-F2A:
     name: deadlock-lock-ordering
     default_severity: HIGH
@@ -574,6 +1270,21 @@ entries:
     - gap-review
     cwe:
     - CWE-833
+    criteria: Qualifies when two or more code paths acquire the same locks (mutexes, DB row locks, file locks)
+      in different orders, or a path re-acquires a non-reentrant lock it already holds, so concurrent execution
+      can block forever. Evidence names the locks and the two acquisition orders. A blocking call that stalls
+      an event loop is COD-F2B; a missing timeout on an outbound call is OPS-A1A; a long-held DB transaction
+      that causes contention is DAT-D1D.
+    see_also:
+    - DAT-D1D
+    - OPS-A1A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the lock acquisitions use a timeout or try-lock, so the cycle ends in an error and retry
+          and not a permanent hang
   COD-F2B:
     name: blocking-call-in-async-context
     default_severity: MEDIUM
@@ -587,6 +1298,14 @@ entries:
       Rendering an unbounded collection in one pass is COD-F2C.
     see_also:
     - COD-F2C
+    - OPS-A1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the blocking call runs only at startup or shutdown, before or after the loop serves any
+          request or UI event
   COD-F2C:
     name: unbounded-collection-rendered-in-one-pass
     default_severity: MEDIUM
@@ -613,6 +1332,13 @@ entries:
     - QAL-G2A
     - OPS-D1B
     - COD-F2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the collection is bounded by an enforced product limit (for example a server-side cap on
+          members or messages per view) small enough that one pass stays cheap
   COD-F3A:
     name: stale-cache-read-without-invalidation
     default_severity: MEDIUM
@@ -620,6 +1346,23 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: Qualifies when code reads a cached or memoized value after the underlying source has changed
+      and there is no invalidation, versioning, or expiry tied to that change, so callers get an outdated
+      result. Evidence names the cache, the write that should invalidate it, and the read that returns the
+      old value. A copy of data kept in sync with a source of record that has drifted is DAT-E1D; missing
+      memoization (the opposite) is QAL-G1B; a race between concurrent writers to the cache is COD-F1C.
+    see_also:
+    - ARC-F1A
+    - COD-F1C
+    - DAT-E1D
+    - QAL-G1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the cache has a short time-to-live that the evidence shows, and a stale read only delays
+          a non-critical display update
   COD-F3B:
     name: thread-unsafe-lazy-initialization
     default_severity: MEDIUM
@@ -629,6 +1372,21 @@ entries:
     - gap-review
     cwe:
     - CWE-543
+    criteria: Qualifies when a value is created on first use (a singleton, a cached client, a module-level
+      lazy global) by a check-if-unset then set step with no lock or once-guard, so concurrent first callers
+      can each create it, or one can see a partly built instance. Evidence names the lazy site and the concurrent
+      callers. General unsynchronised shared state is COD-F1C; a check that goes stale before the act on external
+      state is COD-F1B; a cache that is never invalidated is COD-F3A.
+    see_also:
+    - COD-F1B
+    - COD-F1C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: creating the value twice is idempotent and side-effect free, and the language's memory
+          model publishes the reference only after construction, so the only cost is duplicate work
   COD-F3C:
     name: unawaited-async-result
     default_severity: MEDIUM
@@ -636,6 +1394,21 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: Qualifies when an async call's coroutine, promise, or future is created and never awaited or
+      otherwise handled (a missing await, a fire-and-forget with no error handler), so its work may not run,
+      may finish after the caller has moved on, or may fail with nobody seeing the rejection. Evidence names
+      the call and what depends on its result. A user action that can be re-triggered while in flight is COD-F3E;
+      an error that is caught and dropped is COD-B2C; a blocking call inside async code is COD-F2B.
+    see_also:
+    - COD-B2C
+    - COD-F3E
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the unawaited work is meant to be fire-and-forget (telemetry, a prefetch), and nothing
+          later reads its result or depends on its finishing
   COD-F3D:
     name: unsafe-signal-handler
     default_severity: MEDIUM
@@ -645,6 +1418,20 @@ entries:
     - gap-review
     cwe:
     - CWE-479
+    criteria: Qualifies when a signal handler does work that is not async-signal-safe (allocating, taking
+      locks, doing I/O, calling non-reentrant library functions) or changes shared state that the interrupted
+      code may be using, so a signal arriving at the wrong moment deadlocks or corrupts that state (CWE-479).
+      Evidence names the handler and the unsafe operation. Missing graceful-shutdown draining on SIGTERM is
+      OPS-B1A; general unsynchronised shared state is COD-F1C.
+    see_also:
+    - OPS-B1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the runtime defers the handler to a safe point (for example, Python runs signal handlers
+          between bytecodes on the main thread) and the handler only sets a flag or exits
   COD-F3E:
     name: async-action-without-in-flight-guard
     default_severity: MEDIUM
@@ -666,8 +1453,20 @@ entries:
       guard. Threads or tasks racing on unsynchronised shared state are COD-F1C;
       a check that is stale by the time it is acted on is COD-F1B.
     see_also:
-    - COD-F1C
     - COD-F1B
+    - COD-F1C
+    - COD-F3C
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the duplicated side effect is a payment, charge, or transfer that cannot be reversed, and
+          the server takes no idempotency key and has no dedup for the request
+      lower_when:
+      - to: LOW
+        condition: the server treats the request as idempotent (an idempotency key, upsert, or unique constraint),
+          so a repeat yields one effect and at most a redundant call
   COD-G1A:
     name: dst-unsafe-time-arithmetic
     default_severity: MEDIUM
@@ -675,6 +1474,21 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: Qualifies when code adds or subtracts calendar spans (days, months) as fixed numbers of seconds
+      or hours in local time, or builds local times that may not exist or may occur twice, so results are
+      an hour off or invalid across a DST change. Evidence names the arithmetic and the time zone. Comparing
+      naive and aware datetimes is COD-G1C; using the wall clock to time intervals is COD-G1D; user-facing
+      date formatting is LNG-B1A.
+    see_also:
+    - COD-G1C
+    - COD-G1D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the time zone the computation runs in is pinned to UTC or another zone with no DST, as
+          shown by the code or deployment config
   COD-G1B:
     name: epoch-unit-confusion-ms-vs-s
     default_severity: MEDIUM
@@ -682,6 +1496,24 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: Qualifies when an epoch timestamp produced in one unit (milliseconds, microseconds) is read
+      as another (seconds), or the reverse, so dates land decades off or durations are off by a factor of
+      1000. Evidence names the producer's unit and the consumer's assumption. Unit confusion in a quantity
+      that is not a timestamp is COD-G3C; precision lost when converting the timestamp is COD-G2C.
+    see_also:
+    - COD-G2C
+    - COD-G3C
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the misread timestamp decides when data is deleted or retained, or when a credential or
+          token expires, so records are deleted early or access outlives its intended expiry
+      lower_when:
+      - to: LOW
+        condition: the value is only displayed, and the resulting date is so far off that a reader cannot
+          miss it
   COD-G1C:
     name: naive-aware-datetime-mixing
     default_severity: MEDIUM
@@ -689,6 +1521,20 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: Qualifies when time-zone-aware and naive datetimes are compared, subtracted, or stored together,
+      so the code raises, or treats a naive value as local time when it was UTC (or the reverse), and ordering
+      or durations come out wrong. Evidence names both values' origins. DST-unsafe calendar arithmetic is
+      COD-G1A; a wrong epoch unit is COD-G1B.
+    see_also:
+    - COD-G1A
+    - LNG-B1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: mixing them raises an exception every time (Python's naive/aware comparison TypeError),
+          so it cannot produce a wrong ordering unseen
   COD-G1D:
     name: wall-clock-used-for-elapsed-time
     default_severity: LOW
@@ -696,6 +1542,23 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: Qualifies when elapsed time, timeouts, or rate limits are measured with the wall clock (time.time(),
+      Date.now()) instead of a monotonic clock, so NTP adjustments, manual changes, or leap smearing make
+      intervals negative, too long, or too short. Evidence names the measurement and the decision it drives.
+      A test whose result depends on the wall clock is TST-F1E; DST arithmetic on calendar time is COD-G1A.
+    see_also:
+    - COD-G1A
+    - TST-F1E
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the measured interval drives a timeout, lockout, rate limit, or token-expiry decision,
+          so a clock step can expire or extend it
+      lower_when:
+      - to: INFO
+        condition: the measured interval is only logged or reported as a duration
   COD-G2A:
     name: monetary-value-in-float
     default_severity: HIGH
@@ -705,6 +1568,24 @@ entries:
     - gap-review
     cwe:
     - CWE-681
+    criteria: Qualifies when monetary amounts are stored, summed, or compared as binary floating point (float,
+      double, JS number used for fractional currency), so rounding error builds up into wrong totals or failed
+      equality. Evidence names the money value and the arithmetic. A database column type that cannot hold
+      the amount exactly is DAT-A1A; precision lost in a non-monetary numeric conversion is COD-G2C; comparing
+      floats for equality in general is COD-G2D.
+    see_also:
+    - COD-G2C
+    - DAT-A1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the float only holds a value computed exactly elsewhere (integer minor units or decimal)
+          and is used for display or formatting, never fed back into arithmetic or storage
+      - to: LOW
+        condition: the amounts are whole currency units well within 2^53 and are never divided or multiplied
+          by fractions
   COD-G2B:
     name: integer-overflow-or-truncation
     default_severity: MEDIUM
@@ -714,6 +1595,26 @@ entries:
     - gap-review
     cwe:
     - CWE-190
+    criteria: Qualifies when integer arithmetic or a narrowing cast can go past the target type's range (a
+      fixed-width add, multiply, or shift, int64 to int32, signed to unsigned), so the value wraps, saturates,
+      or is truncated without notice. Evidence names the operation, the type, and the input range that overflows
+      it. When the overflowed value then sizes a buffer write, the memory corruption is COD-A2A; loss of fractional
+      or low-order precision without a range overflow is COD-G2C.
+    see_also:
+    - COD-A2A
+    - COD-G2C
+    - DAT-A1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the overflowed value is used as an allocation size, length, or index, or as a balance or
+          quantity that is persisted, and the overflowing input can arrive through normal use
+      lower_when:
+      - to: LOW
+        condition: the language traps on overflow in the shipped build (checked arithmetic), so overflow aborts
+          instead of wrapping
   COD-G2C:
     name: precision-loss-in-numeric-conversion
     default_severity: MEDIUM
@@ -723,6 +1624,28 @@ entries:
     - gap-review
     cwe:
     - CWE-681
+    criteria: Qualifies when a numeric value is converted to a representation that cannot hold it exactly
+      (a 64-bit integer through a JSON or JS double, a decimal through float, a high-precision value through
+      a narrower float) and the code goes on to rely on the exact value. Evidence names the conversion and
+      a value that changes. Money in float is COD-G2A; integer range overflow or truncation is COD-G2B; a
+      database column too narrow for the value is DAT-A1A.
+    see_also:
+    - COD-G1B
+    - COD-G2A
+    - COD-G2B
+    - COD-G2D
+    - DAT-A1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the converted value is an identifier or key (a 64-bit id through a double), so distinct
+          records collide or point to the wrong record without notice
+      lower_when:
+      - to: LOW
+        condition: the converted value is only displayed or rounded for presentation, and no comparison, key,
+          or later calculation uses it
   COD-G2D:
     name: float-equality-comparison
     default_severity: LOW
@@ -730,6 +1653,23 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: Qualifies when floating-point values produced by arithmetic are compared with == or != (or used
+      as dict or set keys) instead of within a tolerance, so mathematically equal results compare unequal.
+      Evidence names the comparison and how the operands were computed. Money stored in float is COD-G2A;
+      precision lost in a conversion is COD-G2C.
+    see_also:
+    - COD-G2C
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the equality result ends a loop or decides a branch that changes persisted data or a gate
+          verdict
+      lower_when:
+      - to: INFO
+        condition: both operands are exactly representable constants or integers stored as floats, so equality
+          is exact
   COD-G3A:
     name: bytes-string-conflation
     default_severity: MEDIUM
@@ -737,6 +1677,21 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: 'Qualifies when raw bytes and decoded text are mixed up: bytes concatenated with or compared
+      to str, a str written to a binary stream, len() of bytes treated as a character count in data processing,
+      or a repr like b''...'' ending up in output. Evidence names the value and where its kind changes without
+      notice. Decoding with an implicit platform encoding is COD-G3B; user-facing text length or truncation
+      by bytes is LNG-E1A; one field with different types across return paths is COD-D3C.'
+    see_also:
+    - COD-D3C
+    - COD-G3B
+    - LNG-E1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the mix-up raises a TypeError on every run, so it cannot produce corrupted output silently
   COD-G3B:
     name: default-encoding-assumption
     default_severity: MEDIUM
@@ -746,6 +1701,22 @@ entries:
     - gap-review
     cwe:
     - CWE-176
+    criteria: Qualifies when text is read from or written to files, subprocesses, or sockets without naming
+      an encoding, so the platform or locale default (cp1252, ASCII, the LANG setting) is used and non-ASCII
+      content is garbled or raises on other machines (CWE-176). Evidence names the I/O call and the content
+      that can be non-ASCII. Mixing bytes and str is COD-G3A; strings compared without Unicode normalization
+      is COD-G3D; locale-aware formatting of UI text is LNG-B1A.
+    see_also:
+    - COD-G3A
+    - COD-G3D
+    - LNG-E1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the runtime's default is UTF-8 on every supported platform (for example Python UTF-8 mode
+          is forced, or the supported OS list has only UTF-8 locales)
   COD-G3C:
     name: unit-confusion-in-quantity
     default_severity: MEDIUM
@@ -753,6 +1724,26 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: Qualifies when a quantity (a size, duration, distance, rate, currency) produced in one unit
+      is used as another (KiB as bytes, minutes as seconds, cents as dollars) with no conversion, so limits,
+      thresholds, or results are off by a constant factor. Evidence names the producer's unit and the consumer's
+      assumption. An epoch timestamp read in the wrong unit is COD-G1B; an external API passed a value in
+      the wrong unit is COD-D3A.
+    see_also:
+    - COD-D3A
+    - COD-G1B
+    - LNG-B1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the mis-scaled quantity is a money amount, a dosage or physical control value, or a safety
+          limit (a size cap or rate limit made 1000x looser), so the error causes financial loss or disables
+          a protection
+      lower_when:
+      - to: LOW
+        condition: the mis-scaled quantity only feeds a log line or a display label
   COD-G3D:
     name: unicode-normalization-mismatch
     default_severity: LOW
@@ -762,3 +1753,22 @@ entries:
     - gap-review
     cwe:
     - CWE-176
+    criteria: Qualifies when strings that can contain composed or decomposed Unicode forms (NFC vs NFD, compatibility
+      characters) are compared, hashed, or used as keys without normalizing them to one form, so visually
+      identical text fails to match or duplicates get past a uniqueness check (CWE-176). Evidence names the
+      comparison and the source of non-normalized text. Non-Unicode identifier normalization (case, ./ prefixes,
+      separators) is COD-C2D; byte-vs-character length is LNG-E1A.
+    see_also:
+    - COD-C2D
+    - COD-G3B
+    - LNG-E1A
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the compared string is an identity or uniqueness key (a username, file path, permission
+          or role name), so distinct forms of the same text slip past a uniqueness or match check
+      lower_when:
+      - to: INFO
+        condition: every input reaching the comparison is restricted to ASCII by an earlier validation step
