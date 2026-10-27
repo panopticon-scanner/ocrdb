@@ -150,6 +150,9 @@ entries:
     examples:
     - missing-query-result-limit
     - unpaginated-list-endpoint
+    see_also:
+    - COD-F2C
+    - QAL-G2A
   OPS-E1A:
     name: silent-failure-without-telemetry
     default_severity: MEDIUM

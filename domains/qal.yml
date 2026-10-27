@@ -650,6 +650,14 @@ entries:
     cwe:
     - CWE-400
     character: defect
+    criteria: >-
+      Qualifies when a collection that grows with the data is loaded into
+      memory whole where streaming, paging or a bound is available. Rendering
+      such a collection into the UI in one pass is COD-F2C; an endpoint or query
+      returning it unbounded is OPS-D1B.
+    see_also:
+    - COD-F2C
+    - OPS-D1B
   QAL-H1A:
     name: overly-complex-function
     default_severity: MEDIUM

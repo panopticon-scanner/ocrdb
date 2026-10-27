@@ -14,7 +14,7 @@ first; this file is the practical how-to.
 
 Every code is `DOMAIN-AREA CAT ISSUE`, e.g. `SEC-A1A`:
 
-- **Domain** — one of the ten **approved** core domains (`SEC COD ARC TST QAL AGT DAT OPS ACC LNG`). No candidate domain is in the catalog: `MOC`/`CMP` were absorbed into ARC/SEC at 0.5.0, and `FRN`/`LGL` are proposed for admission at the 0.6.0 entry point. See the lifecycle ladder in `RATIFICATION.md`.
+- **Domain** — one of the ten **approved** core domains (`SEC COD ARC TST QAL AGT DAT OPS ACC LNG`). No candidate domain is in the catalog: `MOC`/`CMP` were absorbed into ARC/SEC at 0.5.0, `FRN` was absorbed into COD at 0.6.0, and `LGL` is a provisional calibration skeleton. See the lifecycle ladder in `RATIFICATION.md`.
 - **Area** (a letter) and **category** (a digit) group related hazards.
 - **Issue** (a letter) names one defect type, letter-ordered by typical severity.
 
