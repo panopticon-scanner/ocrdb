@@ -2,13 +2,32 @@
 
 All notable changes to the OCRDb taxonomy. Codes are held stable per release but may change before 1.0 (pre-1.0); see SCHEMA.md stability contract.
 
-## [Unreleased] — 0.6.0 entry point
+## [0.6.0] - 2026-10-26
+
+Entry-point release. FRN and LGL were admitted and calibrated over two rounds. FRN is absorbed into COD with 3 gap codes (395 → 398), and LGL holds at provisional. The stability contract holds: all 395 prior codes are byte-identical on `name` / `default_severity` against 0.5.1. 0 changed, 3 added, 0 removed. `validate.py`: 0 errors.
+
+Verdict records: `ocrdb-docs/calibration/0.6.0-r1-panel-2026-08-27/verdict-r1.md` (round 1) and `ocrdb-docs/calibration/0.6.0-r2-panel-2026-10-26/verdict-r2.md` (round 2).
+
+### Added — catalog (FRN absorb)
+
+Each code is the FRN skeleton code with the strongest *homeless* evidence: G3-upheld findings that reviewers said no approved code fits, pooled over R1 + R2, on 8 or more of the 10 targets.
+
+- `COD-B2F unguarded-web-storage-access` (LOW). A Web Storage call with no handling for `SecurityError` / `QuotaExceededError`, so blocked or full storage breaks a render, boot or persistence path. From FRN-C1B: 40 survivors, 31 homeless, 9 targets.
+- `COD-F2C unbounded-collection-rendered-in-one-pass` (MEDIUM). A collection that grows with user data is rendered whole in one interaction, with no paging, virtualisation or cap. From FRN-D1A: 25 survivors, 23 homeless, 8 targets.
+- `COD-F3E async-action-without-in-flight-guard` (MEDIUM). A user-triggered async action can be activated again while the first is still in flight, issuing duplicate side effects. From FRN-B1B: 20 survivors, 17 homeless, 8 targets.
+
+### Changed — catalog
+
+- The new codes carry `criteria` (qualification plus nearest-neighbour exclusion) and reciprocal `see_also`, to the 0.5.1 bar.
+- Their neighbours gain the reciprocal side and, where they had none, a `criteria` naming the boundary: `COD-B2C` ↔ `COD-B2F`, `COD-F2B` / `QAL-G2A` / `OPS-D1B` ↔ `COD-F2C`, and `COD-F1B` / `COD-F1C` ↔ `COD-F3E`.
 
 ### Changed — domain ladder
 
-- **FRN and LGL admitted** at the 0.6.0 entry point. Both are calibration skeletons; neither is in `domains/*.yml`, and the 395-code catalog is unchanged.
+- **FRN and LGL admitted** at the 0.6.0 entry point as calibration skeletons, outside `domains/*.yml`.
 - **FRN → draft.** It cleared every 0.6.0-R1 round-1 gate: 129 adversarially upheld findings, breadth 7 of 7 core targets, independence on 6 targets, and 4 areas with ≥ 2 codes each. Verdict record: `ocrdb-docs/calibration/0.6.0-r1-panel-2026-08-27/verdict-r1.md`.
 - **LGL holds at provisional.** It failed only the domain-shape gate: areas A and C surfaced one code each. 0.6.0-R2 re-probes them.
+- **FRN → absorbed into COD** (round 2, 0.6.0-R2, mid-tier reproduction). It passed six of the seven criteria: fit 96.0%, breadth 10/10, 4 families, homelessness 58.4% (bar 51.9%), 4 rich areas, and tier reproduction. It failed the rate criterion: FRN survivors per target were 0.33 of the DAT control, against a bar of 0.50. The SEC positive-detection control passed on 4 of 4 anchors, so the failure is conclusive. Unlike MOC/CMP, FRN did not resolve to an existing home. The absorb therefore adds only the three codes above, and the rest of the FRN evidence stands for a re-proposal at 0.8.0.
+- **LGL is one area.** 0.6.0-R2 re-probed areas A and C on four targets chosen for that surface. Every new survivor was LGL-B, and pooled over R1 + R2 only one area (LGL-B) has two or more codes. LGL stays provisional. The 0.8.0 proposal is a narrowed LGL-B (attribution and notices). Its findings are 88.6% homeless, so there is no approved home to absorb it into.
 
 ## [0.5.1] - 2026-09-02
 

@@ -163,12 +163,14 @@ entries:
       checked, so the program proceeds on bad or absent data. When the swallowed
       failure is specifically security-relevant it is SEC-F1B; when the defect is
       an OVERBROAD catch clause masking multiple error types it is ARC-F2G; a
-      config-loader that fails open is COD-B1A.
+      config-loader that fails open is COD-B1A. A Web Storage call with no
+      handling for its throws is COD-B2F.
     see_also:
     - SEC-F1B
     - ARC-F2G
     - COD-B1A
     - OPS-E1A
+    - COD-B2F
   COD-B2D:
     name: result-not-revalidated-after-transform
     default_severity: LOW
@@ -188,6 +190,30 @@ entries:
     recurrence: 1
     examples:
     - recover_linkage_from_github caps at --limit 1000 with no detection or warning that results were truncated
+  COD-B2F:
+    name: unguarded-web-storage-access
+    default_severity: LOW
+    status: active
+    provenance:
+    - corpus
+    recurrence: 9
+    cwe:
+    - CWE-755
+    examples:
+    - A theme hook reads localStorage in its state initializer and writes it in a layout effect with no
+      try/catch, so a blocked or full storage throws and aborts the app's first render
+    - A draft-persistence path updates in-memory state, then calls sessionStorage.setItem unguarded, so a
+      quota error leaves the two diverged
+    criteria: >-
+      Qualifies when a client path calls the Web Storage API (localStorage or
+      sessionStorage getItem, setItem, removeItem, or the property access
+      itself) with no handling for its documented throws, SecurityError when
+      storage is blocked and QuotaExceededError when it is full, so a browser
+      that denies or fills storage breaks a render, boot or persistence path
+      instead of degrading. Evidence names the call and the path it aborts. A
+      generic auxiliary load whose failure goes unchecked is COD-B2C.
+    see_also:
+    - COD-B2C
   COD-C1A:
     name: analyzer-confidence-conflated-with-severity
     default_severity: HIGH
@@ -514,6 +540,12 @@ entries:
     examples:
     - decide() validates a write target via os.path.islink()/os.path.realpath(), but the actual write happens later
       in a separate tool-call step, leaving a window for the target to change
+    criteria: >-
+      Qualifies when a condition is checked and then acted on non-atomically,
+      so the state can change between the check and the act. A repeatable user
+      action with no in-flight guard is COD-F3E.
+    see_also:
+    - COD-F3E
   COD-F1C:
     name: shared-mutable-state-without-synchronization
     default_severity: MEDIUM
@@ -525,6 +557,14 @@ entries:
     cwe:
     - CWE-362
     notes: 'single-homes COD/ARC/SEC thread-safety duplicates (big rock #0)'
+    criteria: >-
+      Qualifies when state shared between threads, tasks or concurrent async
+      continuations is read and written without synchronisation, so an
+      interleaving corrupts or overwrites it, including an older async result
+      applied over a newer one. A user action that can be re-entered while its
+      own request is in flight is COD-F3E.
+    see_also:
+    - COD-F3E
   COD-F2A:
     name: deadlock-lock-ordering
     default_severity: HIGH
@@ -541,6 +581,38 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: >-
+      Qualifies when a synchronous blocking call (I/O, sleep, lock wait, or
+      heavy CPU work) runs on an async event loop or UI thread and stalls it.
+      Rendering an unbounded collection in one pass is COD-F2C.
+    see_also:
+    - COD-F2C
+  COD-F2C:
+    name: unbounded-collection-rendered-in-one-pass
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 8
+    cwe:
+    - CWE-400
+    examples:
+    - A table view renders every row of a user-data collection in a single render pass, with no paging,
+      virtualisation or cap, so render time and DOM size grow with the data
+    - A chat panel maps a session's full message history to rendered message components when it opens
+    criteria: >-
+      Qualifies when one interaction renders every item of a collection that
+      grows with user data (rows, messages, participants, search results) into
+      the UI in a single pass, with no paging, virtualisation, windowing or cap,
+      so the interaction's main-thread time and DOM size scale with the data.
+      Evidence names the collection's source, why it is unbounded, and the
+      render site. Loading an unbounded collection into memory is QAL-G2A; an
+      endpoint or query returning an unbounded result set is OPS-D1B; a
+      synchronous blocking call on an async path is COD-F2B.
+    see_also:
+    - QAL-G2A
+    - OPS-D1B
+    - COD-F2B
   COD-F3A:
     name: stale-cache-read-without-invalidation
     default_severity: MEDIUM
@@ -573,6 +645,29 @@ entries:
     - gap-review
     cwe:
     - CWE-479
+  COD-F3E:
+    name: async-action-without-in-flight-guard
+    default_severity: MEDIUM
+    status: active
+    provenance:
+    - corpus
+    recurrence: 8
+    examples:
+    - A Save button calls an async upload mutation and stays enabled until the success callback navigates
+      away, so a second click submits a duplicate
+    - A confirm handler starts a permission change without recording or checking an in-flight state, so
+      repeated activation fires the request again
+    criteria: >-
+      Qualifies when a user-triggered asynchronous action (a mutation, submit or
+      create) can be activated again while an earlier activation is still in
+      flight, because nothing disables the control, tracks a pending state, or
+      deduplicates the request, so repeated activation issues duplicate side
+      effects. Evidence names the trigger, the async call, and the missing
+      guard. Threads or tasks racing on unsynchronised shared state are COD-F1C;
+      a check that is stale by the time it is acted on is COD-F1B.
+    see_also:
+    - COD-F1C
+    - COD-F1B
   COD-G1A:
     name: dst-unsafe-time-arithmetic
     default_severity: MEDIUM

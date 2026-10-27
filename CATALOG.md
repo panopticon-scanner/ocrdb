@@ -1,6 +1,6 @@
-# OCRDb Catalog — v0.5.1
+# OCRDb Catalog — v0.6.0
 
-395 finding types across 10 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.5.1.html`.
+398 finding types across 10 domains. Generated from `domains/` by `tools/build_catalog.py` — do not edit by hand. For a searchable view, open `build/ocrdb-0.6.0.html`.
 
 **Severity** INFO · LOW · MEDIUM · HIGH · CRITICAL — the *typical* grade for the defect type, not a per-instance verdict. **character**: `defect` (absent) or `opportunity`.
 
@@ -11,7 +11,7 @@
 | [`ACC`](#acc--accessibility) | accessibility | 8 |
 | [`AGT`](#agt--agentic-trust) | agentic-trust | 16 |
 | [`ARC`](#arc--architecture) | architecture | 71 |
-| [`COD`](#cod--correctness) | correctness | 55 |
+| [`COD`](#cod--correctness) | correctness | 58 |
 | [`DAT`](#dat--data-and-persistence) | data-and-persistence | 27 |
 | [`LNG`](#lng--language-and-internationalization) | language-and-internationalization | 8 |
 | [`OPS`](#ops--production-readiness) | production-readiness | 9 |
@@ -354,6 +354,7 @@
 | `COD-B2C` | missing-error-handling-around-auxiliary-load | LOW | CWE-755 | — |
 | `COD-B2D` | result-not-revalidated-after-transform | LOW | — | — |
 | `COD-B2E` | silent-truncation-without-warning | LOW | — | — |
+| `COD-B2F` | unguarded-web-storage-access | LOW | CWE-755 | — |
 
 ### COD-C · tool-adapter-normalization
 
@@ -440,6 +441,7 @@
 |---|---|---|---|---|
 | `COD-F2A` | deadlock-lock-ordering | HIGH | CWE-833 | — |
 | `COD-F2B` | blocking-call-in-async-context | MEDIUM | — | — |
+| `COD-F2C` | unbounded-collection-rendered-in-one-pass | MEDIUM | CWE-400 | — |
 
 **COD-F3 · async-correctness**
 
@@ -449,6 +451,7 @@
 | `COD-F3B` | thread-unsafe-lazy-initialization | MEDIUM | CWE-543 | — |
 | `COD-F3C` | unawaited-async-result | MEDIUM | — | — |
 | `COD-F3D` | unsafe-signal-handler | MEDIUM | CWE-479 | — |
+| `COD-F3E` | async-action-without-in-flight-guard | MEDIUM | — | — |
 
 ### COD-G · data-representation-and-time
 
