@@ -1,53 +1,163 @@
 # OCRDb domain file — PRE-1.0: no domain is ratified until 1.0; this domain's lifecycle stage is derived, not stored here — see RATIFICATION.md.
 domain: QAL
 name: quality-maintainability
+guide: 'QAL covers code and docs that work but are harder to read, change or keep consistent: naming,
+  formatting, inert stale references, duplication, dead code, convention drift, avoidable recomputation,
+  complexity and diagnostic quality. Use COD when the instance gives a wrong result or breaks a contract,
+  ARC when two sources of truth disagree or the fix needs a new structural owner, TST when the same hazard
+  sits in test code (for example TST-C5C, TST-C5D, TST-G1A, TST-G2A), ACC for an assistive-technology
+  defect, and OPS, DAT or SEC when the cost is runtime capacity, query volume or attacker-reachable resource
+  use. Start with A (readability) or B (mechanical style) for local text problems, C for documentation,
+  D and E for copies and leftovers, F for placement and convention, G for wasted work, H for complexity
+  and I for logs and traces.'
 areas:
   A:
     name: readability
+    guide: Readability of names, expressions and comments at a single site, where the code is correct but
+      a reader can misread it. Names go in A1 and expressions, numbers and comments in A2. Convention mismatches
+      across files go in F3.
     categories:
       '1': naming
       '2': clarity
+    category_guides:
+      '1': Naming problems. QAL-A1B is a mixed naming style. QAL-A1C is a name that clashes with an existing
+        domain concept. A misleading test or helper name is TST-C3B or TST-C3C, and a cross-host field-name
+        mismatch is QAL-F3C.
+      '2': Clarity of an expression or literal. Use QAL-A2B for precedence a reader can misread, QAL-A2C for
+        an unexplained number or a fixed index, and QAL-A2D for comments that only restate the code. A hardcoded
+        index that is actually wrong is COD-A2B, and an out-of-range access is COD-A2C. A precedence bug that
+        actually evaluates wrongly has no specific code yet (COD-X0X). The same magic value in a test is TST-C5D.
   B:
     name: style-and-formatting
+    guide: 'Mechanical style: import statements, whitespace and layout, and string-building idioms. Most entries
+      here can be caught by a linter (automated_by). Choose B only when the finding is about how a line is
+      written. Where code is placed belongs in F2, and conventions shared across modules belong in F1 or F3.'
     categories:
       '1': imports
       '2': whitespace-and-layout
       '3': string-formatting
+    category_guides:
+      '1': Import statements within one file. QAL-B1A is several imports on one line, QAL-B1B is an import
+        placed mid-file or inside a function, and QAL-B1C is an import repeated or shadowed. Inconsistent
+        import style across modules is QAL-F1B. The test-code forms are TST-C5C and TST-G2A.
+      '2': Whitespace and line layout. QAL-B2A is an overlong line, QAL-B2B is an awkward continuation, QAL-B2C
+        is missing blank lines and QAL-B2D is inconsistent spacing inside literals. These are pure formatting,
+        so pick whichever names the visible symptom.
+      '3': String-building idioms. QAL-B3B is f-strings and %-formatting mixed in one file, and QAL-B3C is
+        + concatenation where the file otherwise uses f-strings. QAL-B3A covers the prefix convention of diagnostic
+        messages, not the formatting idiom. A message lacking identifying context is QAL-I1B.
   C:
     name: documentation
+    guide: 'Documentation hygiene: references that have gone stale, and doc text that lags the code without
+      breaking anything. Under the routing principle, inert staleness homes here. Stale pointers are C1 and
+      inert doc-text drift is C2. If a missing reference breaks the code or build, it is ARC-D3A. If a doc
+      and the code are competing sources of truth for the same fact, it is ARC-G1B. If a documented feature
+      does not exist at all, it is COD-D2B.'
     categories:
       '1': stale-references
       '2': docs-code-drift
+    category_guides:
+      '1': Stale pointers that break nothing. QAL-C1A is a URL, QAL-C1C is a file path and QAL-C1D is a version
+        number. A stale packaging-manifest URL is ARC-B1C, a doc describing an artifact the repo lacks is
+        ARC-D3B, and a path filter that no longer matches what it should is ARC-C1B. QAL-C1B covers documentation
+        lists in an inconsistent order.
+      '2': 'Doc text that has drifted. QAL-C2A is a schema or example stricter than reality but inert, QAL-C2B
+        is one document contradicting itself, QAL-C2C is CLI docs lagging real flags, QAL-C2D is a docstring
+        error contract that is wrong, and QAL-C2F is config behavior left undocumented. Easy to confuse: QAL-C2A
+        vs COD-D1B (live rejection), QAL-C2B vs COD-D2C (contradictory spec documents), and QAL-C2C/QAL-C2F
+        vs COD-D2D (a capability missing from the docs entirely). QAL-C2E (typos) is text hygiene, not drift.'
   D:
     name: duplication
+    guide: Copy-paste duplication that can be consolidated within the existing structure. The finding is the
+      copies themselves. If the fix needs a new shared module or a canonical owner, use ARC-A3A or ARC-A5A.
+      Duplicated test helpers are TST-C2B or TST-G1B.
     categories:
       '1': duplicated-logic
+    category_guides:
+      '1': Duplicated code. QAL-D1A is an inline block of business logic, QAL-D1B is a constant or literal
+        table and QAL-D1C is a named helper function. A dead, drifted duplicate validator is QAL-E1B. Duplication
+        left alone on purpose because it is tangled with an open correctness finding is QAL-H2B.
   E:
     name: dead-code
+    guide: 'Leftovers that nothing uses: dead config, retired registrations, orphaned assets and unused functions.
+      If the code cannot run because of a misplaced guard or return, it is COD-E2A. Unused test fixtures are
+      TST-E1B.'
     categories:
       '1': dead-configuration
       '2': stale-artifacts
       '3': unused-code
+    category_guides:
+      '1': Config or rule definitions that nothing reads. QAL-E1A is a setting whose consumer is off or absent.
+        QAL-E1B is an unused, drifted duplicate of a validator, regex or constant. A setting that implies
+        an enforcement that does not happen is ARC-F1E, and contradictory lint settings are ARC-B1E.
+      '2': Artifacts a past change left behind. QAL-E2B is a retired component that is still registered (compare
+        ARC-A4C, shadow registries without parity), and QAL-E2C is CSS or asset rules with no referencing
+        markup.
+      '3': Unused code. QAL-E3A is a function with no callers. Unreachable code is COD-E2A, and an unused
+        duplicate validator is QAL-E1B.
   F:
     name: structure-and-convention
+    guide: 'Where code lives and whether it follows the codebase''s own conventions: how imports resolve across
+      modules, code in an unusual location, and convention drift (noqa usage, field naming, type-hint adoption).
+      Single-line import style is B1. A missing package structure that forces path hacks is ARC-A2C, and the
+      test-suite form is TST-G1A.'
     categories:
       '1': import-dependency-structure
       '2': code-placement
       '3': convention-divergence
+    category_guides:
+      '1': 'How imports resolve across modules. QAL-F1A is an implicit sys.path or caller-provided import
+        dependency, and QAL-F1B is import style varying between modules. Easy to confuse: ARC-A2C (packaging-level
+        resolution hack), TST-G1A (the test-suite form) and TST-G2A (inconsistent imports inside test methods).'
+      '2': Code placed in the wrong spot. QAL-F2A is logic embedded in a non-standard host such as CI YAML,
+        and QAL-F2B is a cosmetic __main__ guard sitting mid-file. When the guard hides code, it is COD-E2A
+        for production code and TST-C1A for tests. When embedded CI logic is also untested, that untested
+        path is ARC-C1C, not a higher grade of QAL-F2A.
+      '3': Divergence from the codebase's own convention. QAL-F3B is noqa usage, QAL-F3C is per-host field
+        names and QAL-F3D is partial type-hint adoption. A naming-style mix inside one module is QAL-A1B.
+        A cross-host parity gap in content (rather than naming) is ARC-E3C.
   G:
     name: efficiency
+    guide: 'Avoidable work and memory use in-process: recomputation, missing caches and whole-collection loads.
+      Repeated database queries are DAT-C1B, unbounded query results are DAT-C1C, attacker-reachable resource
+      use is SEC-H4B or SEC-F2A, and capacity under load is OPS-D1A.'
     categories:
       '1': redundant-computation
       '2': memory-and-scale
+    category_guides:
+      '1': Work repeated for no reason. QAL-G1A is loop-invariant work not hoisted, QAL-G1B is a pure or idempotent
+        load repeated across calls, and QAL-G1C is the narrow case of repeated filesystem stat or realpath
+        calls on an unchanging path. Pick QAL-G1C only for filesystem-metadata calls and QAL-G1A for other
+        per-iteration work. A query issued per row is DAT-C1B, and a stale cache after memoizing is COD-F3A.
+      '2': Memory growing with the data. QAL-G2A is an in-memory collection loaded whole. The neighbours are
+        DAT-C1C (DB result set), DAT-F2B (persisted file read), COD-F2C (UI rendering) and OPS-D1B (API response
+        cap).
   H:
     name: complexity-and-simplification
+    guide: Complexity, and how judgment is applied when simplifying. H1 covers code that is too complex, and
+      H2 covers simplification that goes wrong or abstraction that adds nothing. A function mixing separable
+      concerns is the structural ARC-A1C.
     categories:
       '1': complexity
       '2': simplification-judgment
+    category_guides:
+      '1': Local complexity. QAL-H1A is a whole function that is too long or has too many branches. QAL-H1B
+        is a single construct nested too deeply (nested ternaries, arrow code). Pick H1B when one construct
+        is the problem and H1A when the function as a whole is.
+      '2': Simplification judgment. QAL-H2A is a simplification that made code worse, and QAL-H2C is an abstraction
+        that adds no value. QAL-H2B applies only when near-duplicate code was explicitly deferred from unification
+        because of an open correctness finding. Without a recorded deferral, cite QAL-D1A or QAL-D1C.
   I:
     name: observability
+    guide: 'Diagnostics quality: logs and traces that exist but help too little. An error swallowed with no
+      telemetry at all is OPS-E1A, sensitive data in logs is SEC-B4A or SEC-B2B, and a missing audit record
+      is SEC-C4B.'
     categories:
       '1': diagnostics
+    category_guides:
+      '1': Diagnostic content. QAL-I1A is trace context dropped across a call, and QAL-I1B is a log message
+        with no identifying context. An error message that names the wrong cause is COD-B2B, and a mixed message-prefix
+        convention is QAL-B3A.
 entries:
   QAL-A1B:
     name: inconsistent-naming-convention
@@ -58,6 +168,20 @@ entries:
     character: opportunity
     examples:
     - maintain consistent naming conventions across a module
+    criteria: Qualifies when identifiers in one module or package mix naming conventions (snake_case and camelCase,
+      singular and plural collection names) with no rule that explains the split. A per-host config field-name
+      mismatch is QAL-F3C. A name that clashes with an existing domain concept is QAL-A1C. A test or helper
+      name that misstates behavior is TST-C3B or TST-C3C.
+    see_also:
+    - QAL-A1C
+    - QAL-F3C
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      raise_when:
+      - to: LOW
+        condition: The inconsistent names are part of an exported API, CLI flag set or config-key surface
+          that external callers must type.
   QAL-A1C:
     name: name-collision-with-domain-concept
     default_severity: INFO
@@ -69,6 +193,16 @@ entries:
     - Filename orchestrator.py collides with the unrelated 'orchestrator' concept used throughout the pipeline docs/agent
       naming
     - Same collision flagged again independently in a later review pass on the same file
+    criteria: Qualifies when a file, module or identifier reuses a term that already names a different, established
+      concept in the project's code or docs, so a reader conflates the two. A name that misstates what a test
+      or helper does is TST-C3B or TST-C3C. A term that is defined ambiguously in a spec is ARC-D2F. A naming-style
+      mix is QAL-A1B.
+    see_also:
+    - ARC-D2F
+    - QAL-A1B
+    severity_range:
+      floor: INFO
+      ceiling: INFO
   QAL-A2B:
     name: confusing-expression-precedence
     default_severity: LOW
@@ -82,6 +216,19 @@ entries:
     - '`"**Found by:** %s%s" % (src, "  \u00b7  model: %s" % prov["model"] if prov.get("model") else "")` reads,
       at a glance, as if the ternary applies to the wrong operand'
     - Awkward line break in a conditional expression obscures which branch a continuation line belongs to
+    criteria: Qualifies when an expression evaluates correctly but its operator precedence or line breaks
+      let a reader misread which operand a ternary, boolean or arithmetic operator binds. If the precedence
+      actually gives the wrong result, it is a correctness defect (COD; no specific code exists yet, so use
+      COD-X0X). Deeply nested conditional expressions are QAL-H1B.
+    see_also:
+    - QAL-H1B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The expression is already parenthesised or split so each operand's binding is explicit,
+          and only the line break is awkward.
   QAL-A2C:
     name: magic-number-or-fragile-hardcoded-index
     default_severity: LOW
@@ -95,6 +242,22 @@ entries:
     - render_summary() prepends banner lines via three independent lines.insert(<fixed index>, ...) calls with undocumented,
       fragile hardcoded indices
     character: opportunity
+    criteria: Qualifies when a numeric literal or positional index in production code has no name or comment
+      explaining it, or positional inserts and indexes depend on an unstated layout that a nearby edit would
+      silently shift. The value must currently be correct. Self-evident literals (0, 1, 60 seconds, 1024 bytes,
+      a standard HTTP status code) do not qualify. A wrong index or off-by-one is COD-A2B, and an empty or
+      out-of-range access is COD-A2C. The same unexplained value in test code is TST-C5D.
+    see_also:
+    - COD-A2B
+    - TST-B3A
+    - TST-C5D
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The literal is defined once next to a comment or adjacent docstring that states its origin,
+          and only its name is missing.
   QAL-A2D:
     name: comment-noise
     default_severity: INFO
@@ -104,6 +267,15 @@ entries:
     character: opportunity
     examples:
     - removing comments that describe obvious code
+    criteria: Qualifies when comments only restate what the adjacent code plainly does and add no intent or
+      rationale. A comment that has gone stale and now misstates the code is ARC-G1B, or QAL-C2D for a docstring's
+      error contract. A comment that points at a path that no longer exists is QAL-C1C. Commented-out code
+      is not covered here.
+    see_also:
+    - QAL-C1C
+    severity_range:
+      floor: INFO
+      ceiling: INFO
   QAL-B1A:
     name: combined-imports-single-line
     default_severity: LOW
@@ -119,6 +291,16 @@ entries:
       style'
     automated_by:
     - ruff:E401
+    criteria: Qualifies when several modules are imported in one import statement (PEP 8 E401). Imports placed
+      mid-file or inside functions are QAL-B1B. Imports repeated or re-aliased are QAL-B1C. Import style differing
+      across modules is QAL-F1B.
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The file's own sibling modules use the same combined style, so the instance departs only
+          from PEP 8, not from the codebase.
   QAL-B1B:
     name: mid-file-or-inline-import-placement
     default_severity: LOW
@@ -134,6 +316,15 @@ entries:
     - Import statements placed inside test methods rather than at module level
     automated_by:
     - ruff:E402
+    criteria: Qualifies when an import sits mid-module or inside a function or method body in production code
+      with no lazy-import reason, unlike the file's top-level imports. The test-code form is TST-C5C. An import
+      in a function used to break an import cycle is ARC-A2A.
+    see_also:
+    - ARC-A2A
+    - TST-C5C
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   QAL-B1C:
     name: redundant-shadowing-import
     default_severity: LOW
@@ -149,6 +340,20 @@ entries:
     - 10+ test methods locally re-import io/contextlib/tempfile that are already imported at module scope
     automated_by:
     - ruff:F811
+    criteria: Qualifies when a module is imported more than once in a file, under different aliases or again
+      in a local scope, while it is already bound at module scope (F811). Test methods re-importing modules
+      already imported at the top are TST-G2A. Import style differing across modules is QAL-F1B.
+    see_also:
+    - QAL-F1B
+    - TST-C5C
+    - TST-G2A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The re-import binds the identical name with no new alias, so no reader can reach the module
+          under two names.
   QAL-B2A:
     name: line-too-long
     default_severity: LOW
@@ -163,6 +368,16 @@ entries:
     - Line exceeds an 88-character limit
     automated_by:
     - ruff:E501
+    criteria: Qualifies when a source line exceeds the project's configured line-length limit (PEP 8 or the
+      repo's ruff/black setting). A long line that is long because of a nested conditional is better cited
+      as QAL-H1B or QAL-A2B when the readability problem is the expression itself.
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The line is a URL, a single string literal or a generated data row that cannot be wrapped
+          without hurting readability.
   QAL-B2B:
     name: misaligned-or-awkward-continuation
     default_severity: LOW
@@ -175,6 +390,12 @@ entries:
     examples:
     - Backslash line continuation used instead of implicit (parenthesized) continuation
     - Misaligned continuation line in a tuple return statement
+    criteria: Qualifies when a statement continues across lines with a backslash or with misaligned hanging
+      or visual indentation, where parenthesised implicit continuation is the codebase norm. Overlong single
+      lines are QAL-B2A, and missing blank lines between definitions are QAL-B2C.
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   QAL-B2C:
     name: missing-blank-line-separation
     default_severity: LOW
@@ -187,6 +408,11 @@ entries:
     examples:
     - Missing blank line before a module-level function definition
     - Missing PEP8 two-blank-line separation between top-level definitions
+    criteria: Qualifies when top-level or nested definitions lack the blank-line separation the project's
+      style requires (PEP 8 E301/E302/E305). Spacing inside literals is QAL-B2D.
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   QAL-B2D:
     name: inconsistent-literal-whitespace
     default_severity: INFO
@@ -199,6 +425,11 @@ entries:
     examples:
     - Dict literals throughout a test file consistently omit whitespace after ':' and ',', breaking from the file's
       dominant formatting style
+    criteria: Qualifies when spacing after ':' and ',' (or around operators) inside literals departs from
+      the file's dominant formatting. Missing blank lines between definitions are QAL-B2C.
+    severity_range:
+      floor: INFO
+      ceiling: INFO
   QAL-B3A:
     name: inconsistent-diagnostic-prefix-convention
     default_severity: LOW
@@ -212,6 +443,15 @@ entries:
     - 'model_resolver.py''s ''WARNING:'' stderr prefix diverges from the package-wide ''<module>: message'' convention
       used by dispatch.py, ingest_tools.py, etc.'
     - load_findings() mixes four different stderr diagnostic-prefix conventions in a dozen lines
+    criteria: 'Qualifies when stderr or log diagnostics depart from the package''s established message-prefix
+      convention (for example ''<module>: message'' versus ''WARNING:''). Mixing f-string and %-formatting
+      in the message body is QAL-B3B. A message that lacks identifying context is QAL-I1B.'
+    see_also:
+    - QAL-B3B
+    - QAL-I1B
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   QAL-B3B:
     name: mixed-fstring-percent-formatting
     default_severity: LOW
@@ -225,6 +465,16 @@ entries:
     - run_adapters() mixes f-string and %-style diagnostic messages while every sibling function in the same file
       uses %-formatting
     - Mixed f-string and %-formatting used for near-identical diagnostics in one file
+    criteria: Qualifies when one file or function mixes f-strings and %-style (or .format) formatting for
+      similar messages, against the file's dominant idiom. Logger calls that pass arguments for lazy %-interpolation
+      (logger.info('%s', x)) do not qualify. + concatenation where f-strings are the norm is QAL-B3C. A diagnostic-prefix
+      mismatch is QAL-B3A.
+    see_also:
+    - QAL-B3A
+    - QAL-B3C
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   QAL-B3C:
     name: string-concatenation-instead-of-fstring
     default_severity: LOW
@@ -236,6 +486,19 @@ entries:
     - CWE-1078
     examples:
     - String built with the + operator instead of an f-string, inconsistent with the file's dominant idiom
+    criteria: Qualifies when a string is built with + concatenation of interpolated values where the file
+      otherwise uses f-strings. Mixing f-string and %-formatting is QAL-B3B. Translatable UI text assembled
+      by concatenation is LNG-C1A.
+    see_also:
+    - LNG-A1B
+    - LNG-C1A
+    - QAL-B3B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The concatenation joins only literals or constants, with no interpolated runtime value.
   QAL-C1A:
     name: stale-external-url-reference
     default_severity: MEDIUM
@@ -252,6 +515,16 @@ entries:
     see_also:
     - ARC-B1C
     - ARC-E1C
+    - QAL-C1C
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The stale URL still redirects (HTTP 301/302) to the correct current target.
+      - to: INFO
+        condition: The URL appears only in a historical record (a CHANGELOG entry, a dated ADR) where it was
+          correct when written.
   QAL-C1B:
     name: inconsistent-ordering-in-docs
     default_severity: LOW
@@ -261,6 +534,16 @@ entries:
     recurrence: 1
     examples:
     - DEVELOPMENT.md's version History list is in neither ascending nor descending order
+    criteria: Qualifies when an ordered documentation list (version history, changelog, numbered steps) follows
+      neither ascending nor descending order, or an order the document itself states. A CHANGELOG version
+      that disagrees with another doc's description is QAL-C1D. Self-contradictory content is QAL-C2B.
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: Every entry carries an explicit version or date, so a reader can recover the order without
+          relying on position.
   QAL-C1C:
     name: stale-file-path-reference
     default_severity: LOW
@@ -282,8 +565,19 @@ entries:
       artifact or component the repository lacks (a doc-vs-repo structural gap, not a
       drifted pointer) is ARC-D3B.
     see_also:
-    - QAL-C1D
+    - ARC-C1B
+    - ARC-D3A
     - ARC-D3B
+    - QAL-A2D
+    - QAL-C1A
+    - QAL-C1D
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The stale path appears only in a historical record (a changelog entry, a dated plan) where
+          it was correct when written.
   QAL-C1D:
     name: stale-version-number
     default_severity: LOW
@@ -302,6 +596,13 @@ entries:
       QAL-C1C.
     see_also:
     - QAL-C1C
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The version appears only in a historical narrative (a dated plan or release note) describing
+          a past state.
   QAL-C2A:
     name: schema-or-example-stricter-than-reality
     default_severity: MEDIUM
@@ -325,6 +626,13 @@ entries:
     - ARC-D1D
     - COD-D1B
     - QAL-E1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The over-strict artifact is a prose example or placeholder, not a schema that any validator
+          loads.
   QAL-C2B:
     name: self-contradictory-documentation
     default_severity: MEDIUM
@@ -335,12 +643,22 @@ entries:
     examples:
     - SKILL.md's 'Notes' section makes a blanket self-write claim that directly contradicts the Codex and generic-host
       sections of the same file
-    criteria: >-
-      Qualifies when a SINGLE document contradicts itself (one part states X, another
-      not-X). When TWO independent sources of truth disagree (code vs. code, doc vs.
-      code), that is the architecture case ARC-G1B per the routing principle.
+    criteria: Qualifies when a SINGLE document contradicts itself (one section states X, another not-X) about
+      behavior that is not normative for an implementation. When two independent sources of truth disagree
+      (code vs code, doc vs code), it is ARC-G1B. When specification documents prescribe contradictory required
+      behavior that an implementer must choose between, it is COD-D2C.
     see_also:
+    - ARC-B1E
+    - ARC-D2F
     - ARC-G1B
+    - COD-D2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: One of the contradicting passages is explicitly marked as superseded, historical or non-authoritative
+          inside the same document.
   QAL-C2C:
     name: cli-docs-out-of-sync-with-implementation
     default_severity: LOW
@@ -352,15 +670,25 @@ entries:
     - README Quick Start examples use a --mode/--target CLI syntax that no longer matches the documented flags
     - SKILL.md frontmatter's `arguments` list is stale relative to the much larger, differently-named flag surface
       documented in the body
-    criteria: >-
-      Qualifies when CLI or flag documentation is STALE relative to an
-      implementation that DOES exist — the flags are real but the docs lag,
-      misname, or under-cover them (doc hygiene, LOW). If a documented feature is
-      entirely unimplemented so a following user breaks, that is COD-D2B; if the
-      whole interface contract is structurally unreliable, ARC-D2A.
+    criteria: 'Qualifies when CLI or flag documentation is STALE relative to an implementation that DOES exist:
+      the flags are real, but the docs lag, misname or under-cover them (doc hygiene, LOW). If a documented
+      feature is entirely unimplemented, so a user following the docs breaks, it is COD-D2B. If an implemented
+      flag or capability is absent from the docs altogether, it is COD-D2D. If the documented invocation syntax
+      or arguments manifest as a whole is unreliable as a spec, it is ARC-D2A.'
     see_also:
     - ARC-D2A
+    - ARC-G1A
     - COD-D2B
+    - COD-D2D
+    - QAL-C2D
+    - TST-A1D
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: Only secondary metadata is stale (a frontmatter summary list) while the body docs a user
+          reads are correct.
   QAL-C2D:
     name: docstring-inaccurate-error-contract
     default_severity: LOW
@@ -371,6 +699,21 @@ entries:
     examples:
     - acquire_pr()'s docstring promises a loud RuntimeError on any failure, but a missing gh/git binary actually
       raises a different, undocumented exception
+    criteria: Qualifies when a docstring or API doc names exception types, return sentinels or failure behavior
+      that the implementation does not produce on some path. If a caller relying on the documented contract
+      fails to handle the real failure, so the program proceeds on bad data or crashes, that is a correctness
+      defect (COD-B2C where it is an unchecked auxiliary failure, otherwise COD-X0X). If an error message
+      names the wrong cause, it is COD-B2B.
+    see_also:
+    - COD-B2B
+    - QAL-C2C
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The function is private (underscore-prefixed) and every caller in the repo handles a common
+          base exception.
   QAL-C2E:
     name: typo-in-shipped-text
     default_severity: LOW
@@ -380,6 +723,18 @@ entries:
     recurrence: 1
     examples:
     - Shipped commit-message template contains the typo 'kim port' instead of 'kimi port'
+    criteria: Qualifies when text that ships to users or downstream tools (templates, messages, published
+      docs) contains a spelling error. A misspelt identifier, key or command that breaks a lookup or invocation
+      is a correctness defect (COD-X0X), not this code.
+    see_also:
+    - LNG-A1A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The typo is in prose and changes no name, command or term that a reader would copy or search
+          for.
   QAL-C2F:
     name: undocumented-configuration-behavior
     default_severity: LOW
@@ -391,6 +746,23 @@ entries:
     - cwe_owasp mapping's intentional sparseness (8 of 34 catalog CWEs unmapped) is undocumented
     - model-profiles.yml's claude host entries silently omit max_context_size/max_output_size present on the other
       two hosts
+    criteria: Qualifies when a config file's deliberate behavior (intentional sparseness, omitted keys, defaults
+      that differ between sections) is not documented, so a maintainer would read it as a mistake. An implemented
+      capability missing from the docs is COD-D2D. Docs that under-describe the architecture are ARC-G1C.
+      A real parity gap between hosts is ARC-E3C.
+    see_also:
+    - ARC-E2D
+    - ARC-E3C
+    - ARC-G1C
+    - COD-C3B
+    - COD-D2D
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: A code comment next to the config value already explains the intent, and only user-facing
+          docs omit it.
   QAL-D1A:
     name: duplicated-business-logic-block
     default_severity: MEDIUM
@@ -413,6 +785,14 @@ entries:
     character: opportunity
     see_also:
     - ARC-A3A
+    - QAL-D1C
+    - QAL-H2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Both copies are in the same file and each is under 10 lines.
   QAL-D1B:
     name: duplicated-constant-definition
     default_severity: MEDIUM
@@ -429,8 +809,18 @@ entries:
       a proper fix must establish (an ownership / aliasing change), that is
       ARC-A5A. A dead, unimported stricter duplicate is instead QAL-E1B.
     see_also:
+    - ARC-A3B
     - ARC-A5A
     - QAL-E1B
+    - TST-G1B
+    - TST-G2D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The duplicated value is fixed by an external standard (a protocol port, a spec-defined
+          header or magic number) and cannot drift independently.
   QAL-D1C:
     name: duplicated-helper-function
     default_severity: MEDIUM
@@ -446,6 +836,22 @@ entries:
     - _severity_class and _panel_class implement the exact same strip/lowercase transform, differing only in a CSS-class
       prefix string
     character: opportunity
+    criteria: Qualifies when two or more named helper functions in production code are identical or near-identical
+      and could be one shared function. Inline duplicated blocks of business logic are QAL-D1A. Duplication
+      with no structural home, where the fix needs a new module, is ARC-A3A. Duplicated test helpers are TST-C2B.
+      Duplication left unmerged deliberately because it is entangled with an open correctness finding is QAL-H2B.
+    see_also:
+    - ARC-A3A
+    - QAL-D1A
+    - QAL-H2B
+    - TST-C2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The duplicated helper is a trivial transform (a single expression with no branching, for
+          example strip/lower).
   QAL-E1A:
     name: dead-configuration-setting
     default_severity: LOW
@@ -458,6 +864,21 @@ entries:
     examples:
     - Ruff's `[tool.ruff.lint.pydocstyle] convention = "google"` is dead configuration because the "D" rule set
       that would consume it is never selected
+    criteria: Qualifies when a config setting has no effect because the feature, rule set or consumer that
+      reads it is not enabled or does not exist. If the setting makes a reader believe a policy or gate is
+      enforced when it is not, it is ARC-F1E. Contradictory lint settings are ARC-B1E. A lint gate whose scope
+      misses files is ARC-C1D.
+    see_also:
+    - ARC-B1E
+    - ARC-D2D
+    - ARC-F1E
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The dead setting restates the tool's own default, so enabling the consumer would not change
+          behavior either.
   QAL-E1B:
     name: unused-duplicate-validator-left-in-code
     default_severity: LOW
@@ -482,6 +903,10 @@ entries:
     - COD-D1B
     - QAL-C2A
     - QAL-D1B
+    - QAL-E3A
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   QAL-E2B:
     name: retired-component-still-registered
     default_severity: MEDIUM
@@ -498,6 +923,15 @@ entries:
       BrakemanAdapter'
     see_also:
     - ARC-A4C
+    - QAL-E3A
+    criteria: Qualifies when a component that its own module, docs or a later change mark as retired is still
+      registered in a dispatch table, registry or prefix map. If a second registry duplicates the live one
+      with no enforced parity, it is ARC-A4C. If the retired component is still selected and run by default,
+      producing output it should not, it is a behavioral defect (COD-X0X). An unused function with no registration
+      is QAL-E3A.
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   QAL-E2C:
     name: orphaned-asset-rules
     default_severity: INFO
@@ -507,6 +941,15 @@ entries:
     character: defect
     examples:
     - .grades and .heatmap-more CSS classes in html_report.py with no referencing template markup
+    criteria: Qualifies when stylesheet rules, templates or static assets have no remaining reference in any
+      markup or code that could render them. Unused functions are QAL-E3A. Unused test fixtures are TST-E1B.
+    see_also:
+    - ARC-G3B
+    - LNG-D1A
+    - TST-E1B
+    severity_range:
+      floor: INFO
+      ceiling: INFO
   QAL-E3A:
     name: dead-code-unused-function
     default_severity: LOW
@@ -519,6 +962,18 @@ entries:
     - 'model_resolver.role_config: zero callers'
     notes: receiving-code-review treats unused/dead code as a YAGNI defect, not merely an opportunity — character
       is contested across sources
+    criteria: Qualifies when a production function, method or class has no caller, registration or export
+      a consumer could reach. Code that cannot run because a guard or return precedes it is COD-E2A. An unused
+      duplicate validator is QAL-E1B. A retired component still registered is QAL-E2B. Unused test fixtures
+      are TST-E1B.
+    see_also:
+    - COD-E2A
+    - QAL-E1B
+    - QAL-E2B
+    - TST-E1B
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   QAL-F1A:
     name: implicit-sys-path-or-import-dependency
     default_severity: MEDIUM
@@ -530,6 +985,17 @@ entries:
     - group_runner.py imports scripts.evidence without ensuring the parent directory is on sys.path, relying implicitly
       on the caller's setup
     - Two incompatible sys.path bootstrap conventions coexist in the test suite, making import success order-dependent
+    criteria: Qualifies when a single production module imports a sibling package only because the caller
+      or a launcher has already set up sys.path or PYTHONPATH, so it fails when imported or run from elsewhere.
+      A project-wide resolution hack that replaces proper packaging is ARC-A2C. The test-suite-wide sys.path.insert
+      pattern is TST-G1A. Import style differing across modules is QAL-F1B.
+    see_also:
+    - ARC-A2C
+    - SEC-D1B
+    - TST-G1A
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   QAL-F1B:
     name: inconsistent-import-style-across-modules
     default_severity: MEDIUM
@@ -543,6 +1009,18 @@ entries:
     - Adapter modules use inconsistent import patterns from one file to the next
     - unittest.mock.patch used without importing the mock submodule, an inconsistent stderr-capture idiom relative
       to sibling tests
+    criteria: Qualifies when sibling production modules use different import conventions for the same kind
+      of dependency (absolute vs relative, module vs from-import, aliasing) with no rule for the split. Problems
+      inside one file are QAL-B1*. The test-method form is TST-G2A. A referenced symbol that is never imported
+      is TST-C5A or a correctness defect, not this code.
+    see_also:
+    - QAL-B1C
+    - TST-C4B
+    - TST-C5A
+    - TST-G2A
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   QAL-F2A:
     name: logic-embedded-in-non-standard-location
     default_severity: LOW
@@ -553,6 +1031,19 @@ entries:
     examples:
     - Gate logic is embedded as an inline Python heredoc inside the CI workflow YAML instead of living in a reusable,
       unit-tested script
+    criteria: Qualifies when real program logic is embedded in a host not meant for it (an inline heredoc
+      in CI YAML, a shell one-liner in a Makefile, code in a config string) instead of a reusable, testable
+      source file. A main guard misplaced within a file is QAL-F2B. Untested CI integration is ARC-C1C. A
+      script with zero test coverage is TST-A1A.
+    see_also:
+    - ARC-C1C
+    - TST-A1A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The embedded snippet is three lines or fewer and has no branching.
   QAL-F2B:
     name: main-guard-or-block-misplaced-mid-file
     default_severity: LOW
@@ -574,6 +1065,12 @@ entries:
     see_also:
     - COD-E2A
     - TST-C1A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: Only constant or import declarations follow the guard.
   QAL-F3B:
     name: inconsistent-noqa-annotation-usage
     default_severity: LOW
@@ -588,6 +1085,15 @@ entries:
       file'
     automated_by:
     - ruff:RUF100
+    criteria: 'Qualifies when lint-suppression comments (noqa, type: ignore, nosec) are applied inconsistently
+      to identical patterns, or are unused (RUF100), against the codebase''s suppression convention. A swallowed
+      broad exception itself is ARC-F2G or OPS-E1A. Contradictory lint config is ARC-B1E.'
+    see_also:
+    - ARC-B1E
+    - ARC-F2G
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   QAL-F3C:
     name: inconsistent-per-host-field-naming
     default_severity: INFO
@@ -600,6 +1106,17 @@ entries:
     examples:
     - model-profiles.yml uses a different field-naming convention for model/effort settings depending on which host
       section it's in
+    criteria: Qualifies when equivalent settings use different field names across host or profile sections
+      of one config file, and the loader accepts each spelling. If a loader reads only one spelling, so another
+      section's field is silently ignored, it is COD-C3C. A content parity gap between hosts is ARC-E3C. A
+      naming-style mix in code is QAL-A1B.
+    see_also:
+    - ARC-E3C
+    - COD-C3C
+    - QAL-A1B
+    severity_range:
+      floor: INFO
+      ceiling: INFO
   QAL-F3D:
     name: partial-type-hint-adoption
     default_severity: INFO
@@ -612,6 +1129,11 @@ entries:
     - select_adapters() and run_adapters() carry full PEP 484 type annotations while most other functions in the
       same file have none, with no apparent rule for which get them
     character: opportunity
+    criteria: Qualifies when type annotations cover only some functions in a file or package with no evident
+      rule for which are annotated (such as public API only). A type mismatch across a boundary is COD-D3C.
+    severity_range:
+      floor: INFO
+      ceiling: INFO
   QAL-G1A:
     name: loop-invariant-not-hoisted
     default_severity: LOW
@@ -621,6 +1143,23 @@ entries:
     character: opportunity
     examples:
     - eligible_ids set recomputed inside synthesize's per-group loop despite being loop-invariant
+    criteria: Qualifies when a value that does not change across a loop's iterations is recomputed inside
+      the loop. A pure or idempotent load repeated across calls (not iterations) is QAL-G1B. A repeated stat/realpath
+      is QAL-G1C. A database query issued per row is DAT-C1B.
+    see_also:
+    - DAT-C1B
+    - QAL-G1B
+    - QAL-G1C
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The recomputed work performs I/O (a file read, network call or subprocess), and the loop's
+          iteration count grows with input size.
+      lower_when:
+      - to: INFO
+        condition: The loop's iteration count is bounded by a small constant (a fixed enum or literal list).
   QAL-G1B:
     name: missing-memoization
     default_severity: LOW
@@ -631,6 +1170,20 @@ entries:
     examples:
     - dispatch.load_template re-read and re-parsed advisor.md once per verify-queue entry — 412 times in run-3
     - synthesize re-loading CWE catalog and verdicts per call site instead of threading loaded values
+    criteria: Qualifies when a pure or idempotent load or computation (template parse, catalog load) is redone
+      on every call although its inputs do not change during the process. A value recomputed per loop iteration
+      is QAL-G1A. A cache that is added but returns stale data is COD-F3A. A lazy cache that is not thread-safe
+      is COD-F3B.
+    see_also:
+    - COD-F3A
+    - DAT-C1B
+    - QAL-G1A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The function runs a fixed number of times per process, independent of input size.
   QAL-G1C:
     name: repeated-filesystem-stat
     default_severity: LOW
@@ -641,6 +1194,19 @@ entries:
     examples:
     - orchestrator._within recomputed os.path.realpath(repo) per candidate file on large expansions; cached via
       _repo_realpath
+    criteria: Qualifies when filesystem metadata calls (stat, realpath, exists) for the same unchanging path
+      are repeated per item. Other loop-invariant work is QAL-G1A. Path resolution against the wrong base
+      is COD-E2B.
+    see_also:
+    - DAT-C1B
+    - QAL-G1A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The repeated call runs over a set bounded by a small constant, not by repository or input
+          size.
   QAL-G2A:
     name: unbounded-collection-load
     default_severity: MEDIUM
@@ -650,14 +1216,25 @@ entries:
     cwe:
     - CWE-400
     character: defect
-    criteria: >-
-      Qualifies when a collection that grows with the data is loaded into
-      memory whole where streaming, paging or a bound is available. Rendering
-      such a collection into the UI in one pass is COD-F2C; an endpoint or query
-      returning it unbounded is OPS-D1B.
+    criteria: Qualifies when an in-memory collection that grows with the data is loaded whole in-process where
+      streaming, paging or a bound is available. A database query with no LIMIT is DAT-C1C. A persisted file
+      read whole is DAT-F2B. An unbounded network response read is SEC-F2A. Rendering the collection into
+      the UI in one pass is COD-F2C. An endpoint returning it unbounded is OPS-D1B. Overload of memory or
+      connections under load is OPS-D1A.
     see_also:
     - COD-F2C
+    - DAT-C1C
+    - DAT-F2B
+    - OPS-D1A
     - OPS-D1B
+    - SEC-F2A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The collection's size is capped by a documented upstream limit (a schema maxItems, a config
+          cap, a fixed retention window).
   QAL-H1A:
     name: overly-complex-function
     default_severity: MEDIUM
@@ -667,14 +1244,21 @@ entries:
     character: opportunity
     examples:
     - function flagged for high cyclomatic complexity / too many responsibilities combined into one function
-    criteria: >-
-      Qualifies when a function is too long or too complex for a SINGLE
-      concern (high cyclomatic complexity, deep nesting) — a local complexity
-      problem whose fix simplifies in place. When the function mixes multiple
-      SEPARABLE concerns that belong in different units, that is the
-      structural ARC-A1C.
+    criteria: Qualifies when a function as a whole is too long or too complex for a SINGLE concern (high cyclomatic
+      complexity, many branches, many locals), a local problem whose fix simplifies in place. When the problem
+      is one deeply nested construct inside an otherwise reasonable function, it is QAL-H1B. When the function
+      mixes several SEPARABLE concerns that belong in different units, it is the structural ARC-A1C.
     see_also:
+    - ARC-A1B
     - ARC-A1C
+    - QAL-H1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The complexity comes from a flat dispatch, a single match or if/elif over enumerated cases
+          with no nesting.
   QAL-H1B:
     name: excess-nesting-complexity
     default_severity: LOW
@@ -685,6 +1269,17 @@ entries:
     examples:
     - nested ternary operators flagged for conversion to switch/if-else chains
     - reducing unnecessary complexity and nesting
+    criteria: Qualifies when one construct (nested ternaries, arrow-shaped if-nesting, nested comprehensions)
+      is nested deeper than needed and could be flattened with guard clauses or extraction, while the rest
+      of the function is reasonable. Whole-function complexity is QAL-H1A. Precedence that is merely misreadable
+      is QAL-A2B. Nesting introduced by an over-eager simplification is QAL-H2A.
+    see_also:
+    - QAL-A2B
+    - QAL-H1A
+    - QAL-H2A
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   QAL-H2A:
     name: harmful-oversimplification
     default_severity: MEDIUM
@@ -697,6 +1292,20 @@ entries:
     - combining too many concerns into a single function to save lines
     - prioritizing fewer-lines over readability (dense one-liners, nested ternaries) making code harder to debug
       or extend
+    criteria: Qualifies when a change (typically a refactor or a simplify pass) removes or inlines a helpful
+      abstraction, name or step and leaves the code harder to read, debug or extend than before. The resulting
+      nested or dense construct on its own is QAL-H1B. A function that now mixes separable concerns is ARC-A1C.
+      An abstraction that adds nothing (the opposite judgment) is QAL-H2C.
+    see_also:
+    - ARC-A1C
+    - QAL-H1B
+    - QAL-H2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The removed abstraction had a single call site and no test or doc referred to it.
   QAL-H2B:
     name: correctness-entangled-duplication-deferred
     default_severity: LOW
@@ -709,6 +1318,15 @@ entries:
       open correctness finding, so unification was explicitly deferred out of a quality-only PR'
     - 'reconcile.load_report / file_issues parts-merge unification deferred: duplicated confinement logic entangled
       with an open reconcile-fingerprint correctness finding'
+    criteria: Qualifies only when near-duplicate code (QAL-D1A or QAL-D1C) is explicitly deferred from unification
+      because the merge would change behavior covered by an open correctness finding, and the deferral and
+      the linked finding are recorded. Without a recorded deferral, cite QAL-D1A or QAL-D1C.
+    see_also:
+    - QAL-D1A
+    - QAL-D1C
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   QAL-H2C:
     name: needless-abstraction
     default_severity: LOW
@@ -719,6 +1337,16 @@ entries:
     examples:
     - eliminating redundant code and abstractions
     - removing indirection that adds no value beyond direct derivation
+    criteria: Qualifies when a wrapper, class, layer or indirection in production code adds nothing beyond
+      direct use of what it wraps. A parallel structure derived byte-for-byte from another is ARC-A5B. An
+      over-engineered test fixture builder is TST-C5B. Removing an abstraction that did help is QAL-H2A.
+    see_also:
+    - ARC-A5B
+    - QAL-H2A
+    - TST-C5B
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   QAL-I1A:
     name: missing-trace-context-propagation
     default_severity: LOW
@@ -726,6 +1354,16 @@ entries:
     provenance:
     - prior-art
     - gap-review
+    criteria: Qualifies when code making an outbound call, enqueueing work or spawning a task does not forward
+      the incoming trace or correlation context it holds, so the downstream span or log cannot be joined to
+      its origin. An entry point with no upstream context to continue does not qualify. An error swallowed
+      with no telemetry at all is OPS-E1A. A log line lacking identifying context is QAL-I1B.
+    see_also:
+    - OPS-E1A
+    - QAL-I1B
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   QAL-I1B:
     name: vague-log-message-without-context
     default_severity: INFO
@@ -735,3 +1373,20 @@ entries:
     - gap-review
     cwe:
     - CWE-778
+    criteria: Qualifies when a log or diagnostic message omits the identifying context (entity id, path, input,
+      operation) needed to act on it. A message naming the wrong cause is COD-B2B. An error with no log at
+      all is OPS-E1A. Adding context that is PII or a credential is SEC-B4A or SEC-B2B. An inconsistent message-prefix
+      convention is QAL-B3A.
+    see_also:
+    - COD-B2B
+    - OPS-E1A
+    - QAL-B3A
+    - QAL-I1A
+    - SEC-B4A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      raise_when:
+      - to: LOW
+        condition: The vague message is the only signal on an error path; no exception, exit status or metric
+          accompanies it.

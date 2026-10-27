@@ -38,6 +38,7 @@ def build_bundle(docs, version):
         dom = doc["domain"]
         domains[dom] = {
             "name": doc.get("name"),
+            **({"guide": doc["guide"]} if doc.get("guide") else {}),
             "areas": doc.get("areas") or {},
             "entries": dict(sorted((doc.get("entries") or {}).items())),
         }

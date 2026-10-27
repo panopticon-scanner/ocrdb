@@ -1,57 +1,156 @@
 # OCRDb domain file — PRE-1.0: no domain is ratified until 1.0; this domain's lifecycle stage is derived, not stored here — see RATIFICATION.md.
 domain: SEC
 name: security
+guide: 'SEC covers defects an adversary or untrusted input can exploit, or that weaken a security boundary
+  or the security tooling that guards it. Choose SEC when the harm needs an attacker or untrusted input.
+  With no adversary, a wrong result is COD and an internal or systemic capacity or timeout failure is
+  OPS (SCHEMA OPS/SEC rule). A security control that degrades to permit on missing or malformed config
+  is ARC-F2E, agent tool grants and prompt injection are AGT, and a generic missing test is TST. Start
+  from the area that matches the sink: A injection, B output and data exposure, C identity/access/crypto/audit,
+  D path and URL resolution, E supply chain, F adversarial-input robustness, G security tooling and scan
+  integrity, H web session and request boundaries.'
 areas:
   A:
     name: injection-and-unsafe-execution
+    guide: 'Untrusted data reaching an interpreter: shell/process (A1), language eval and deserialization
+      (A2), SQL (A3), XML entity processing (A4). Where a category pairs a demonstrated-dataflow code with
+      a heuristic sibling, cite the demonstrated code only when untrusted input is shown reaching the sink.'
     categories:
       '1': command-execution
       '2': code-injection-and-deserialization
       '3': sql-injection
       '4': xml-and-entity-processing
+    category_guides:
+      '1': SEC-A1A when untrusted input is shown to reach a shell or argv sink. SEC-A1B for a pattern-only
+        subprocess flag with no dataflow. Bare-name PATH lookup on an attacker-writable path is SEC-D1B.
+      '2': SEC-A2A for eval/exec of untrusted strings, SEC-A2B for deserializers that instantiate types (pickle,
+        unsafe YAML). Build files that execute by design are SEC-E3A, not A2.
+      '3': SEC-A3A for untrusted input concatenated into SQL text instead of bound as a parameter. A slow
+        query is DAT-C1 (for example DAT-C1B, N+1); an unbounded result set is OPS-D1B.
+      '4': SEC-A4A when untrusted XML is parsed with entities or DTDs enabled. SEC-A4B for an XML-library
+        rule hit with no dataflow or configuration evidence.
   B:
     name: output-handling-and-data-exposure
+    guide: 'Content leaving the system unsafely: injection into generated output (B1), disclosure through
+      debug, errors and logs (B2), secrets at rest or in the environment (B3), personal-data handling (B4).
+      Choose by what leaks: markup or script (B1), runtime detail or credentials (B2), stored credentials
+      (B3), personal data (B4).'
     categories:
       '1': output-encoding-and-report-hardening
       '2': information-disclosure
       '3': secrets-handling
       '4': privacy-and-data-protection
+    category_guides:
+      '1': SEC-B1C is the general code for unescaped untrusted content in a generated artifact. SEC-B1A is
+        the auto-posted markdown/@-mention variant and SEC-B1B the unsafe link-scheme variant. SEC-B1D (remote
+        loads) and SEC-B1E (no CSP) are report hardening, not injection.
+      '2': SEC-B2A is secrets through a debug endpoint, SEC-B2B credentials written to output or logs, SEC-B2C
+        a redactor that exists but misses cases, SEC-B2D verbose errors with no secret in them. B2B and B2C
+        differ on whether a redaction control exists.
+      '3': SEC-B3A only for a confirmed, real credential. Detector hits of unconfirmed validity are SEC-B3C.
+        SEC-B3B is secrets exposed through a subprocess inheriting the full environment.
+      '4': SEC-B4A is personal data in logs. SEC-B4B (over-collection), SEC-B4C (retention) and SEC-B4D (subject-rights
+        path) are distinct lifecycle defects; split a finding that cites more than one.
   C:
     name: identity-access-and-cryptography
+    guide: 'Who may do what, and with what proof: access control (C1), authentication (C2), cryptographic
+      primitives (C3), security audit logging (C4). Agent tool-grant scope routes to AGT-B1; inconsistent
+      gates across sibling scripts route to ARC-F1C.'
     categories:
       '1': access-control
       '2': authentication
       '3': cryptography
       '4': logging-and-monitoring
+    category_guides:
+      '1': SEC-C1C is a missing role/function check and SEC-C1F a missing per-object ownership check; split
+        a finding that cites both. SEC-C1B is a hidden backdoor trigger. SEC-C1D is a mutation through ambient
+        credentials or context in one script; when the finding is that sibling scripts gate inconsistently,
+        cite ARC-F1C. SEC-C1A is excess container privilege; SEC-C1E is root with no other excess.
+      '2': SEC-C2A is no throttling, SEC-C2B a non-constant-time compare, SEC-C2C a response-discrepancy oracle.
+        All three often show up on one login endpoint; split them, do not merge.
+      '3': SEC-C3A is a weak PRNG for a security value, SEC-C3B a broken standard algorithm or mode, SEC-C3C
+        a non-cryptographic checksum used in a security role.
+      '4': SEC-C4B when no audit record is written. SEC-C4C when the record is written but destroyed through
+        the channel it audits.
   D:
     name: untrusted-path-and-resource-resolution
+    guide: 'Attacker-influenced names resolved to resources: filesystem and search paths (D1) and server-side
+      URL fetches (D2). Resolving against the wrong base directory with no attacker is COD-E2B.'
     categories:
       '1': path-and-search-resolution
       '2': ssrf
+    category_guides:
+      '1': SEC-D1A is a ../ or absolute path escape, SEC-D1C symlink following during copy or extract, SEC-D1B
+        an attacker-writable search path for binaries, modules or plugins.
+      '2': SEC-D2B for a user-influenced fetch with no allow-list (the precursor). SEC-D2A only when internal
+        reach or an allow-list bypass is demonstrated.
   E:
     name: supply-chain-and-build-integrity
+    guide: 'Third-party code entering the build or runtime: dependency state (E1), pinning of what is fetched
+      (E2), code executed without verification (E3). Choose E1 for what is resolved, E2 for how it is referenced,
+      E3 for how it is executed.'
     categories:
       '1': dependency-management
       '2': pinning-and-provenance
       '3': unverified-code-execution
+    category_guides:
+      '1': SEC-E1B is a version with a published advisory, SEC-E1D an unmaintained dependency with no advisory,
+        SEC-E1C a pinned version with no integrity hash, SEC-E1A an update bot with no cooldown.
+      '2': SEC-E2A is an unpinned package or image install, SEC-E2B a mutable CI action ref, SEC-E2C a floating
+        branch of third-party source. Floating scanner rulesets are SEC-G2C.
+      '3': SEC-E3A is untrusted build files executed by design, SEC-E3B a binary download with no checksum
+        or signature, SEC-E3C a remote script piped to a shell.
   F:
     name: robustness-under-adversarial-input
+    guide: 'Failures an adversary can trigger with crafted input: unhandled exceptions and security-relevant
+      swallows (F1), and resource exhaustion (F2). Per SCHEMA routing, internally or systemically triggered
+      failures go to OPS, and ordinary error swallowing goes to COD-B2C.'
     categories:
       '1': exception-handling
       '2': resource-management
+    category_guides:
+      '1': SEC-F1A for crashes an attacker can trigger (denial of service). SEC-F1B only when a swallowed
+        exception hides a security-relevant failure; generic swallows are COD-B2C and fail-open controls are
+        ARC-F2E.
+      '2': SEC-F2A for an unbounded read of an outbound response that an attacker can influence. Inbound request
+        size and ReDoS are SEC-H4B and SEC-H4A. A missing timeout with an internal or systemic trigger is
+        OPS-A1A.
   G:
     name: security-tooling-and-scan-integrity
+    guide: 'Integrity of the security tooling itself: triage fidelity (G1), scan coverage (G2), security testing
+      and governance (G3). Use G when the defect makes security review under-report or mis-classify, not when
+      the defect is itself exploitable.'
     categories:
       '1': severity-and-triage-fidelity
       '2': scan-coverage-integrity
       '3': security-testing-and-governance
+    category_guides:
+      '1': SEC-G1B for an imprecise or inconsistent CWE/classification mapping. Severity-vs-confidence conflation
+        and hardcoded severity are COD-C1A and COD-C1B.
+      '2': SEC-G2A is a security surface never routed to the security reviewer, SEC-G2B a scan that silently
+        loses coverage at runtime, SEC-G2C an unpinned remote ruleset.
+      '3': SEC-G3B is a missing negative test for a security guard, SEC-G3C a security invariant enforced
+        only by assert, SEC-G3D no vulnerability-disclosure policy. Use ARC-D3B instead of G3D when docs promise
+        a disclosure process that is absent.
   H:
     name: web-session-and-browser-boundary
+    guide: 'Web-application boundaries: session lifecycle (H1), cross-site request controls (H2), token and
+      federation validation (H3), and adversarial request processing (H4: ReDoS and unbounded inbound size,
+      from any entry point, not only browsers). An outbound response read with no bound is SEC-F2A.'
     categories:
       '1': session-management
       '2': cross-site-request
       '3': token-and-federation
       '4': adversarial-request-processing
+    category_guides:
+      '1': SEC-H1A is a session id not rotated at login, SEC-H1B missing cookie flags, SEC-H1C no expiry or
+        invalidation.
+      '2': SEC-H2A is missing CSRF protection, SEC-H2B permissive CORS, SEC-H2C an open redirect, SEC-H2D
+        no frame protection.
+      '3': SEC-H3A is a JWT algorithm chosen by the token header, SEC-H3C missing exp/aud/iss checks, SEC-H3B
+        an OAuth redirect_uri matching gap (an app-level open redirect is SEC-H2C).
+      '4': SEC-H4A is a catastrophic-backtracking regex run on attacker input, SEC-H4B an unbounded inbound
+        body, upload or decompression. Outbound response size is SEC-F2A.
 entries:
   SEC-A1A:
     name: os-command-injection
@@ -69,6 +168,26 @@ entries:
     - Shell command injection via unescaped fixture paths
     - Command injection via unsanitized user input to shell
     - OS command injection via unsanitized shell script construction
+    criteria: 'Qualifies when untrusted or attacker-influenced data is shown to reach a shell or process-argument
+      sink without escaping: a shell=True string, an unquoted shell variable, or concatenated argv that enables
+      option/argument injection (CWE-78/88). A subprocess call flagged by pattern with no dataflow from untrusted
+      input is the LOW heuristic SEC-A1B. Untrusted data evaluated as language code is SEC-A2A. An attacker-controlled
+      build file that executes by design is SEC-E3A.'
+    see_also:
+    - SEC-A1B
+    - SEC-A2A
+    - SEC-E3A
+    severity_range:
+      floor: MEDIUM
+      ceiling: CRITICAL
+      raise_when:
+      - to: CRITICAL
+        condition: the injected input is reachable from an unauthenticated network request and the command
+          runs with service or host privileges
+      lower_when:
+      - to: MEDIUM
+        condition: only argument injection (CWE-88) is possible, into a binary with no option that executes
+          code or writes files
   SEC-A1B:
     name: unsafe-subprocess-invocation-pattern
     default_severity: LOW
@@ -85,6 +204,16 @@ entries:
     - Starting a process with a partial executable path
     - String Concatenation in Command Argument Construction
     - Brittle Path Substitution Pattern in Tool Command Construction
+    criteria: 'Qualifies (LOW) for a pattern-level subprocess hazard with no demonstrated untrusted dataflow,
+      flagged by a rule or a reviewer: shell=True, a partial executable path, string-built argv. When untrusted
+      input is shown to reach the sink, it promotes to SEC-A1A (verify-then-grade, R2). Bare-name resolution
+      through a search path an attacker can write to is SEC-D1B.'
+    see_also:
+    - SEC-A1A
+    - SEC-D1B
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   SEC-A2A:
     name: eval-of-untrusted-input
     default_severity: CRITICAL
@@ -100,6 +229,24 @@ entries:
     - 'Known vulnerable code pattern: eval() with user input'
     - Direct eval() of Unvalidated Command-Line Arguments
     - Dangerous eval() with user input (CWE-95)
+    criteria: Qualifies when a dynamic code-evaluation sink (eval/exec, Function/new Function, or rendering
+      of attacker-controlled template source; CWE-94/95) receives a value that is not a compile-time constant.
+      The CRITICAL default requires untrusted input shown reaching the sink. A rule or pattern hit with no
+      untrusted dataflow shown qualifies only at the lowered grade (see lower_when) until a heuristic sibling
+      exists. Deserializing untrusted bytes into objects is SEC-A2B; a shell sink is SEC-A1A.
+    see_also:
+    - SEC-A1A
+    - SEC-A2B
+    severity_range:
+      floor: LOW
+      ceiling: CRITICAL
+      lower_when:
+      - to: HIGH
+        condition: the sink is reachable only by an authenticated non-admin user and evaluation runs in a
+          restricted interpreter (no builtins / isolated VM) with no demonstrated escape
+      - to: LOW
+        condition: the finding is a rule or pattern hit and no dataflow from an untrusted source to the evaluated
+          value is shown
   SEC-A2B:
     name: insecure-deserialization-of-untrusted-data
     default_severity: HIGH
@@ -112,6 +259,24 @@ entries:
     examples:
     - Insecure deserialization of untrusted CBOR and YAML input
     - 'Known vulnerable code pattern: Unsafe deserialization of untrusted input'
+    criteria: 'Qualifies when bytes an attacker can reach are deserialized by a loader that can instantiate
+      arbitrary types or invoke code: pickle, yaml.load without SafeLoader, Java native serialization, BinaryFormatter
+      (CWE-502). A data-only loader (json, yaml.safe_load) on untrusted input is not this code. An XML parser
+      with entity expansion is SEC-A4A; direct eval of strings is SEC-A2A.'
+    see_also:
+    - SEC-A2A
+    - SEC-A4A
+    severity_range:
+      floor: MEDIUM
+      ceiling: CRITICAL
+      raise_when:
+      - to: CRITICAL
+        condition: the payload arrives from an unauthenticated network request and the loader executes code
+          directly (pickle, BinaryFormatter) or a gadget chain is present on the classpath
+      lower_when:
+      - to: MEDIUM
+        condition: the loader enforces an explicit allow-list of instantiable classes (e.g. a Java ObjectInputFilter
+          or a restricted Unpickler.find_class) and no gadget in the allowed set is shown
   SEC-A3A:
     name: sql-injection-via-string-concatenation
     default_severity: CRITICAL
@@ -124,6 +289,21 @@ entries:
     examples:
     - SQL injection via string concatenation with user input
     - 'Known vulnerable code pattern: SQL injection via string concatenation'
+    criteria: Qualifies when SQL text is built by concatenating or interpolating a non-constant value instead
+      of binding it as a parameter (CWE-89). The CRITICAL default requires untrusted input shown reaching
+      the interpolated value. A rule or pattern hit with no untrusted source shown qualifies only at the lowered
+      grade (see lower_when). Identifier interpolation from a fixed allow-list does not qualify. A slow query
+      is DAT-C1B; an unbounded result set is OPS-D1B; injection into a shell is SEC-A1A.
+    severity_range:
+      floor: LOW
+      ceiling: CRITICAL
+      lower_when:
+      - to: HIGH
+        condition: the injection point is reachable only after authentication and the connection uses a read-only
+          role limited to non-sensitive tables
+      - to: LOW
+        condition: string-built SQL is flagged by a rule but no untrusted source reaches the interpolated
+          value (internal constants or enum values only)
   SEC-A4A:
     name: xxe-vulnerable-xml-parsing
     default_severity: MEDIUM
@@ -142,7 +322,17 @@ entries:
       is the LOW heuristic SEC-A4B; if untrusted parsing is shown but entities are
       disabled, the finding declines to A4B. Verify-then-grade per R2.
     see_also:
+    - ARC-A4A
+    - SEC-A2B
     - SEC-A4B
+    - SEC-D2A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: external-entity resolution is shown to read local files or make outbound requests when
+          fed input from an unauthenticated network source
   SEC-A4B:
     name: xml-library-import-flagged
     default_severity: LOW
@@ -164,6 +354,9 @@ entries:
       known-vulnerable configuration, it promotes to SEC-A4A (MEDIUM) per R2.
     see_also:
     - SEC-A4A
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   SEC-B1A:
     name: markdown-mention-injection-in-automated-comments
     default_severity: MEDIUM
@@ -175,6 +368,20 @@ entries:
     - CWE-74
     examples:
     - Scanned-repo file paths flow unescaped into auto-posted GitHub issue comments, enabling markdown/@-mention injection
+    criteria: Qualifies when untrusted strings (repo file paths, commit text, finding titles) are interpolated
+      without escaping into markdown that a bot posts automatically to an issue tracker or chat, which allows
+      @-mention pings, link or image injection, or formatting spoofing (CWE-74). Unescaped content in a generated
+      HTML or report file is SEC-B1C. An unsafe URL scheme accepted in rendered links is SEC-B1B.
+    see_also:
+    - SEC-B1B
+    - SEC-B1C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the comment is posted as a draft or to a holding location that a human reviews before it
+          is published
   SEC-B1B:
     name: unsafe-url-scheme-allowed-in-links
     default_severity: MEDIUM
@@ -187,6 +394,25 @@ entries:
     - CWE-601
     examples:
     - Unrestricted URL Scheme in Reference Links
+    criteria: 'Qualifies when rendered links or hrefs accept untrusted URLs with no scheme allow-list, so
+      javascript:, data: or vbscript: URLs reach a clickable sink (CWE-79/601). A server endpoint that redirects
+      to an attacker URL is SEC-H2C. General unescaped interpolation into HTML is SEC-B1C.'
+    see_also:
+    - SEC-B1A
+    - SEC-B1C
+    - SEC-H2C
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: 'the link renders inside an authenticated web origin, the URL is supplied by a party other
+          than the viewer (stored), and no CSP blocks script URLs, so a javascript: URL runs with the viewer''s
+          session'
+      lower_when:
+      - to: LOW
+        condition: the renderer is not a browser (terminal, PDF, plain-text email) and does not execute script
+          URLs
   SEC-B1C:
     name: untrusted-content-unsanitized-in-generated-output
     default_severity: MEDIUM
@@ -202,6 +428,29 @@ entries:
     - Unescaped provenance.confirmation_status enables HTML attribute-injection XSS in generated reports
     - Untrusted finding text (title/description/impact/remediation) is aggregated with no content neutralization
     - Repo-controlled file names and messages flow into finding `title`/`location.file`/`description` without control
+    criteria: Qualifies when untrusted content (repo-controlled file names, tool output, finding text) is
+      interpolated into a generated artifact (an HTML report, SARIF, markdown, an attribute context) without
+      encoding or neutralization suited to that context, so script or markup is injected when the artifact
+      is viewed (CWE-79/116). Auto-posted tracker comments are SEC-B1A. Unsafe link schemes specifically are
+      SEC-B1B. Untrusted content entering an LLM prompt is AGT-A1B.
+    see_also:
+    - AGT-A1A
+    - AGT-A1B
+    - SEC-B1A
+    - SEC-B1B
+    - SEC-B1E
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the generated artifact is served from an authenticated web origin (dashboard, CI artifact
+          viewer), the injected content is controlled by a party other than the viewer (e.g. a scanned third-party
+          repo), and no CSP prevents inline script
+      lower_when:
+      - to: LOW
+        condition: the output format is plain text or JSON consumed only by programs and never rendered as
+          markup
   SEC-B1D:
     name: unintended-external-resource-load-in-offline-report
     default_severity: LOW
@@ -213,6 +462,19 @@ entries:
     - CWE-200
     examples:
     - '"Self-contained" HTML report fetches remote Google Fonts on open, contradicting its offline-safety claim'
+    criteria: Qualifies when an artifact documented or designed as self-contained or offline fetches remote
+      resources when opened (fonts, scripts, images, analytics), which leaks the viewer's IP and the fact
+      of opening, and contradicts the offline claim (CWE-200). A missing CSP in the same report is SEC-B1E.
+      Untrusted content injected into the report is SEC-B1C.
+    see_also:
+    - SEC-B1E
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the remote resource is a script, so third-party code runs in the report context with access
+          to its contents
   SEC-B1E:
     name: missing-content-security-policy-in-generated-report
     default_severity: INFO
@@ -225,6 +487,21 @@ entries:
     - CWE-693
     examples:
     - Self-contained HTML report ships an inline <script> with no Content-Security-Policy
+    criteria: 'Qualifies when a generated HTML artifact that embeds inline script ships with no Content-Security-Policy,
+      so an injection anywhere in it meets no second line of defence. This is hardening, not an injection:
+      the injection itself is SEC-B1C, remote loads are SEC-B1D, and missing frame protection on a served
+      app is SEC-H2D.'
+    see_also:
+    - SEC-B1C
+    - SEC-B1D
+    - SEC-H2D
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      raise_when:
+      - to: LOW
+        condition: the same report interpolates untrusted content into HTML (a SEC-B1C sink exists, even if
+          currently encoded)
   SEC-B2A:
     name: debug-endpoint-secret-exposure
     default_severity: HIGH
@@ -237,6 +514,24 @@ entries:
     - CWE-200
     examples:
     - Sensitive Token Exposure via Debug Endpoint String Formatting
+    criteria: Qualifies when a debug or diagnostic endpoint or mode that is reachable in a deployed build
+      returns secrets, tokens, or environment values (CWE-215/200). Credentials written to stdout or logs
+      are SEC-B2B. Stack traces or internal detail with no secret in them are SEC-B2D.
+    see_also:
+    - SEC-B2B
+    - SEC-B2D
+    - SEC-C1B
+    severity_range:
+      floor: MEDIUM
+      ceiling: CRITICAL
+      raise_when:
+      - to: CRITICAL
+        condition: the endpoint is reachable unauthenticated from the internet and an exposed secret grants
+          production write or admin access
+      lower_when:
+      - to: MEDIUM
+        condition: the exposed values are only the requesting user's own session-scoped token (no service
+          secrets and no other users' data)
   SEC-B2B:
     name: credentials-printed-to-output-or-logs
     default_severity: MEDIUM
@@ -250,6 +545,29 @@ entries:
     - Hardcoded credentials written directly to standard output
     - run_tool's F-CAL-1 stderr diagnostic prints raw subprocess stderr with no secret redaction
     - Unfiltered Stderr Output May Leak Sensitive Information
+    criteria: Qualifies when a credential, a token, or a value that carries secrets (including raw subprocess
+      stderr or environment dumps that may contain them) is written to stdout, stderr or logs without redaction
+      (CWE-532). A redaction routine that exists but misses cases is SEC-B2C. Personal data (not credentials)
+      in logs is SEC-B4A. A secret pulled into an AI agent's output or transcript is AGT-D1B. A secret committed
+      to the repository is SEC-B3A.
+    see_also:
+    - AGT-D1B
+    - SEC-B2A
+    - SEC-B2C
+    - SEC-B3A
+    - SEC-B3B
+    - SEC-B4A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: a live production credential is shown in output that is readable by parties who do not
+          otherwise hold it (public CI logs, a public issue or PR, a log store open to all tenants)
+      lower_when:
+      - to: LOW
+        condition: the output only might contain secrets (raw stderr passthrough) and no secret-bearing input
+          reaches the process that produces it
   SEC-B2C:
     name: incomplete-sensitive-data-redaction
     default_severity: MEDIUM
@@ -262,6 +580,25 @@ entries:
     examples:
     - Public-issue redaction of local absolute paths is a single hardcoded constant that fails open
     - Test hardcodes the author's local absolute filesystem path instead of computing it dynamically
+    criteria: 'Qualifies when a redaction or masking control EXISTS but misses some sensitive values or forms:
+      a single hardcoded pattern, unmasked alternative encodings, or a path that bypasses the redactor. Sensitive
+      data then leaks despite the control. No redaction at all is SEC-B2B (credentials) or SEC-B4A (personal
+      data). A hardcoded developer path in code or tests with no redaction role is ARC-E1A or TST-E2C.'
+    see_also:
+    - AGT-F1A
+    - SEC-B2B
+    - SEC-B4A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the bypass is shown to publish a live credential to a public sink (public issue, public
+          CI log)
+      lower_when:
+      - to: LOW
+        condition: the unredacted values are only local absolute paths or the operator's own username, with
+          no credentials or third-party personal data
   SEC-B2D:
     name: verbose-error-message-disclosure
     default_severity: LOW
@@ -273,6 +610,20 @@ entries:
     - CWE-209
     examples:
     - Attempted read of /etc/shadow combined with verbose internal-error disclosure
+    criteria: Qualifies when error responses or messages show internal detail to an untrusted caller (stack
+      traces, file paths, SQL text, library versions; CWE-209). The detail helps an attacker but is not itself
+      a secret. Secrets returned by a debug endpoint are SEC-B2A. A response that reveals whether an account
+      exists (account found versus wrong password) is SEC-C2C.
+    see_also:
+    - SEC-B2A
+    - SEC-C2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the detail is returned to unauthenticated callers and includes internal hostnames/IPs or
+          raw SQL query text (a credential-bearing connection string is SEC-B2A/SEC-B2B instead)
   SEC-B3A:
     name: embedded-credential-or-api-key-in-repo
     default_severity: HIGH
@@ -290,7 +641,21 @@ entries:
       (possible-secret, placeholder, fixture, example key) is the LOW SEC-B3C and
       promotes to B3A only on confirmation (verify-then-grade, R2).
     see_also:
+    - AGT-D1B
+    - ARC-G3B
+    - SEC-B2B
     - SEC-B3C
+    severity_range:
+      floor: MEDIUM
+      ceiling: CRITICAL
+      raise_when:
+      - to: CRITICAL
+        condition: the confirmed credential is in a public repository or its history and grants production
+          write, admin, or cloud-account access
+      lower_when:
+      - to: MEDIUM
+        condition: the confirmed credential is scoped read-only to non-sensitive data, or is shown revoked
+          and present only in history
   SEC-B3B:
     name: full-environment-inherited-by-subprocess
     default_severity: MEDIUM
@@ -302,6 +667,26 @@ entries:
     - CWE-200
     examples:
     - Shared `run_tool()` subprocess helper inherits the full parent environment for every scanner invocation
+    criteria: Qualifies when a subprocess, especially third-party tooling or tooling that handles untrusted
+      input, is launched with the parent's full environment, so secrets in environment variables (API keys,
+      tokens) are readable by code that does not need them (CWE-200). Printing those values is SEC-B2B. An
+      AI agent's tool grant that exceeds its task is AGT-B1D. Container-level privilege is SEC-C1A.
+    see_also:
+    - AGT-B1D
+    - SEC-B2B
+    - SEC-C1A
+    - SEC-E3A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the child process runs attacker-controlled code (untrusted build files, plugins from a
+          scanned repo) and the inherited environment holds a live write-scoped credential
+      lower_when:
+      - to: LOW
+        condition: the parent's environment is shown to hold no secrets (a launcher that already strips them,
+          or a CI step with no secret env)
   SEC-B3C:
     name: hardcoded-secret-heuristic-flag
     default_severity: LOW
@@ -324,6 +709,9 @@ entries:
       per R2.
     see_also:
     - SEC-B3A
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   SEC-B4A:
     name: pii-in-logs
     default_severity: MEDIUM
@@ -333,6 +721,26 @@ entries:
     - gap-review
     cwe:
     - CWE-532
+    criteria: Qualifies when personal data (names, emails, addresses, government IDs, health or financial
+      attributes) is written in clear to logs or telemetry (CWE-532/359). Credentials in logs are SEC-B2B.
+      Personal data sent to an LLM provider is AGT-F1A. Over-collection at intake is SEC-B4B.
+    see_also:
+    - AGT-F1A
+    - QAL-I1B
+    - SEC-B2B
+    - SEC-B2C
+    - SEC-B4B
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the logged fields are special-category, financial, or government-identifier data and the
+          logs ship to a store outside the data's access controls
+      lower_when:
+      - to: LOW
+        condition: the only personal datum logged is a pseudonymous internal user id or the operator's own
+          identity
   SEC-B4B:
     name: excessive-data-collection
     default_severity: LOW
@@ -346,23 +754,35 @@ entries:
       purpose needs (over-collection at intake). Distinct from SEC-B4C (data kept
       too long) and SEC-B4D (no path for the subject to access or erase it).
     see_also:
+    - SEC-B4A
     - SEC-B4C
     - SEC-B4D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: a field collected beyond the stated purpose is special-category data (health, biometrics,
+          government ID)
   SEC-B4C:
     name: missing-retention-limit
     default_severity: LOW
     status: active
     provenance:
     - prior-art
-    criteria: >-
-      Covers a retention window that is either ABSENT or present-but-unconfigurable
-      (a hardcoded / compile-time constant with no config key to set it) — both leave
-      the operator unable to bound how long personal data is kept. (Widened in 0.5.0
-      when the CMP-absorb corpus surfaced hardcoded-retention alongside missing-retention.)
-      Distinct from SEC-B4B (over-collection at intake) and SEC-B4D (no subject-rights path).
+    criteria: Qualifies when personal data is kept with no retention window, or with a window that is hardcoded
+      or compile-time and cannot be configured, so the operator cannot bound how long it is kept. Over-collection
+      at intake is SEC-B4B; a missing subject access or erasure path is SEC-B4D. The 0.5.0 widening history
+      belongs in notes, not in criteria.
     see_also:
     - SEC-B4B
     - SEC-B4D
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the data kept without a bound is special-category or financial data
   SEC-B4D:
     name: missing-data-subject-rights-path
     default_severity: LOW
@@ -379,10 +799,14 @@ entries:
     see_also:
     - SEC-B4B
     - SEC-B4C
+    - SEC-C4C
     examples:
     - The data model holds a subject's personal data but exposes no self-service path for that subject to
       exercise access / portability (export their own data in a portable form) or erasure (delete or
       anonymize), so an access/portability/erasure request has no product path
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   SEC-C1A:
     name: excessive-container-network-and-filesystem-privilege
     default_severity: HIGH
@@ -395,6 +819,23 @@ entries:
     - CWE-1008
     examples:
     - Scan container combines full read access to the target repository with unrestricted scan-time network egress
+    criteria: 'Qualifies when a container or sandbox that processes untrusted content has network, filesystem
+      or capability privilege beyond its job, so a compromised workload can exfiltrate data or pivot (CWE-250/1008).
+      Examples: unrestricted egress together with broad read mounts, --privileged, host mounts, added capabilities.
+      Running as root with no other excess is SEC-C1E. An AI agent''s tool grant is AGT-B1C or AGT-B1D. Ambient
+      CLI credentials used by a script are SEC-C1D.'
+    see_also:
+    - AGT-B1C
+    - AGT-B1D
+    - SEC-B3B
+    - SEC-C1E
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the container runs only first-party tooling on first-party input (no untrusted code executes
+          inside it), or only one kind of excess (egress or broad mounts, not both) is present
   SEC-C1B:
     name: hardcoded-backdoor-trigger
     default_severity: HIGH
@@ -407,6 +848,20 @@ entries:
     - CWE-489
     examples:
     - Hidden backdoor trigger activated by a magic input string
+    criteria: Qualifies when code contains a hidden trigger (a magic input string, hardcoded user, secret
+      header or flag) that bypasses authentication or authorization or enables privileged behaviour (CWE-506/489).
+      A leftover debug endpoint that returns secrets is SEC-B2A. A check that is simply missing, with no trigger,
+      is SEC-C1C.
+    see_also:
+    - SEC-B2A
+    - SEC-C1C
+    severity_range:
+      floor: HIGH
+      ceiling: CRITICAL
+      raise_when:
+      - to: CRITICAL
+        condition: the trigger is reachable from unauthenticated network input and grants admin rights or
+          code execution
   SEC-C1C:
     name: missing-function-level-authorization
     default_severity: HIGH
@@ -420,7 +875,24 @@ entries:
     examples:
     - Missing authorization check allows any caller to retrieve admin-only data
     see_also:
+    - ARC-F1C
+    - COD-B1C
+    - SEC-C1B
     - SEC-C1F
+    criteria: Qualifies when an operation, route or function that requires a role or permission can be invoked
+      without that check (CWE-862/285), so any authenticated or anonymous caller can run it. A missing per-record
+      ownership check on an otherwise authorized operation is SEC-C1F. Sibling scripts that gate inconsistently
+      are ARC-F1C. A shared guard that grants too broad a scope is COD-B1C.
+    severity_range:
+      floor: MEDIUM
+      ceiling: CRITICAL
+      raise_when:
+      - to: CRITICAL
+        condition: the unguarded operation is reachable unauthenticated and changes or exports other users'
+          data, or grants admin rights
+      lower_when:
+      - to: MEDIUM
+        condition: the unguarded operation is read-only and returns only non-sensitive data
   SEC-C1D:
     name: ambient-authority-unscoped-mutation
     default_severity: MEDIUM
@@ -432,6 +904,25 @@ entries:
     - CWE-284
     examples:
     - triage.py mutates GitHub issues via ambient `gh` repo context with no explicit repo pinning
+    criteria: Qualifies when code changes an external system through ambient credentials or context (the current
+      gh, aws or kubectl context, a repo derived from the cwd) without pinning the target, so it can act on
+      an unintended repo, account or tenant (CWE-284). When the finding is that sibling scripts gate or pin
+      inconsistently, it is ARC-F1C. A write-capable tool granted to an AI agent without scope is AGT-B1C.
+      A container with excess privilege is SEC-C1A.
+    see_also:
+    - AGT-B1C
+    - ARC-F1C
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the mis-targeted mutation is destructive (delete, force-push, permission change) and the
+          ambient context can be set by an attacker (cwd inside an untrusted checkout)
+      lower_when:
+      - to: LOW
+        condition: the mutation is limited to non-destructive annotations (labels) carrying no repository
+          content
   SEC-C1E:
     name: container-runs-as-root
     default_severity: LOW
@@ -443,6 +934,18 @@ entries:
     - CWE-250
     examples:
     - Fixtures image never drops root privileges before running third-party build tooling
+    criteria: Qualifies when a container image or process runs as root without need (no USER drop; CWE-250)
+      and no other privilege excess is shown. Root combined with egress, host mounts or privileged flags is
+      SEC-C1A.
+    see_also:
+    - SEC-C1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the root process runs untrusted third-party code (build tooling run on scanned or user-supplied
+          input)
   SEC-C1F:
     name: missing-object-level-authorization
     default_severity: HIGH
@@ -466,7 +969,19 @@ entries:
       per-record ownership check vs a route/function guard). A finding citing both
       should be split, one to each.
     see_also:
+    - DAT-A1D
     - SEC-C1C
+    severity_range:
+      floor: MEDIUM
+      ceiling: CRITICAL
+      raise_when:
+      - to: CRITICAL
+        condition: object identifiers are sequential or guessable and the operation changes or deletes another
+          user's record
+      lower_when:
+      - to: MEDIUM
+        condition: the operation is read-only and object identifiers are unguessable (128-bit random) and
+          never shown to other users
   SEC-C2A:
     name: missing-brute-force-protection
     default_severity: MEDIUM
@@ -486,6 +1001,18 @@ entries:
       each.
     see_also:
     - SEC-C2B
+    - SEC-C2C
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the guessed secret is a short code (PIN, OTP, reset code; about 6 digits or fewer) whose
+          full space can be tried online within its validity window at the unthrottled request rate
+      lower_when:
+      - to: LOW
+        condition: the credential checked is a high-entropy machine token (at least 128 bits), so online guessing
+          is infeasible
   SEC-C2B:
     name: timing-unsafe-credential-comparison
     default_severity: MEDIUM
@@ -505,6 +1032,13 @@ entries:
       that cites both.
     see_also:
     - SEC-C2A
+    - SEC-C2C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the compared values are a digest or keyed hash of the secret, not the raw secret
   SEC-C2C:
     name: user-enumeration-via-response-discrepancy
     default_severity: MEDIUM
@@ -529,6 +1063,17 @@ entries:
       timing) lets an attacker classify whether an identifier (email, username)
       exists — CWE-203/204/205. The response oracle is the defect, independent of
       any brute-force protection (SEC-C2A) on the same endpoint.
+    see_also:
+    - SEC-B2D
+    - SEC-C2A
+    - SEC-C2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the identifiers being classified are already public by design (public usernames or profile
+          handles)
   SEC-C3A:
     name: weak-prng-for-security-token
     default_severity: HIGH
@@ -541,6 +1086,20 @@ entries:
     examples:
     - Predictable security token generated from a hand-rolled LCG seeded by wall-clock time
     - 'Known vulnerable code pattern: Random() class for token generation'
+    criteria: 'Qualifies when a non-cryptographic PRNG (Math.random, random.Random, an LCG, a time-seeded
+      generator) generates a security value: a session token, reset code, CSRF token, key or nonce (CWE-338).
+      A weak hash or cipher algorithm is SEC-C3B. A non-cryptographic checksum used as a hash is SEC-C3C.
+      Unseeded randomness in tests is TST-F1D.'
+    see_also:
+    - SEC-C3B
+    - TST-F1D
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the value is single-use, expires within minutes, and the attacker cannot observe any other
+          output of the same generator
   SEC-C3B:
     name: weak-standard-crypto-algorithm
     default_severity: HIGH
@@ -550,6 +1109,21 @@ entries:
     - gap-review
     cwe:
     - CWE-327
+    criteria: 'Qualifies when a standard but broken or deprecated algorithm or mode protects a security property:
+      MD5/SHA-1 for signatures or password hashing, a fast unsalted hash for passwords, DES/RC4, ECB mode,
+      RSA without padding (CWE-327). A hand-rolled or non-cryptographic checksum is SEC-C3C. Weak randomness
+      is SEC-C3A. A JWT algorithm chosen by the token is SEC-H3A.'
+    see_also:
+    - SEC-C3A
+    - SEC-C3C
+    - SEC-H3A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the weak hash is used only inside an HMAC construction (e.g. HMAC-SHA1, HMAC-MD5), where
+          collision resistance is not relied on
   SEC-C3C:
     name: non-cryptographic-hash-in-security-context
     default_severity: MEDIUM
@@ -562,6 +1136,24 @@ entries:
     - CWE-327
     examples:
     - Ad-hoc, unsalted, non-cryptographic checksum used in place of a real hash function
+    criteria: 'Qualifies when a non-cryptographic checksum or ad-hoc hash (CRC32, Adler, the language''s hash(),
+      a sum of bytes, an unsalted custom digest) is used where a security property depends on it: integrity
+      checks, deduplication of untrusted content, password storage (CWE-328). A standard but broken algorithm
+      (MD5, SHA-1) is SEC-C3B.'
+    see_also:
+    - SEC-C3B
+    - SEC-E3B
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the checksum is how stored passwords are hashed, or it is the only integrity check on downloaded
+          executable code fetched over plain HTTP or with TLS verification disabled
+      lower_when:
+      - to: LOW
+        condition: the checksum guards only against accidental corruption of first-party data, and no decision
+          an attacker could exploit depends on it
   SEC-C4B:
     name: missing-audit-logging-for-sensitive-action
     default_severity: LOW
@@ -578,9 +1170,18 @@ entries:
       record IS written but can later be destroyed through the channel it audits,
       that is SEC-C4C, not this code.
     see_also:
+    - AGT-B1B
+    - ARC-F1B
     - SEC-C4C
     examples:
     - Sensitive fund-transfer action executes with no audit logging
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the unaudited action moves money or changes privileges, and the repository's own stated
+          policy or compliance scope requires an audit trail
   SEC-C4C:
     name: audit-trail-not-durable-destroyed-by-deletion
     default_severity: MEDIUM
@@ -595,12 +1196,20 @@ entries:
       purges history — with no append-only store or tamper protection. The log is
       written, then lost. Distinct from SEC-C4B, where no record is written.
     see_also:
+    - ARC-E2A
+    - ARC-F1B
+    - DAT-A1C
+    - DAT-E1B
+    - SEC-B4D
     - SEC-C4B
     examples:
     - Audit records are destroyed or orphaned through the same channel they audit — a LogEntry.user CASCADE
       wipes a user's admin-action trail on account deletion, or a bulk-deletion workflow purges
       Version/Communication/Comment history — with no append-only or tamper protection. (The log IS written,
       then destroyed; distinct from SEC-C4B missing-audit-logging.)
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   SEC-D1A:
     name: path-traversal-via-unvalidated-input
     default_severity: HIGH
@@ -614,6 +1223,24 @@ entries:
     - Path Traversal via Unvalidated FIXTURE_ROOT Environment Variable
     - Path traversal via unsanitized file path
     - 'Known vulnerable code pattern: Path traversal via unsanitized file path'
+    criteria: Qualifies when an attacker-influenced path component (a request parameter, an archive entry
+      name, a path controlled by a repo) is joined to a base directory and read or written with no canonicalize-and-contain
+      check, so it escapes the intended root (CWE-22, zip-slip included). Following a symlink planted inside
+      the tree is SEC-D1C. Resolving against the wrong base with no attacker is COD-E2B. A path from an operator-set
+      environment variable falls under the operator-controlled-input modifier.
+    see_also:
+    - COD-E2B
+    - SEC-D1C
+    severity_range:
+      floor: MEDIUM
+      ceiling: CRITICAL
+      raise_when:
+      - to: CRITICAL
+        condition: the traversal writes or overwrites files (code, config) from unauthenticated network input
+      lower_when:
+      - to: MEDIUM
+        condition: the escape is read-only and can reach only a directory shown to hold no secrets or other
+          users' data
   SEC-D1B:
     name: uncontrolled-search-path-element
     default_severity: HIGH
@@ -630,6 +1257,25 @@ entries:
     - Unsafe sys.path Manipulation
     - Silent Selection of First Alphabetically Sorted Requirements File
     - External tool binaries (`git`, `gh`, `codex`, `docker`) are invoked by bare name, relying on `$PATH` resolution
+    criteria: Qualifies when a binary, module or plugin is resolved through a search path (PATH, NODE_PATH,
+      sys.path, the cwd, project-relative plugin directories) that includes a location an attacker can write
+      or supply, for example a tool run on an untrusted checkout that loads plugins from it (CWE-426/427).
+      Bare-name invocation under a trusted PATH is the SEC-A1B heuristic. A sys.path edit made for import
+      convenience, with no attacker-writable element, is QAL-F1A or ARC-A2C. Picking the wrong file by heuristic
+      is COD-C2A.
+    see_also:
+    - ARC-A2C
+    - COD-C2A
+    - COD-E2B
+    - QAL-F1A
+    - SEC-A1B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: planting needs local write access to a shared-host directory on the path, and the location
+          cannot be supplied through repository or request content
   SEC-D1C:
     name: unsafe-symlink-following-on-copy
     default_severity: HIGH
@@ -644,6 +1290,20 @@ entries:
     - shutil.copytree dereferences symlinks in the scanned target before building it
     - Unguarded `shutil.copytree(target, tmp, dirs_exist_ok=True)` dereferences attacker-controlled symlinks
     - Unvalidated Directory Copy Operation Before Analysis
+    criteria: Qualifies when code that copies, archives, reads or deletes an untrusted directory tree follows
+      symlinks (copytree with default symlink handling, tar extraction, recursive reads), so a planted link
+      can read or write outside the tree (CWE-59/61). A path string that escapes via ../ is SEC-D1A.
+    see_also:
+    - COD-F1B
+    - SEC-D1A
+    - TST-D2B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: following the link only reads, and the copied content is never published, uploaded or returned
+          to the attacker
   SEC-D2A:
     name: server-side-request-forgery-to-internal-service
     default_severity: HIGH
@@ -661,7 +1321,16 @@ entries:
       precursor SEC-D2B. Elevation rule (R2): demonstrated internal reach or
       bypass promotes D2B to D2A.
     see_also:
+    - SEC-A4A
     - SEC-D2B
+    - SEC-H2C
+    severity_range:
+      floor: HIGH
+      ceiling: CRITICAL
+      raise_when:
+      - to: CRITICAL
+        condition: the fetch reaches a cloud metadata credential endpoint (or an unauthenticated internal
+          admin API) from unauthenticated input
   SEC-D2B:
     name: unvalidated-url-fetch-target-ssrf-precursor
     default_severity: LOW
@@ -681,6 +1350,9 @@ entries:
       SEC-D2A (HIGH) per R2.
     see_also:
     - SEC-D2A
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   SEC-E1A:
     name: dependabot-missing-cooldown-period
     default_severity: MEDIUM
@@ -692,6 +1364,19 @@ entries:
     - CWE-1357
     examples:
     - This Dependabot configuration does not set a cooldown period. Newly published packages can be malicious.
+    criteria: Qualifies when an automated dependency-update bot (Dependabot, Renovate, or similar) is set
+      to propose newly published versions with no minimum age or cooldown, so a freshly published malicious
+      release can be merged before it is detected (CWE-1357). A version that is outdated and has a known advisory
+      is SEC-E1B. An unpinned install in a build is SEC-E2A.
+    see_also:
+    - SEC-E1B
+    - SEC-E2A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: auto-merge is disabled for bot PRs, so every update gets human review before it merges
   SEC-E1B:
     name: known-vulnerable-dependency
     default_severity: MEDIUM
@@ -708,6 +1393,26 @@ entries:
     - 'Known vulnerable dependency: serde_yaml 0.8.25 with RUSTSEC-2024-0327'
     - 'Package: lodash Installed Version: 4.17.20 Vulnerability CVE-2021-23337 Severity: HIGH Fixed Version: 4.17.21'
     - 'Known vulnerable dependency: regex 1.4.0 with RUSTSEC-2022-0013'
+    criteria: Qualifies when a resolved dependency version is covered by a published advisory (CVE, GHSA,
+      RUSTSEC) for the version range in use (CWE-1104). An unmaintained dependency with no advisory is SEC-E1D.
+      A version that is unpinned and could drift is SEC-E2A.
+    see_also:
+    - SEC-E1A
+    - SEC-E1D
+    - SEC-E2A
+    severity_range:
+      floor: LOW
+      ceiling: CRITICAL
+      raise_when:
+      - to: HIGH
+        condition: the vulnerable function is shown reachable from untrusted input in this codebase and the
+          advisory is rated high or critical
+      - to: CRITICAL
+        condition: the advisory is on a known-exploited list (e.g. CISA KEV) and the vulnerable path is reachable
+          unauthenticated
+      lower_when:
+      - to: LOW
+        condition: the advisory's affected function or feature is shown not to be used by this codebase
   SEC-E1C:
     name: missing-lockfile-integrity-hash
     default_severity: MEDIUM
@@ -720,6 +1425,16 @@ entries:
     - CWE-1357
     examples:
     - Legacy lockfileVersion 1 lockfile carries no subresource-integrity hash for its dependency
+    criteria: Qualifies when a lockfile or requirements file pins versions but has no integrity hashes (legacy
+      lockfile formats, pip requirements without --hash), so a compromised registry or mirror can substitute
+      content (CWE-494). No version pinning at all is SEC-E2A. A direct binary download with no verification
+      is SEC-E3B.
+    see_also:
+    - SEC-E2A
+    - SEC-E3B
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   SEC-E1D:
     name: abandoned-unmaintained-dependency
     default_severity: LOW
@@ -729,6 +1444,18 @@ entries:
     - openssf-align
     cwe:
     - CWE-1104
+    criteria: 'Qualifies when a dependency is unmaintained and has no known advisory: the repository is archived,
+      there has been no release or response to security reports for a long period, or OpenSSF Scorecard flags
+      it on maintenance. A dependency with a published advisory is SEC-E1B.'
+    see_also:
+    - SEC-E1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the unmaintained dependency parses untrusted input or implements crypto or auth on a production
+          path
   SEC-E2A:
     name: unpinned-build-dependency-install
     default_severity: HIGH
@@ -744,6 +1471,24 @@ entries:
     - Unversioned cargo-audit installation enables known vulnerability injection
     - Unversioned npm package installs enable known vulnerability injection
     - Base Docker image uses version tag without digest, allowing known vulnerabilities in base layers
+    criteria: Qualifies when a build, CI or image step installs a package or base image by name or by a floating
+      tag with no version or digest pin (pip install x, npm i -g x, FROM image:latest), so the build runs
+      whatever is current (CWE-1357/829). A mutable CI action ref is SEC-E2B. A floating git branch of third-party
+      source is SEC-E2C. Versions pinned without integrity hashes are SEC-E1C.
+    see_also:
+    - ARC-B1A
+    - SEC-E1A
+    - SEC-E1B
+    - SEC-E1C
+    - SEC-E2B
+    - SEC-E2C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the step runs in a job that holds no secrets and its output is not shipped in a release
+          artifact, or the floating reference is a version tag rather than latest/no version
   SEC-E2B:
     name: mutable-ci-action-reference
     default_severity: MEDIUM
@@ -758,6 +1503,20 @@ entries:
     - GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed.
     - GitHub Actions pinned to mutable version tags, not immutable commit SHAs
     - Third-party GitHub Actions pinned to mutable tags in a workflow holding write-scoped tokens
+    criteria: Qualifies when a CI workflow references a third-party action or reusable workflow by a mutable
+      tag or branch instead of a full commit SHA, so a repointed tag runs new code with the job's token and
+      secrets (CWE-829). Scoping of workflow token permissions is ARC-C1E. Unpinned package installs inside
+      steps are SEC-E2A.
+    see_also:
+    - ARC-C1E
+    - SEC-E2A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the action is published by the same organization, or the job has a read-only token and
+          no secrets
   SEC-E2C:
     name: unpinned-third-party-source-reference
     default_severity: MEDIUM
@@ -771,6 +1530,16 @@ entries:
     - Fixture repos RailsGoat and AspGoat default to the floating `main` branch instead of a pinned ref, and are built
     - Fixture image builds from unpinned mutable git branches of third-party repositories
     - Fixture manifest drives supply-chain-unsafe, unpinned third-party code execution during image build
+    criteria: Qualifies when third-party source (a git repo, submodule or fixture project) is fetched by a
+      floating branch or HEAD instead of a commit SHA and is then built or executed. Package installs are
+      SEC-E2A, CI actions SEC-E2B, scanner rulesets SEC-G2C.
+    see_also:
+    - ARC-B3C
+    - SEC-E2A
+    - SEC-G2C
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   SEC-E3A:
     name: arbitrary-code-execution-via-untrusted-build-file
     default_severity: CRITICAL
@@ -786,6 +1555,16 @@ entries:
     - MSBuild <Exec> target performs unrestricted network egress and filesystem write on every build
     - roslyn-secguard runs `dotnet build` on scanned code, executing arbitrary MSBuild targets/NuGet package content
     - roslyn-secguard adapter executes untrusted target source via `dotnet build`
+    criteria: Qualifies when a tool runs a build or configure step on untrusted input whose build files execute
+      code by design (MSBuild targets, setup.py, Makefiles, npm lifecycle scripts, Gradle), which gives arbitrary
+      code execution as the tool's user (CWE-94/829). Command injection through a string-built shell is SEC-A1A.
+      A curl-pipe-shell of a vendor installer is SEC-E3C.
+    see_also:
+    - SEC-A1A
+    - SEC-B3B
+    severity_range:
+      floor: CRITICAL
+      ceiling: CRITICAL
   SEC-E3B:
     name: unverified-binary-download-no-integrity-check
     default_severity: MEDIUM
@@ -801,6 +1580,20 @@ entries:
     - Scanner toolchain binaries and the Trivy apt signing key are downloaded with no checksum or signature verification
     - Static-analysis tool binaries fetched from GitHub Releases / Maven Central without checksum or signature verification
     - Docker scanner-tool image installs unpinned packages and unverified remote binaries with no integrity checks
+    criteria: Qualifies when a binary, archive, plugin or signing key is downloaded and installed or run with
+      no checksum or signature verification (CWE-494/345). Piping a remote script straight into a shell is
+      SEC-E3C. Missing lockfile hashes for package-manager installs is SEC-E1C.
+    see_also:
+    - SEC-C3C
+    - SEC-E1C
+    - SEC-E3C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the download is over plain HTTP or with TLS verification disabled (curl -k, verify=False),
+          so an on-path attacker can substitute the content
   SEC-E3C:
     name: unverified-remote-script-execution-curl-pipe-shell
     default_severity: MEDIUM
@@ -816,6 +1609,20 @@ entries:
     - Piping remote script to shell (.NET SDK installer)
     - Unverified curl-pipe-to-shell installers execute remote code during panopticon-tools image build
     - Dockerfile.fixtures pipes dotnet-install.sh into bash without version pin or verification
+    criteria: Qualifies when a remote script is fetched and run in one step (curl | sh, iwr | iex) with no
+      checksum or signature check on its content; a version-pinned URL alone does not verify the content.
+      Downloading a binary and then running it unverified is SEC-E3B.
+    see_also:
+    - SEC-E3B
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the script is fetched over plain HTTP or with TLS verification disabled (curl -k)
+      lower_when:
+      - to: LOW
+        condition: the script URL is pinned to an immutable version on the vendor's HTTPS origin
   SEC-F1A:
     name: crash-on-malformed-input
     default_severity: MEDIUM
@@ -833,6 +1640,28 @@ entries:
     - Unguarded JSON Parsing in NpmAuditAdapter Causes Crash
     - Unhandled panics on attacker-influenced input crash the process (denial of service)
     - '`RoslynSecGuardAdapter.is_applicable()` raises an unhandled exception on a missing/inaccessible target directory'
+    criteria: 'Qualifies when attacker-influenced input can raise an unhandled exception or panic that ends
+      the process or request worker, a denial of service (CWE-248/755). The input must come from an untrusted
+      party: a network payload, an uploaded file, or content of a scanned target. Tool output counts only
+      when the malformed part is shown to come from that target''s content. A crash on internal data or on
+      a trusted tool''s malformed output is COD-B2A. A component that silently skips malformed input is ARC-F2D.
+      The missing test for malformed input is TST-A2D.'
+    see_also:
+    - ARC-F2D
+    - COD-A2C
+    - COD-B2A
+    - TST-A2D
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: a single unauthenticated request kills a long-lived shared service process that no supervisor
+          restarts
+      lower_when:
+      - to: LOW
+        condition: the crash aborts only the single CLI run or request that supplied the input, with a clear
+          error, and no shared worker or other user is affected
   SEC-F1B:
     name: silent-exception-swallowing
     default_severity: LOW
@@ -853,8 +1682,21 @@ entries:
       error-swallowing here (it inflates the security lens). A security/enforcement
       CONTROL that degrades to permit is ARC-F2E.
     see_also:
-    - COD-B2C
     - ARC-F2E
+    - ARC-F2G
+    - COD-B2C
+    - DAT-B1F
+    - OPS-E1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: MEDIUM
+        condition: the swallowed failure silently skips a signature or integrity verification and the unverified
+          content is then accepted (no access is granted)
+      - to: HIGH
+        condition: the swallowed error comes from an authentication, authorization or signature check and
+          execution goes on as if the check passed (a bypass is shown)
   SEC-F2A:
     name: unbounded-external-response-read
     default_severity: MEDIUM
@@ -868,7 +1710,19 @@ entries:
     examples:
     - Unbounded Response Size in External API Lookup
     see_also:
+    - DAT-F2B
     - OPS-A1A
+    - OPS-D1A
+    - QAL-G2A
+    - SEC-H4B
+    criteria: Qualifies when a response from an external server an attacker can influence is read wholly into
+      memory with no size cap (response.read(), .json() on an unbounded body), so a hostile or compromised
+      endpoint can exhaust memory (CWE-400/770). A missing timeout on the call is OPS-A1A. An inbound request
+      body with no size limit is SEC-H4B. A persisted file read whole is DAT-F2B. Internal capacity overload
+      is OPS-D1A.
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   SEC-G1B:
     name: tool-citation-cwe-mismatch
     default_severity: LOW
@@ -878,6 +1732,20 @@ entries:
     recurrence: 1
     examples:
     - Brakeman 'Dangerous Eval' maps to CWE-94 while the equivalent JS eval pattern maps to the more precise CWE-95
+    criteria: Qualifies when security tooling or a rule mapping cites an imprecise or inconsistent CWE or
+      classification for a finding (equivalent patterns mapped to different CWEs, a parent CWE where a child
+      applies), which degrades triage and trend fidelity. Severity hardcoded so that it ignores the tool's
+      value is COD-C1B. Confidence conflated with severity is COD-C1A.
+    see_also:
+    - COD-C1A
+    - COD-C1B
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: both cited CWEs are in the same lineage (parent and child) and either is defensible; only
+          precision differs
   SEC-G2A:
     name: security-surface-not-routed-to-review-lens
     default_severity: HIGH
@@ -888,6 +1756,20 @@ entries:
     examples:
     - scout.md defines secrets_config as a detectable surface but never routes it (or concurrency-surfaced files)
       to the security panel/lens
+    criteria: Qualifies when a review or scan pipeline detects a security-relevant surface (secrets config,
+      auth code, concurrency) but never routes it to the security reviewer or lens, so that surface gets no
+      security review at all. A tool that silently drops coverage at runtime is SEC-G2B. General asymmetric
+      coverage across non-security domains is ARC-E3B.
+    see_also:
+    - ARC-E3B
+    - SEC-G2B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the unrouted surface is still covered by a deterministic security scanner in the same run;
+          only the agentic lens misses it
   SEC-G2B:
     name: silent-scan-coverage-loss
     default_severity: MEDIUM
@@ -911,8 +1793,22 @@ entries:
       findings, not a permitted action: a security/enforcement control that fails
       open is ARC-F2E; a general component that skips malformed input is ARC-F2D.
     see_also:
+    - ARC-A4D
+    - ARC-C2A
     - ARC-F2D
     - ARC-F2E
+    - COD-B2C
+    - COD-B2E
+    - COD-C2A
+    - SEC-G2A
+    - SEC-G2C
+    - TST-A4C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the scan that loses coverage feeds a CI gate that reports PASS while scanning nothing
   SEC-G2C:
     name: unpinned-scan-ruleset
     default_severity: LOW
@@ -924,6 +1820,20 @@ entries:
     - CWE-1357
     examples:
     - Semgrep invocation uses `--config auto` without `--metrics=off`, introducing an unpinned remote ruleset
+    criteria: Qualifies when a security scanner loads a remote or floating ruleset or vulnerability DB (semgrep
+      --config auto, unpinned rule packs), so results cannot be reproduced and the scan may send telemetry.
+      A stale-DB fallback that silently loses coverage is SEC-G2B. Unpinned third-party source that is built
+      or executed is SEC-E2C.
+    see_also:
+    - SEC-E2C
+    - SEC-G2B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the floating ruleset is fetched with metrics/telemetry on and uploads metadata about a
+          private codebase
   SEC-G3B:
     name: insufficient-negative-test-coverage-for-security-guard
     default_severity: LOW
@@ -939,6 +1849,23 @@ entries:
     - No test drives dispatch's fail-closed unenforced-reviewer gate through main() with a MIXED-enforcement plan
     - Write-guard hook test suite never exercises non-string tool_input.file_path, hiding an uncaught TypeError
     - meta.parts confinement test covers relative traversal only, not an absolute-path escape
+    criteria: Qualifies when a security guard or control (a sandbox trigger, a fail-closed gate, a confinement
+      check, parser hardening) has no negative or adversarial test proving it rejects the attack input it
+      exists for. General untested malformed-input paths are TST-A2D. A security path that is unit-tested
+      but never tested end to end is TST-G3E. A guard enforced only by assert is SEC-G3C.
+    see_also:
+    - SEC-G3C
+    - TST-A2B
+    - TST-A2D
+    - TST-A2F
+    - TST-G3E
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the untested guard is the only control in front of a sink graded HIGH or CRITICAL in this
+          catalog (code execution, path escape)
   SEC-G3C:
     name: security-invariant-enforced-only-via-assert
     default_severity: LOW
@@ -950,6 +1877,20 @@ entries:
     - CWE-617
     examples:
     - Security-ordering invariants in TestPanelPriority are checked with bare `assert`, which `python -O` silently strips
+    criteria: Qualifies when a security invariant in production code is enforced only by assert (stripped
+      under python -O, disabled in release/NDEBUG builds), so the check disappears in optimized runs (CWE-617).
+      Asserts in test code do not qualify. A policy that is stated but not enforced in code at all is ARC-F1E.
+    see_also:
+    - ARC-F1E
+    - SEC-G3B
+    - TST-G2E
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the production deployment is shown to run optimized (python -O, PYTHONOPTIMIZE set, NDEBUG
+          release build), so the check is absent today
   SEC-G3D:
     name: missing-vulnerability-disclosure-policy
     default_severity: INFO
@@ -959,6 +1900,14 @@ entries:
     recurrence: 1
     examples:
     - No SECURITY.md backing the vulnerability-disclosure instruction
+    criteria: Qualifies when a project that ships software has no vulnerability-disclosure policy (a SECURITY.md
+      or equivalent contact and process). When documentation promises a disclosure process whose backing file
+      is absent, that is the doc-versus-repo gap ARC-D3B; cite one code, not both.
+    see_also:
+    - ARC-D3B
+    severity_range:
+      floor: INFO
+      ceiling: INFO
   SEC-H1A:
     name: session-fixation
     default_severity: HIGH
@@ -968,6 +1917,19 @@ entries:
     - asvs-align
     cwe:
     - CWE-384
+    criteria: Qualifies when the session identifier is not regenerated on authentication or privilege change,
+      so a pre-set id that an attacker planted becomes authenticated (CWE-384). Missing cookie flags are SEC-H1B.
+      No idle or absolute expiry is SEC-H1C.
+    see_also:
+    - SEC-H1B
+    - SEC-H1C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the framework rejects session ids supplied from outside (no URL or adoption of unknown
+          ids), so planting one needs a separate XSS or subdomain foothold
   SEC-H1B:
     name: missing-secure-cookie-flags
     default_severity: MEDIUM
@@ -977,6 +1939,19 @@ entries:
     - asvs-align
     cwe:
     - CWE-614
+    criteria: Qualifies when a session or auth cookie lacks Secure, HttpOnly, or a suitable SameSite attribute
+      (CWE-614/1004). Missing CSRF tokens are SEC-H2A, where SameSite is a compensating control. Missing expiry
+      is SEC-H1C.
+    see_also:
+    - SEC-H1A
+    - SEC-H2A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the only missing attribute is Secure on a host served solely over HTTPS with HSTS preload,
+          or the only missing attribute is SameSite and token-based CSRF protection is present
   SEC-H1C:
     name: missing-session-expiry
     default_severity: MEDIUM
@@ -986,6 +1961,18 @@ entries:
     - asvs-align
     cwe:
     - CWE-613
+    criteria: Qualifies when server-side sessions or refresh tokens have no idle or absolute timeout, or are
+      not invalidated on logout or password change (CWE-613). JWT exp/aud not being validated is SEC-H3C.
+      Fixation is SEC-H1A.
+    see_also:
+    - SEC-H1A
+    - SEC-H3C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: an idle timeout and logout invalidation exist and only the absolute lifetime cap is missing
   SEC-H2A:
     name: csrf-missing-token-protection
     default_severity: HIGH
@@ -995,6 +1982,21 @@ entries:
     - owasp-align
     cwe:
     - CWE-352
+    criteria: Qualifies when a state-changing endpoint authenticated by ambient credentials (cookies) accepts
+      cross-site requests with no anti-CSRF token, origin check, or SameSite protection (CWE-352), including
+      a missing OAuth state parameter. A permissive CORS policy is SEC-H2B. A cookie missing SameSite on its
+      own is SEC-H1B.
+    see_also:
+    - SEC-H1B
+    - SEC-H2B
+    - SEC-H3B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: the forgeable state change is limited to non-sensitive user preferences (no credentials,
+          payments, permissions, or data deletion)
   SEC-H2B:
     name: cors-misconfiguration
     default_severity: MEDIUM
@@ -1003,6 +2005,22 @@ entries:
     - prior-art
     cwe:
     - CWE-942
+    criteria: Qualifies when a CORS policy reflects arbitrary origins, allows null, or uses wildcard or regex
+      origins together with credentials, so a hostile site can read authenticated responses (CWE-942). Missing
+      CSRF protection is SEC-H2A.
+    see_also:
+    - SEC-H2A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: 'an arbitrary origin is reflected together with Access-Control-Allow-Credentials: true
+          on endpoints that return user data'
+      lower_when:
+      - to: LOW
+        condition: the permissive policy covers only unauthenticated, public, read-only endpoints and credentials
+          are not allowed
   SEC-H2C:
     name: open-redirect
     default_severity: MEDIUM
@@ -1011,6 +2029,20 @@ entries:
     - prior-art
     cwe:
     - CWE-601
+    criteria: 'Qualifies when a server endpoint redirects to a URL taken from request input with no allow-list
+      (CWE-601). An OAuth redirect_uri validation gap is SEC-H3B. A javascript: link in rendered content is
+      SEC-B1B. A redirect used to launder an SSRF fetch is cited at SEC-D2A.'
+    see_also:
+    - SEC-B1B
+    - SEC-D2A
+    - SEC-H3B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the redirect carries tokens, codes, or session material in the URL to the host the attacker
+          chose
   SEC-H2D:
     name: missing-frame-protection-clickjacking
     default_severity: LOW
@@ -1019,6 +2051,17 @@ entries:
     - prior-art
     cwe:
     - CWE-1021
+    criteria: Qualifies when a served page with state-changing UI sends neither X-Frame-Options nor a CSP
+      frame-ancestors directive (CWE-1021). A missing CSP in a static generated report is SEC-B1E.
+    see_also:
+    - SEC-B1E
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the frameable page performs a sensitive one-click action (payment, permission grant, account
+          deletion)
   SEC-H3A:
     name: jwt-algorithm-confusion
     default_severity: HIGH
@@ -1027,6 +2070,19 @@ entries:
     - prior-art
     cwe:
     - CWE-347
+    criteria: Qualifies when JWT verification accepts the algorithm from the token header (alg=none, or HS256
+      verified with an RSA public key used as the HMAC secret) instead of an algorithm pinned on the server
+      (CWE-347). Missing exp/aud/iss checks are SEC-H3C.
+    see_also:
+    - SEC-C3B
+    - SEC-H3C
+    severity_range:
+      floor: HIGH
+      ceiling: CRITICAL
+      raise_when:
+      - to: CRITICAL
+        condition: alg=none or key confusion is accepted on tokens that authenticate internet-facing requests
+          (forgery needs no key)
   SEC-H3B:
     name: oauth-redirect-uri-validation-gap
     default_severity: HIGH
@@ -1035,6 +2091,20 @@ entries:
     - prior-art
     cwe:
     - CWE-601
+    criteria: Qualifies when an OAuth/OIDC authorization server or client matches redirect_uri by prefix,
+      substring or wildcard, or skips matching against the registration, so authorization codes or tokens
+      can be delivered to an attacker's host (CWE-601). A general application open redirect is SEC-H2C. A
+      missing OAuth state parameter is SEC-H2A.
+    see_also:
+    - SEC-H2A
+    - SEC-H2C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: PKCE is enforced for every client and no response type that returns tokens in the redirect
+          (implicit or hybrid flow) is enabled, so an intercepted redirect yields only an unredeemable code
   SEC-H3C:
     name: jwt-missing-expiry-or-audience-validation
     default_severity: MEDIUM
@@ -1043,6 +2113,19 @@ entries:
     - prior-art
     cwe:
     - CWE-613
+    criteria: Qualifies when JWT validation skips the exp/nbf, audience or issuer checks, so expired tokens,
+      or tokens minted for another service, are accepted (CWE-613). Accepting an algorithm chosen by the header
+      is SEC-H3A. Server-side session expiry is SEC-H1C.
+    see_also:
+    - SEC-H1C
+    - SEC-H3A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the audience is unchecked and the same issuer and key sign tokens for other services or
+          tenants, so cross-service replay is possible
   SEC-H4A:
     name: redos-catastrophic-backtracking
     default_severity: MEDIUM
@@ -1051,6 +2134,23 @@ entries:
     - prior-art
     cwe:
     - CWE-1333
+    criteria: Qualifies when a regex with nested or overlapping quantifiers (catastrophic backtracking) runs
+      on attacker-controlled input with a backtracking engine (CWE-1333). A regex that rejects valid input
+      is COD-C2C. Unbounded input size alone is SEC-H4B.
+    see_also:
+    - COD-C2C
+    - SEC-H4B
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: a single unauthenticated request is measured to block a worker past the service's request
+          timeout, and no per-match timeout exists, so a few concurrent requests exhaust the worker pool
+      lower_when:
+      - to: LOW
+        condition: the measured worst-case match time at the enforced maximum input length is under about
+          100 ms (e.g. polynomial-only backtracking with a tight length cap)
   SEC-H4B:
     name: unbounded-request-size
     default_severity: MEDIUM
@@ -1059,3 +2159,19 @@ entries:
     - prior-art
     cwe:
     - CWE-400
+    criteria: Qualifies when an inbound request body, upload, header or decompressed payload is accepted with
+      no size limit, so an attacker can exhaust memory or disk (CWE-400; zip and gzip bombs included). An
+      outbound response read with no bound is SEC-F2A. Internal load or capacity is OPS-D1A. A persisted file
+      read whole is DAT-F2B.
+    see_also:
+    - DAT-F2B
+    - OPS-D1A
+    - SEC-F2A
+    - SEC-H4A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: the payload is decompressed with no size or ratio limit on an unauthenticated endpoint
+          (a decompression bomb is possible)

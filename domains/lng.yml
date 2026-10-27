@@ -1,31 +1,79 @@
 # OCRDb domain file — PRE-1.0: no domain is ratified until 1.0; this domain's lifecycle stage is derived, not stored here — see RATIFICATION.md.
 domain: LNG
 name: language-and-internationalization
+guide: LNG (language and internationalization) covers defects that make user-facing text untranslatable,
+  ungrammatical, wrongly formatted or wrongly rendered for users in a locale, language or script other
+  than the source one. Choose LNG over ACC when the problem is translation, locale formatting or text
+  direction rather than what assistive technology can announce (an untranslated aria-label is LNG-A1A,
+  a missing accessible name is ACC-A1A). Choose COD area G (temporal, encoding-and-units) or DAT (column
+  types and persisted formats) when encoding, normalization or time handling produces a wrong result in
+  program logic or stored data rather than in displayed text, and QAL for inert hygiene in strings (typos,
+  style-only concatenation, orphaned assets). Look in A for strings that never reach the i18n layer, B
+  for numbers, dates and plurals, C for sentence composition, D for catalog keys, E for character-level
+  measurement and truncation, F for right-to-left layout.
 areas:
   A:
     name: externalization
+    guide: 'Externalization: user-facing text that does not go through the i18n layer at all, so it cannot
+      be translated. Category 1 separates a whole hardcoded literal (LNG-A1A) from a message assembled in
+      code (LNG-A1B).'
     categories:
       '1': string-externalization
+    category_guides:
+      '1': 'A complete user-facing literal written at point-of-use is LNG-A1A; a message built by concatenating
+        or interpolating in code outside the catalog is LNG-A1B. Easy to confuse: when the pieces ARE translated
+        but glued together, that is LNG-C1A, and a key that exists in code but not in the catalog is LNG-D1A.'
   B:
     name: locale-formatting
+    guide: 'Locale formatting: values whose rendering depends on locale conventions (number separators, date
+      order, currency, plural forms). Category 1 holds number/date/currency formatting (LNG-B1A) and plural
+      rules (LNG-B1B).'
     categories:
       '1': locale-aware-formatting
+    category_guides:
+      '1': 'Hardcoded separators, date patterns or currency placement are LNG-B1A; an n==1-else-''s'' plural
+        rule is LNG-B1B. Easy to confuse: a naive/aware datetime mix is COD-G1C and a wrong unit or currency
+        conversion is COD-G3C; a time shown in the right zone but the wrong pattern is still LNG-B1A.'
   C:
     name: grammar
+    guide: 'Grammar: messages whose translated parts are composed in code so word order, gender or agreement
+      breaks in other languages. Category 1 holds the concatenated-translation code (LNG-C1A).'
     categories:
       '1': translation-composition
+    category_guides:
+      '1': 'Separately translated fragments glued or interpolated into a sentence are LNG-C1A. Easy to confuse:
+        untranslated pieces assembled in code are LNG-A1B, and a count-based plural branch is LNG-B1B.'
   D:
     name: key-drift
+    guide: 'Key drift: the translation catalog and the keys code references fall out of sync. Category 1 holds
+      the key-lifecycle code (LNG-D1A).'
     categories:
       '1': key-management
+    category_guides:
+      '1': 'A referenced key missing with no fallback, or a renamed or unused key left behind, is LNG-D1A.
+        Easy to confuse: a string that was never given a key is LNG-A1A.'
   E:
     name: encoding
+    guide: 'Encoding: user-facing text measured, truncated or indexed at the wrong unit (bytes or UTF-16 code
+      units instead of characters or graphemes). Category 1 holds LNG-E1A; encoding defects in program logic
+      belong to COD area G, and a stored column sized in bytes rather than characters is DAT-A1A.'
     categories:
       '1': text-encoding
+    category_guides:
+      '1': 'Text limited, truncated or split mid-character for display is LNG-E1A. Easy to confuse: bytes
+        and str mixed in logic is COD-G3A, decoding with an implicit default encoding is COD-G3B, NFC/NFD
+        mismatch in comparison or lookup is COD-G3D, and a silent truncation of a result set is COD-B2E.'
   F:
     name: directionality
+    guide: 'Directionality: UI that assumes left-to-right text and layout, including user-supplied mixed-direction
+      text that is not isolated. Category 1 holds the RTL/bidi code (LNG-F1A).'
     categories:
       '1': directionality
+    category_guides:
+      '1': 'Hardcoded left/right, a missing dir attribute, physical instead of logical CSS properties, or
+        un-isolated user-supplied mixed-direction text is LNG-F1A. Easy to confuse: a missing document or
+        element language attribute is not F1A, and bidi control characters used to disguise code or identifiers
+        are a spoofing hazard, not a layout defect.'
 entries:
   LNG-A1A:
     name: hardcoded-user-facing-string
@@ -34,14 +82,30 @@ entries:
     provenance:
     - corpus
     recurrence: 59
-    criteria: >-
-      Qualifies when a user-facing string is embedded in code, bypassing the
-      i18n layer. A user-facing string hardcoded at point-of-use (a prompt,
-      label, or message) cannot be translated and will not adapt to locale
-      settings, violating i18n externalization principles.
+    criteria: Qualifies when a complete user-facing string (a label, prompt, button text, error or notification
+      shown to an end user) is written as a literal at point-of-use in a codebase that has an i18n layer or
+      a stated localisation requirement, so it bypasses the catalog and cannot be translated. Evidence names
+      the literal and the i18n mechanism it bypasses. Log lines, developer diagnostics and machine-read identifiers
+      are not user-facing and do not qualify. A message assembled in code from pieces is LNG-A1B; translated
+      fragments glued together are LNG-C1A; a key referenced in code but missing from the catalog is LNG-D1A;
+      a spelling error in shipped text is QAL-C2E.
     examples:
     - hardcoded-user-facing-string
     - hardcoded-ui-strings-bypassing-i18n
+    see_also:
+    - ACC-A1A
+    - LNG-A1B
+    - LNG-C1A
+    - LNG-D1A
+    - QAL-C2E
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: the surface showing the string is not offered in any non-source locale today (the product
+          publishes no translations, or this operator/admin surface is excluded from localisation), so no
+          user currently sees it untranslated
   LNG-A1B:
     name: string-assembled-outside-i18n
     default_severity: LOW
@@ -58,6 +122,13 @@ entries:
     examples:
     - user-facing-string-dispatched-outside-template
     - label-built-in-code-not-catalog
+    see_also:
+    - LNG-A1A
+    - LNG-C1A
+    - QAL-B3C
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   LNG-B1A:
     name: locale-unaware-number-date-format
     default_severity: LOW
@@ -65,14 +136,29 @@ entries:
     provenance:
     - corpus
     recurrence: 25
-    criteria: >-
-      Qualifies when a number, date, time, or currency uses hardcoded
-      separators/patterns instead of locale-aware formatting (CLDR/ICU), so
-      output is wrong or confusing in other locales. Distinct from
-      pluralization (LNG-B1B).
+    criteria: Qualifies when a number, date, time or currency amount shown to users is formatted with hardcoded
+      separators, patterns or symbol placement instead of a locale-aware formatter (CLDR/ICU, Intl, babel),
+      so output is wrong or ambiguous in other locales. Evidence names the value, the hardcoded pattern and
+      the display site. A deliberately locale-neutral machine-read format (ISO-8601, a CSV or API field) does
+      not qualify, and neither does its inverse (locale-dependent formatting leaking into a machine-read field),
+      which is a parsing/correctness defect outside LNG. Pluralization is LNG-B1B; a naive/aware datetime
+      mix is COD-G1C; a wrong unit or currency conversion is COD-G3C.
     examples:
     - locale-unaware-date-formatting
     - hardcoded-number-format
+    see_also:
+    - COD-G1C
+    - COD-G3C
+    - LNG-B1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the rendered string parses as a different valid value under the convention of a non-source
+          locale the product publishes (a grouping/decimal swap such as 1,234 vs 1.234 on an amount, or a
+          day/month-ambiguous date such as 03/04), so a reader in that locale takes it for a different amount
+          or date
   LNG-B1B:
     name: naive-pluralization
     default_severity: LOW
@@ -88,6 +174,17 @@ entries:
     examples:
     - naive-plural-s-suffix
     - count-based-if-else-plural
+    see_also:
+    - LNG-B1A
+    - LNG-C1A
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: the n==1 branch selects between two translated catalog strings (no suffix appended in code)
+          and every locale the product publishes has CLDR plural categories of exactly one (n==1) and other,
+          so the selection is correct for all current users
   LNG-C1A:
     name: translation-assembled-by-concatenation
     default_severity: MEDIUM
@@ -104,6 +201,14 @@ entries:
     examples:
     - concatenated-translation-fragments
     - sentence-built-by-string-glue
+    see_also:
+    - LNG-A1A
+    - LNG-A1B
+    - LNG-B1B
+    - QAL-B3C
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   LNG-D1A:
     name: translation-key-drift-or-missing-fallback
     default_severity: LOW
@@ -120,6 +225,21 @@ entries:
     examples:
     - translation-key-drift
     - missing-locale-fallback
+    see_also:
+    - LNG-A1A
+    - QAL-E2C
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the missing key renders blank (not a visible raw key) in the source locale as the only
+          text of a control, error or confirmation message, so the user cannot tell what the action does or
+          what failed
+      lower_when:
+      - to: INFO
+        condition: the drift is only an orphaned key that no code path references (drop this lower and set
+          floor LOW if the orphaned-key half is re-homed to QAL-E2C)
   LNG-E1A:
     name: byte-vs-codepoint-length-confusion
     default_severity: LOW
@@ -127,17 +247,32 @@ entries:
     provenance:
     - corpus
     recurrence: 6
-    criteria: >-
-      Qualifies when text is measured, truncated, or indexed by bytes or
-      UTF-16 code units as if they were characters, so
-      multi-byte/surrogate/grapheme text is split mid-character or mis-limited
-      (Unicode handling; CWE-176). The user-facing-text form; raw
-      data-layer/serialization encoding homes in DAT (see routing note).
+    criteria: Qualifies when user-facing text is measured, truncated, limited or indexed by bytes or UTF-16
+      code units as if they were characters, so multi-byte, surrogate-pair or multi-codepoint grapheme text
+      (emoji, combining marks, CJK) is split mid-character or held to a lower effective limit than documented
+      (CWE-176). Evidence names the length/index operation and the text it is applied to. Bytes and str mixed
+      in program logic is COD-G3A; decoding with an implicit default encoding is COD-G3B; NFC/NFD mismatch
+      in comparison or lookup is COD-G3D; a result set or output cut off with no warning is COD-B2E; a stored
+      column sized in bytes rather than characters is DAT-A1A.
     cwe:
     - CWE-176
     examples:
     - utf8-byte-length-conflated-with-char-count
     - unnormalized-utf8-path-handling
+    see_also:
+    - COD-B2E
+    - COD-G3A
+    - COD-G3B
+    - COD-G3D
+    - DAT-A1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the mid-character split produces an invalid UTF-8 sequence or a lone surrogate that is
+          then persisted or sent onward (stored in a column, emitted in an API or protocol field), so the
+          corruption outlives the display
   LNG-F1A:
     name: missing-rtl-bidi-support
     default_severity: LOW
@@ -145,11 +280,20 @@ entries:
     provenance:
     - corpus
     recurrence: 6
-    criteria: >-
-      Qualifies when the UI assumes left-to-right layout and direction
-      (hardcoded left/right, no dir attribute or logical CSS properties), so
-      right-to-left languages (Arabic, Hebrew) render mirrored or bidi-broken
-      (Unicode Bidirectional Algorithm; CSS logical properties).
+    criteria: Qualifies when a UI that is offered, or stated to be offered, in a right-to-left language assumes
+      left-to-right layout or direction (hardcoded left/right positioning, no dir attribute, physical instead
+      of logical CSS properties, user-supplied mixed-direction text not isolated with bdi/dir=auto), so Arabic,
+      Hebrew, Persian or Urdu render mirrored or bidi-broken (Unicode Bidirectional Algorithm; CSS logical
+      properties). Evidence names the direction assumption and the surface. A missing document or element
+      language attribute is not this code; bidi control characters used to disguise source code or identifiers
+      are a spoofing hazard, not a layout defect.
     examples:
     - rtl-layout-support-missing
     - bidi-directionality-assumption
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: the direction assumption breaks a primary layout in a published RTL locale (navigation,
+          form field order, or the reading flow of main content), not an isolated widget or icon

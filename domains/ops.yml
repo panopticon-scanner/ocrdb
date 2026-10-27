@@ -1,27 +1,77 @@
 # OCRDb domain file — PRE-1.0: no domain is ratified until 1.0; this domain's lifecycle stage is derived, not stored here — see RATIFICATION.md.
 domain: OPS
 name: production-readiness
+guide: 'OPS (production-readiness) covers how running code behaves as a deployed service under real operating
+  conditions: hung or failing dependencies, start/stop lifecycle, boot-time configuration, capacity limits,
+  and whether failures are visible to operators at all. Choose OPS when the failure is internal or systemic
+  (self-inflicted load, a slow dependency, a restart). Route an attacker-sized request or response to
+  SEC, a swallow that leaves the program on a wrong or missing result to COD, a migration or query-shape
+  defect to DAT, a deliberate architectural fail-open decision to ARC, poor-quality diagnostics (a log
+  that exists but is vague) to QAL area I, and agent loop or tool budgets to AGT. Look in A (resilience)
+  for outbound calls and retries, B (lifecycle) for shutdown and health checks, C (deployment-config)
+  for boot-time config and side effects, D (resource-limits) for unbounded growth, and E (observability)
+  for failures that leave no signal.'
 areas:
   A:
     name: resilience
+    guide: 'Resilience of outbound calls to backing services (network, IPC, subprocess): whether a call is
+      bounded in time and whether failures are retried safely. Category 1 holds the timeout code and the retry-amplification
+      code.'
     categories:
       '1': external-call-resilience
+    category_guides:
+      '1': 'A call with no bounded timeout is OPS-A1A; a retry with no backoff or jitter is OPS-A1B. Easy
+        to confuse: a test that shells out with no timeout is TST-G3B, an unbounded response body read is
+        SEC-F2A, and a blocking call on an async path is COD-F2B.'
   B:
     name: lifecycle
+    guide: 'Process lifecycle as an orchestrator sees it: how a service stops and how it reports health. Category
+      1 points at the shutdown-drain and health-check codes.'
     categories:
       '1': startup-and-shutdown
+    category_guides:
+      '1': Dropping in-flight work on SIGTERM/stop is OPS-B1A, including a stop sequence that never flips
+        readiness before draining. A health or readiness endpoint that reports healthy without checking anything
+        real (a static 200, or liveness standing in for readiness) is OPS-B1B. A signal handler that does
+        unsafe work is COD-F3D, and a torn file left by a kill mid-write is DAT-F1B.
   C:
     name: deployment-config
+    guide: 'What happens at boot: whether configuration is validated before serving and whether startup performs
+      unguarded side effects. Category 1 points at the config-validation and startup-side-effect codes.'
     categories:
       '1': startup-configuration
+    category_guides:
+      '1': Config consumed at boot without validation, failing late, is OPS-C1A; an unconditional side effect
+        on every boot is OPS-C1B. A loader that picks a permissive default on missing or corrupt config is
+        COD-B1A; a migration that is not safe to re-run is DAT-B1D, and one whose failure is swallowed and
+        recorded as applied is DAT-B1F.
   D:
     name: resource-limits
+    guide: 'Capacity bounds under load: memory, connections, threads, CPU and result-set size with no cap,
+      quota or backpressure. Category 1 points at the general unbounded-consumption code and the result-set
+      code.'
     categories:
       '1': resource-bounds
+    category_guides:
+      '1': 'General unbounded growth of a concurrency, capacity or in-process memory resource (connections,
+        threads/tasks, queues, caches, CPU fan-out) is OPS-D1A; a list endpoint or query with no pagination
+        or cap is OPS-D1B (until the OPS-D1B/DAT-C1C overlap is resolved, cite DAT-C1C when the fix is the
+        query''s LIMIT and OPS-D1B when the fix is the endpoint''s page/limit contract). Easy to confuse:
+        QAL-G2A (whole collection loaded into memory), DAT-F2B (unbounded file read), SEC-H4B / SEC-F2A (unbounded
+        request / response size), AGT-E1A / AGT-E1B (agent loop or tool budget), and COD-A1A (a leaked file
+        handle).'
   E:
     name: observability
+    guide: 'Failure visibility at runtime: an error is handled or swallowed and leaves no log, metric or trace
+      for operators. Category 1 points at the silent-failure code; diagnostic log quality and trace propagation
+      belong to QAL area I.'
     categories:
       '1': failure-visibility
+    category_guides:
+      '1': A runtime failure that is handled or ignored and emits no log, metric or trace is OPS-E1A. When
+        the swallow makes the program proceed on wrong or missing data it is COD-B2C; a security-relevant
+        swallow is SEC-F1B; an overbroad catch is ARC-F2G; a swallowed CI step is ARC-C2B; a migration failure
+        swallowed and marked applied is DAT-B1F; a log that exists but is vague is QAL-I1B.
 entries:
   OPS-A1A:
     name: missing-timeout-on-external-call
@@ -30,18 +80,33 @@ entries:
     provenance:
     - corpus
     recurrence: 42
-    criteria: >-
-      Qualifies when an outbound network/IPC/subprocess call has no bounded
-      timeout, so a slow or hung dependency can stall the caller indefinitely
-      (12-Factor "backing services" + SRE resilience). Distinct from a retry
-      hazard (OPS-A1B). Malicious triggering of the stall homes in SEC (see
-      routing note); this is the internal/systemic form.
+    criteria: 'Qualifies when an outbound network, IPC or subprocess call in production code has no bounded
+      timeout or deadline (none passed, none inherited from a configured client default), so a slow or hung
+      dependency can stall the caller indefinitely and hold its worker, thread or connection. This is the
+      single home for a missing outbound deadline until SEC gains a slow-request code. Exclusions: the same
+      call in a test harness is TST-G3B; reading an unbounded response body (size, not time) is SEC-F2A; a
+      synchronous call blocking an async event loop is COD-F2B; retrying with no backoff is OPS-A1B.'
     examples:
     - missing-timeout-on-outbound-http-call
     - unbounded-fetch-without-deadline
     - no-timeout-on-subprocess-invocation
     see_also:
+    - AGT-E1A
+    - COD-F2A
+    - COD-F2B
+    - DAT-D1D
+    - OPS-A1B
     - SEC-F2A
+    - TST-F1F
+    - TST-G3B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The call runs in a one-shot process (CLI command, batch job) or once on the boot path before
+          the process reports ready, and holds no shared worker, connection pool or request queue, so a hang
+          stalls only that run or that start.
   OPS-A1B:
     name: retry-without-backoff-or-jitter
     default_severity: MEDIUM
@@ -57,6 +122,16 @@ entries:
     examples:
     - retry-without-backoff-or-jitter
     - tight-retry-loop-amplifies-dependency-failure
+    see_also:
+    - ARC-F1D
+    - OPS-A1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The retry count is small and fixed (for example 3 or fewer) and the retried target is a
+          local resource (file lock, local socket) rather than a dependency shared by many clients.
   OPS-B1A:
     name: no-graceful-shutdown-drain
     default_severity: HIGH
@@ -64,14 +139,26 @@ entries:
     provenance:
     - corpus
     recurrence: 38
-    criteria: >-
-      Qualifies when a service does not drain in-flight work on SIGTERM/stop —
-      requests, jobs, or writes are dropped rather than completed or rejected
-      cleanly (12-Factor IX Disposability). The lifecycle/runtime form; an
-      architectural fail-open decision homes in ARC (see routing note).
+    criteria: 'Qualifies when a long-running service does not drain in-flight work on SIGTERM/stop: requests,
+      jobs or writes in progress are dropped instead of being completed or cleanly rejected before exit, including
+      a stop sequence that keeps accepting traffic because readiness is never failed first (12-Factor IX Disposability).
+      Evidence names the stop path and the work it abandons. Exclusions: a health endpoint that never checks
+      anything real (static 200, liveness as readiness) is OPS-B1B; a signal handler that does async-signal-unsafe
+      work is COD-F3D; a persisted file torn by a kill mid-write is DAT-F1B.'
     examples:
     - no-graceful-shutdown-drain
     - sigterm-drops-in-flight-requests
+    see_also:
+    - COD-F3D
+    - DAT-F1B
+    - OPS-B1B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The only work in flight at stop is read-only or idempotent requests that callers retry,
+          so nothing is lost, only failed.
   OPS-B1B:
     name: fake-or-noop-health-check
     default_severity: MEDIUM
@@ -88,6 +175,16 @@ entries:
     examples:
     - fake-health-check-always-200
     - liveness-masquerading-as-readiness
+    see_also:
+    - OPS-B1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The repository's deployment manifests are present and no probe, load-balancer health check
+          or service-discovery rule in them references the endpoint, so nothing in the shipped deployment
+          routes traffic on its answer.
   OPS-C1A:
     name: unvalidated-startup-configuration
     default_severity: MEDIUM
@@ -95,15 +192,25 @@ entries:
     provenance:
     - corpus
     recurrence: 39
-    criteria: >-
-      Qualifies when config is consumed at startup without validating required
-      values, types, or ranges, so a missing/malformed setting surfaces as a
-      late runtime failure instead of failing fast at boot (12-Factor III
-      Config; fail-fast). Distinct from an unconditional startup side effect
-      (OPS-C1B).
+    criteria: 'Qualifies when configuration is consumed at startup without validating required values, types
+      or ranges, so a missing or malformed setting surfaces as a late runtime failure instead of failing fast
+      at boot (12-Factor III Config). Evidence names the setting and the later point where it fails. Exclusions:
+      a loader that substitutes a permissive default for a missing or corrupt config artifact is COD-B1A (fail-open
+      direction, not lateness); a component that skips malformed runtime input is ARC-F2D; an unguarded side
+      effect at boot is OPS-C1B.'
     examples:
     - unvalidated-startup-configuration
     - missing-required-env-var-fails-late
+    see_also:
+    - ARC-E2C
+    - COD-B1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The unvalidated setting is read only by an optional, off-by-default feature path, so a
+          bad value fails late only when that feature is enabled and the core serving path is unaffected.
   OPS-C1B:
     name: unconditional-startup-side-effect
     default_severity: LOW
@@ -111,15 +218,30 @@ entries:
     provenance:
     - corpus
     recurrence: 12
-    criteria: >-
-      Qualifies when startup performs an unconditional, unguarded side effect
-      — a migration, data mutation, or external write on every boot — instead
-      of an explicit idempotent step, so restarts or multiple replicas repeat
-      or race it (deployment safety). Distinct from consuming config without
-      validating it (OPS-C1A).
+    criteria: 'Qualifies when startup performs an unconditional, unguarded side effect on every boot (a migration,
+      data mutation or external write) instead of an explicit, once-only deployment step, so restarts repeat
+      it and concurrently booting replicas race it. Evidence names the boot hook and the side effect. Exclusions:
+      a migration that is itself unsafe to re-run is DAT-B1D (the migration defect; cite OPS-C1B only for
+      running it on boot); a migration that destroys data is DAT-B1A; replicas racing a shared check is COD-F1B;
+      boot-time config not validated is OPS-C1A.'
     examples:
     - container-boot-runs-unconditional-migration
     - startup-mutates-state-without-guard
+    see_also:
+    - COD-F1B
+    - DAT-B1D
+    severity_range:
+      floor: INFO
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The side effect is a non-migration data mutation or external write that is not idempotent,
+          and the deployment manifest runs more than one replica with no lock or leader election around the
+          step, so concurrently booting replicas duplicate it.
+      lower_when:
+      - to: INFO
+        condition: The side effect is idempotent (a no-op when already applied) and the deployment runs a
+          single instance, so the only cost is boot time.
   OPS-D1A:
     name: unbounded-resource-consumption
     default_severity: HIGH
@@ -127,14 +249,32 @@ entries:
     provenance:
     - corpus
     recurrence: 27
-    criteria: >-
-      Qualifies when a code path can consume unbounded memory, connections,
-      goroutines/threads, or CPU under load — no cap, quota, or backpressure
-      (SRE overload). Resource leaks in general product code home in COD; this
-      is the operational overload/capacity form.
+    criteria: 'Qualifies when a long-running code path can grow a concurrency, capacity or in-process memory
+      resource without bound under load (open connections, goroutines/threads/tasks, queued work, a cache
+      or buffer that grows per request or key, CPU fan-out) because there is no cap, quota, pool limit, eviction
+      or backpressure. Evidence names the resource and the input that drives its growth. Exclusions: a file
+      handle that is never released is COD-A1A; a whole data-sized collection loaded into memory at once is
+      QAL-G2A; an unbounded query or endpoint result set is DAT-C1C / OPS-D1B; an unbounded file read is DAT-F2B;
+      an attacker-sized request or response is SEC-H4B / SEC-F2A; an agent loop or tool-call budget is AGT-E1A
+      / AGT-E1B.'
     examples:
     - unbounded-realtime-connection-growth
     - unbounded-goroutine-fanout
+    see_also:
+    - AGT-E1A
+    - AGT-E1B
+    - COD-A1A
+    - OPS-D1B
+    - QAL-G2A
+    - SEC-F2A
+    - SEC-H4B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The process is a single-tenant worker or batch job whose exhaustion kills only its own
+          run, with no shared serving pool or co-tenant workload.
   OPS-D1B:
     name: missing-pagination-or-result-cap
     default_severity: MEDIUM
@@ -142,17 +282,24 @@ entries:
     provenance:
     - corpus
     recurrence: 14
-    criteria: >-
-      Qualifies when a query or list endpoint returns an unbounded result set
-      — no pagination, limit, or cap — so response size and memory scale with
-      the data (SRE overload; API design). The result-set form of unbounded
-      consumption; general unbounded memory/connection/CPU growth is OPS-D1A.
+    criteria: 'If kept rather than merged: Qualifies when a list or query API endpoint exposes no pagination,
+      limit or cap in its contract (no page/cursor/limit parameters and no server-side maximum), so response
+      size and client memory scale with the data. Evidence names the endpoint and the collection behind it.
+      Exclusions: the database query with no LIMIT is DAT-C1C (fix in the query); loading the collection whole
+      into memory is QAL-G2A; rendering it in one pass is COD-F2C; general unbounded connection/thread/CPU
+      growth is OPS-D1A.'
     examples:
     - missing-query-result-limit
     - unpaginated-list-endpoint
     see_also:
+    - COD-B2E
     - COD-F2C
+    - DAT-C1C
+    - OPS-D1A
     - QAL-G2A
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   OPS-E1A:
     name: silent-failure-without-telemetry
     default_severity: MEDIUM
@@ -160,13 +307,28 @@ entries:
     provenance:
     - corpus
     recurrence: 22
-    criteria: >-
-      Qualifies when an error is swallowed at runtime with no log, metric, or
-      trace, so the failure is operationally invisible. The runtime
-      error-swallowing form (see routing note); a general correctness
-      error-swallow homes in COD-B2C.
+    criteria: 'Qualifies when a runtime failure is caught or ignored and the program continues as designed
+      (degrades or skips) but emits no log, metric or trace, so operators cannot see the failure. The finding
+      is the missing signal, not the handling choice. Exclusions: when the swallow makes the program proceed
+      on wrong or missing data it is COD-B2C; a swallowed security-relevant failure (auth, verification) is
+      SEC-F1B; a blanket catch masking many error types is ARC-F2G; a CI step whose failure is ignored is
+      ARC-C2B; a migration failure swallowed and marked applied is DAT-B1F; a log line that exists but lacks
+      context is QAL-I1B; a sensitive action with no audit record is SEC-C4B.'
     examples:
     - panic-recovery-bypasses-logging
     - error-swallowed-without-telemetry
     see_also:
+    - ARC-C2B
+    - ARC-F2G
     - COD-B2C
+    - DAT-B1F
+    - QAL-I1A
+    - QAL-I1B
+    - SEC-F1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The silenced failure is on a best-effort auxiliary path (cache warm-up, metrics emission,
+          optional enrichment) whose failure changes no output and no persisted state.

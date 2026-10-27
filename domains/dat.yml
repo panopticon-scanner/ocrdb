@@ -1,32 +1,96 @@
 # OCRDb domain file — PRE-1.0: no domain is ratified until 1.0; this domain's lifecycle stage is derived, not stored here — see RATIFICATION.md.
 domain: DAT
 name: data-and-persistence
+guide: 'DAT covers persisted data: schema shape, migrations, query cost, transaction boundaries and DB/KV
+  concurrency, consistency over time (schema drift, deletes, mirrors), and durable files and embedded
+  local stores. Choose DAT when the defect sits in the persistence layer; choose COD when the same hazard
+  is in in-memory logic (process-state races COD-F, numeric and encoding representation COD-G), OPS when
+  it is an endpoint or service capacity limit or a startup side effect (OPS-D1B, OPS-D1A, OPS-C1B), SEC
+  when an attacker triggers it or the data is personal data under privacy rules (SEC-B4C), and ARC when
+  two specifications other than the live schema and its migrations disagree. Look in A for schema shape,
+  B for migrations, C for query cost, D for transactions, E for consistency over time, and F for files
+  and embedded stores.'
 areas:
   A:
     name: schema-design
+    guide: 'Schema-design: the declared shape of stored data and whether it enforces the domain''s rules.
+      Covers column types, constraints, foreign keys and NULL semantics; see category 1.'
     categories:
       '1': integrity-and-modeling
+    category_guides:
+      '1': 'Integrity-and-modeling: a type that cannot hold the value set is DAT-A1A; an invariant the type
+        can hold but no CHECK/UNIQUE/NOT NULL constraint enforces is DAT-A1B; a parent reference with no FK
+        is DAT-A1C; a NULL with no single meaning is DAT-A1D. The easy confusions are A1A/A1B (range invariants),
+        A1B/A1C (membership via FK), A1B/A1D (a required field left nullable) and A1B/DAT-E1C (a unique constraint
+        wrong under soft delete).'
   B:
     name: migrations
+    guide: 'Migrations: what applying, re-running, reversing or silently skipping a schema migration does
+      to production data and schema. Everything here is migration-scoped: a non-migration rewrite of stored
+      data is DAT-F1A, and startup code that runs a migration unconditionally on every boot is OPS-C1B. See
+      category 1.'
     categories:
       '1': safety-and-reversibility
+    category_guides:
+      '1': 'Safety-and-reversibility: apply-time data loss is DAT-B1A (it outranks B1C irreversibility and
+        B1D re-run safety); heavy locks during apply are DAT-B1B; no faithful down path is DAT-B1C; an unsafe
+        re-run is DAT-B1D; a migration that applies nothing is DAT-B1E; a first-run failure swallowed and
+        recorded as applied is DAT-B1F. The usual confusions are B1A/B1C, B1D/B1F, B1E/B1F and B1B/DAT-D1D
+        (migration vs runtime locus).'
   C:
     name: query-patterns
+    guide: 'Query-patterns: the cost and shape of reads and writes issued against a store. Covers missing
+      indexes, per-row query loops, unbounded result sets and over-fetched columns; see category 1. An API
+      endpoint lacking pagination is OPS-D1B; in-memory growth after the read is QAL-G2A.'
     categories:
       '1': efficiency-and-scale
+    category_guides:
+      '1': 'Efficiency-and-scale: no index for a hot read is DAT-C1A; a query per row in a loop is DAT-C1B;
+        no LIMIT on a growing set is DAT-C1C; too many columns fetched is DAT-C1D. C1C/C1D co-occur (rows
+        vs columns), and C1C overlaps OPS-D1B and QAL-G2A.'
   D:
     name: transactions-and-concurrency
+    guide: 'Transactions-and-concurrency: whether multi-statement database or KV work is atomic, isolated
+      and short. Covers isolation choice, missing transaction boundaries, read-modify-write races and long-held
+      transactions; see category 1. The flat-file analogue is area F; in-memory races are COD-F.'
     categories:
       '1': isolation-and-atomicity
+    category_guides:
+      '1': 'Isolation-and-atomicity: a transaction whose isolation level is too weak for its invariant is
+        DAT-D1A; no transaction around writes that must be all-or-nothing is DAT-D1B; concurrent writers racing
+        on a read-modify-write with no lock or CAS is DAT-D1C; a transaction held open across expensive work
+        is DAT-D1D. The easy confusions are D1A/D1C, D1B/DAT-E1B, and D1D/DAT-B1B (runtime vs migration).
+        For a check-then-insert race with no unique constraint, cite DAT-A1B when the fix is the constraint
+        and D1C when the finding is the race window.'
   E:
     name: data-lifecycle
+    guide: 'Data-lifecycle: stored data that becomes inconsistent over time, through ORM-vs-DDL drift, deletes,
+      soft-delete semantics, or mirrors that diverge from their source; see category 1. Retention of personal
+      data is SEC-B4C, and audit records destroyed by a delete cascade are SEC-C4C, not here.'
     categories:
       '1': retention-and-drift
+    category_guides:
+      '1': 'Retention-and-drift: ORM model vs migration DDL drift is DAT-E1A; a delete path that strands rows
+        is DAT-E1B; soft delete applied inconsistently is DAT-E1C; a mirror or derived store that durably
+        contradicts its source is DAT-E1D. The easy confusions are E1A/DAT-B1E (a disabled migration causing
+        drift), E1B/DAT-A1C (orphans), E1B/DAT-D1B (mid-sequence failure) and E1C/DAT-A1B (unique constraints).'
   F:
     name: durable-file-and-local-state
+    guide: 'Durable-file-and-local-state: persistence to flat files and embedded stores (config, caches, state
+      files, BoltDB, on-disk JSON). Category 1 is how such files are written; category 2 is their format and
+      how they are read back. Durable state written to an ephemeral scratch location is ARC-E2A; a schema
+      migration''s data loss is DAT-B1A, not F.'
     categories:
       '1': write-durability-and-atomicity
       '2': format-and-read-safety
+    category_guides:
+      '1': 'Write-durability-and-atomicity: an overwrite with no backup is DAT-F1A; truncate-in-place with
+        no temp+rename is DAT-F1B; a concurrent read-modify-write with no file lock is DAT-F1C. F1B prevents
+        torn files, not lost updates (F1C). The DB analogue of F1C is DAT-D1C, and the migration analogue
+        of F1A is DAT-B1A.'
+      '2': 'Format-and-read-safety: no version marker in a persisted format is DAT-F2A; reading a persisted
+        file into memory with no size bound is DAT-F2B. An unversioned data contract exchanged between pipeline
+        phases or components is ARC-D1F; a network response read unbounded is SEC-F2A.'
 entries:
   DAT-A1A:
     name: inappropriate-type-for-domain
@@ -35,13 +99,31 @@ entries:
     provenance:
     - prior-art
     - gap-review
-    criteria: >-
-      Qualifies for a per-row column whose declared type cannot represent or enforce
-      the domain's value set (wrong width/precision, a type that can't hold a
-      documented range). NOT for cross-row invariants (sum-to-zero, uniqueness — see
-      DAT-A1B) nor a missing enum member of a state machine (that is a
-      COD/state-machine defect). No corpus instance yet — prior-art only; enrich when
-      observed.
+    criteria: 'Qualifies when a column''s declared type cannot represent the domain''s value set, so valid
+      values are rejected, truncated, rounded or wrapped: too narrow a width or precision, an INT for a value
+      that exceeds its range, a FLOAT/REAL column for money, a string length shorter than the documented maximum,
+      a DB enum type lacking a value the code writes. A type that CAN hold every valid value but lets invalid
+      ones in for lack of a CHECK/UNIQUE/NOT NULL is DAT-A1B. Money held in a float in application code is
+      COD-G2A; overflow or truncation in arithmetic rather than storage is COD-G2B; a JSON/spec schema enum
+      missing a produced value is COD-D1A.'
+    see_also:
+    - COD-G2A
+    - COD-G2B
+    - COD-G2C
+    - DAT-A1B
+    - LNG-E1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: The column holds monetary or ledger amounts that are summed, compared or settled from the
+          stored value, and its type rounds or truncates them (FLOAT/REAL, or a DECIMAL scale smaller than
+          the currency's minor unit).
+      lower_when:
+      - to: LOW
+        condition: The database rejects out-of-range writes with an error (strict mode, typed driver) rather
+          than silently truncating, so the defect surfaces as a visible write failure, not wrong data.
   DAT-A1B:
     name: missing-constraint-for-invariant
     default_severity: MEDIUM
@@ -56,12 +138,27 @@ entries:
     - Spec invariant unique(org,slug) has no backing DB constraint
     - Domain membership invariant left as TODO, FK unenforced
     - Column type does not enforce documented value-range invariant
-    criteria: >-
-      Qualifies when an application-enforced invariant (uniqueness, range, membership)
-      has no backing DB constraint, so a bypassing write path violates it. When the
-      same check-then-insert locus could be cited as a race, PREFER A1B when the fix
-      is the missing constraint; DAT-D1C when the finding is the exploitable race
-      window.
+    criteria: Qualifies when an invariant the application relies on (uniqueness, a per-row range or format
+      rule the column type can represent, NOT NULL for a required field, membership in a lookup set) has no
+      backing DB constraint, so any write path that bypasses the application check (a second service, a bulk
+      import, a concurrent request) violates it. When the same check-then-insert locus could be cited as a
+      race, PREFER A1B when the fix is the missing constraint and DAT-D1C when the finding is the exploitable
+      race window. A type that cannot represent the value set at all is DAT-A1A; a missing foreign key specifically
+      is DAT-A1C; a unique constraint that fails to exclude soft-deleted rows is DAT-E1C.
+    see_also:
+    - COD-F1B
+    - DAT-A1A
+    - DAT-A1C
+    - DAT-A1D
+    - DAT-D1C
+    - DAT-E1C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Every write to the table goes through a single serialized writer (single process holding
+          a lock, or a single-writer embedded store), so no bypassing or concurrent write path exists today.
   DAT-A1C:
     name: missing-foreign-key-relationship
     default_severity: MEDIUM
@@ -76,11 +173,23 @@ entries:
     - Join/counter table missing FK, orphans survive parent deletion
     - Spec'd FK implemented as plain column, no referential integrity
     - 'ORM belongs_to/dependent: :destroy with no DB-level FK or index'
-    criteria: >-
-      Qualifies when a logical parent reference is stored as a bare column with no
-      foreign key, so orphan rows survive parent deletion and referential integrity is
-      unenforced (including ORM belongs_to/dependent declarations with no DB-level
-      FK).
+    criteria: Qualifies when a logical parent reference is stored as a bare column with no foreign key, so
+      orphan rows survive parent deletion and referential integrity is unenforced (including ORM belongs_to/dependent
+      declarations with no DB-level FK). The fix is the schema FK. Other uniqueness/range invariants with
+      no constraint are DAT-A1B; a delete code path that strands rows regardless of the schema (mid-sequence
+      failure, bulk soft delete bypassing a cascade) is DAT-E1B; an ON DELETE CASCADE that never fires because
+      the model soft-deletes is DAT-E1C.
+    see_also:
+    - DAT-A1B
+    - DAT-E1B
+    - SEC-C4C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: No code path deletes or re-keys parent rows (the parent table is insert-only), so orphans
+          cannot arise today even though the FK is absent.
   DAT-A1D:
     name: nullable-column-ambiguous-semantics
     default_severity: LOW
@@ -93,12 +202,19 @@ entries:
     examples:
     - Nullable column contradicts 'required' contract; NULL rows silently unqueryable
     - NULL overloaded as wildcard/global, conflating 'unset' with 'matches all'
-    criteria: >-
-      Qualifies when a nullable column's NULL has no single defined meaning —
-      contradicting a 'required' contract (NULL rows silently unqueryable) or
-      overloading NULL as a wildcard/'matches all' (conflating unset with global).
-      Related mirror-image (a NOT NULL column filled with sentinel placeholders like
-      'unknown') is noted for future coverage.
+    criteria: 'Qualifies when a nullable column''s NULL has no single defined meaning: it contradicts a ''required''
+      contract (NULL rows silently drop out of equality filters and joins) or is overloaded as a wildcard/''matches
+      all'' (conflating unset with global). The finding is the ambiguous semantics; when the fix is simply
+      adding NOT NULL to a field the application already treats as required, cite DAT-A1B. Code that dereferences
+      the NULL and crashes is COD-B2A. The mirror image (a NOT NULL column filled with sentinel placeholders
+      like ''unknown'') is noted for future coverage.'
+    see_also:
+    - COD-B2A
+    - DAT-A1B
+    - SEC-C1F
+    severity_range:
+      floor: LOW
+      ceiling: LOW
   DAT-B1A:
     name: destructive-migration-without-backfill
     default_severity: HIGH
@@ -126,6 +242,13 @@ entries:
     - DAT-B1C
     - DAT-B1D
     - DAT-F1A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The destroyed rows are a targeted set the migration identifies as already invalid or unreachable
+          (orphans, known-corrupt rows), not a whole table or column of live values.
   DAT-B1B:
     name: table-lock-heavy-migration
     default_severity: HIGH
@@ -138,12 +261,25 @@ entries:
     examples:
     - Unbatched UPDATE over hot table inside one transaction holds row locks
     - ADD NOT NULL column with volatile default forces full-table rewrite under ACCESS EXCLUSIVE
-    criteria: >-
-      Qualifies when a migration holds heavy locks on a hot/large table — an
-      unbatched mass UPDATE inside one transaction, or a DDL that forces a
-      full-table rewrite under an exclusive lock (e.g. ADD NOT NULL with a
-      volatile default). Severity assumes production concurrency; a
-      single-writer/embedded target lowers it.
+    criteria: 'Qualifies when a schema migration holds heavy locks on a hot or large table while it applies:
+      an unbatched mass UPDATE inside one transaction, or a DDL that forces a full-table rewrite or blocking
+      index build under an exclusive lock (e.g. ADD NOT NULL with a volatile default, CREATE INDEX without
+      CONCURRENTLY). Severity assumes production concurrency; a single-writer/embedded target lowers it. The
+      same long transaction in application runtime code (not a migration) is DAT-D1D; a migration that destroys
+      data is DAT-B1A.'
+    see_also:
+    - DAT-D1D
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The DDL is metadata-only on the target engine version (e.g. ADD COLUMN with a constant
+          default on PostgreSQL 11+, ALGORITHM=INSTANT) and the remaining hazard is a brief exclusive lock
+          taken without a lock_timeout.
+      - to: LOW
+        condition: The locked table is a small bounded lookup or config table, or the target is a single-writer/embedded
+          store with no concurrent traffic during the migration.
   DAT-B1C:
     name: irreversible-migration-no-rollback
     default_severity: MEDIUM
@@ -170,6 +306,17 @@ entries:
     - DAT-B1A
     - DAT-B1D
     - DAT-B1E
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: The reverse path exists but is lossy (drops columns, rows or values) and the deploy pipeline
+          runs it automatically on rollback, so a routine rollback destroys production data.
+      lower_when:
+      - to: LOW
+        condition: The migration is purely additive (creates a table, column or index that no released code
+          yet reads or writes), so a corrective forward migration fully undoes it.
   DAT-B1D:
     name: non-idempotent-migration
     default_severity: MEDIUM
@@ -196,6 +343,14 @@ entries:
     - DAT-B1A
     - DAT-B1C
     - DAT-B1F
+    - OPS-C1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The migration runner records applied versions and refuses re-application, so a re-run is
+          only reachable by an operator manually resetting the version table.
   DAT-B1E:
     name: no-op-or-disabled-migration
     default_severity: MEDIUM
@@ -205,14 +360,19 @@ entries:
     recurrence: 1
     examples:
     - immich migration up() fully commented out, occupies a version slot doing nothing
-    criteria: >-
-      Qualifies when a migration silently does nothing — an empty or
-      commented-out up() body, or a migration excluded from the run — while
-      permanently occupying a version slot, so the intended change is never
-      applied and cannot be re-applied under that name. Distinct from DAT-B1A
-      (destructive) and DAT-B1C (irreversible): B1E applies nothing at all.
+    criteria: Qualifies when a migration silently does nothing (an empty or commented-out up() body, or a
+      migration excluded from the run) while permanently occupying a version slot, so the intended change
+      is never applied and cannot be re-applied under that name. Distinct from DAT-B1A (destructive), DAT-B1C
+      (no working down path; B1E is a missing UP path) and DAT-B1F (the up() ran and failed, but the failure
+      was swallowed). When the resulting gap shows up as model-vs-DDL drift, cite B1E for the migration and
+      DAT-E1A only if no migration is responsible.
     see_also:
     - DAT-B1C
+    - DAT-B1F
+    - DAT-E1A
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   DAT-B1F:
     name: migration-error-swallowed-marked-applied
     default_severity: HIGH
@@ -232,7 +392,18 @@ entries:
       fails on RE-run) — B1F swallows the FIRST-run failure; and from SEC-F1B
       (generic silent-exception-swallowing) — B1F is migration-state-specific.
     see_also:
+    - COD-B2C
     - DAT-B1D
+    - DAT-B1E
+    - OPS-E1A
+    - SEC-F1B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The swallowed DDL only adds an optional object (an index, a comment, a view) whose absence
+          degrades performance but not correctness.
   DAT-C1A:
     name: missing-index-for-hot-query
     default_severity: MEDIUM
@@ -245,11 +416,21 @@ entries:
     examples:
     - Composite index absent for status-polling query on hot execution table
     - Append-only table lacks index on ts/event columns used by ORDER BY + WHERE
-    criteria: >-
-      Qualifies when a frequently-run read path (status polling, an append-only
-      table's ORDER BY/WHERE reads) has no supporting index, forcing sequential
-      scans. 'Hot' means called on a request/execution hot path or over an
-      only-grows table — a rare admin call does not qualify.
+    criteria: 'Qualifies when a frequently-run read path (status polling, an append-only table''s ORDER BY/WHERE
+      reads) has no supporting index, forcing sequential scans. ''Hot'' means called on a request/execution
+      hot path or over an only-grows table; a rare admin call does not qualify. The finding is a missing index,
+      not the query''s shape: a query issued once per row is DAT-C1B, a query with no LIMIT is DAT-C1C, and
+      a foreign key column lacking an index alongside a missing FK is DAT-A1C.'
+    see_also:
+    - DAT-C1B
+    - DAT-C1C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The table has a documented small bound (configuration, lookup, per-user rows capped by
+          the product) so a sequential scan stays cheap as data grows.
   DAT-C1B:
     name: n-plus-one-query
     default_severity: MEDIUM
@@ -262,12 +443,23 @@ entries:
     - Collection count via len(lazy_relationship) instead of SQL COUNT
     - Per-row .get(pk=...) in serializer loop, no prefetch, on hot endpoint
     - Per-row update_attribute in find_each instead of update_all
-    criteria: >-
-      Qualifies for per-row queries issued in a loop instead of a set-based
-      query — a count via len(lazy_relationship) instead of SQL COUNT, per-row
-      .get()/update in a serializer or merge loop, a constant lookup re-queried
-      per row.
+    criteria: 'Qualifies for per-row queries issued in a loop instead of a set-based query: a count via len(lazy_relationship)
+      instead of SQL COUNT, per-row .get()/update in a serializer or merge loop, a constant lookup re-queried
+      per row. The query count must scale with the row count. Repeated filesystem stat calls are QAL-G1C;
+      a non-query value recomputed per iteration is QAL-G1A/QAL-G1B; a single query lacking an index is DAT-C1A.'
     notes: moved at the 0.1 seeding session from the draft QAL-G1D (a code that did not survive the 0.2.0 identity-base reset)
+    see_also:
+    - DAT-C1A
+    - QAL-G1A
+    - QAL-G1B
+    - QAL-G1C
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The loop is bounded by a small fixed or product-capped count (a page of at most N items)
+          or runs only in a batch job off the request path.
   DAT-C1C:
     name: unbounded-result-set
     default_severity: MEDIUM
@@ -283,14 +475,24 @@ entries:
     - Query has no LIMIT/pagination; result grows unbounded with entity history
     - List endpoint returns full rows (incl heavy text column) with no pagination
     - .all() materializes entire table, filtered/sliced in application code
-    criteria: >-
-      Qualifies when a query has no LIMIT/pagination and its result grows
-      unbounded with data (full list endpoints, .all() materializing a whole
-      table, history that grows per event). Draw the boundary vs QAL-G2A: C1C is
-      a DB query/result-set (the fix is SQL LIMIT/pagination); QAL-G2A is
-      in-memory collection growth. Deliberate, bounded full-table
-      exports/projections do NOT qualify. Non-RDBMS store scans (Redis
-      keyspace, etcd prefix) that pull everything into memory DO qualify.
+    criteria: 'Qualifies when a database or store query has no LIMIT/pagination and its result grows unbounded
+      with data (.all() materializing a whole table, history that grows per event, a Redis keyspace or etcd
+      prefix scan pulled into memory). The fix is in the query: SQL LIMIT, keyset pagination, or a cursor.
+      Deliberate, bounded full-table exports/projections do NOT qualify. An API endpoint whose contract exposes
+      no page size or cap is OPS-D1B; in-memory growth of a collection not fed by a query is QAL-G2A; fetching
+      too many columns rather than rows is DAT-C1D.'
+    see_also:
+    - DAT-C1A
+    - DAT-C1D
+    - OPS-D1B
+    - QAL-G2A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The queried set is bounded by a product rule enforced at write time (a per-user cap, a
+          fixed enumeration), even though the query itself has no LIMIT.
   DAT-C1D:
     name: select-star-in-production-path
     default_severity: LOW
@@ -308,6 +510,15 @@ entries:
       production read path where only some fields are needed. Often co-occurs
       with DAT-C1C; cite C1D when over-fetching columns is the defect, C1C when
       the unbounded row count is.
+    see_also:
+    - DAT-C1C
+    severity_range:
+      floor: INFO
+      ceiling: LOW
+      lower_when:
+      - to: INFO
+        condition: The table is narrow (no blob, large text or JSON column) so SELECT * fetches little beyond
+          the needed fields.
   DAT-D1A:
     name: isolation-level-mismatch
     default_severity: HIGH
@@ -315,13 +526,23 @@ entries:
     provenance:
     - prior-art
     - gap-review
-    criteria: >-
-      Qualifies when a transaction's isolation level is wrong for its
-      invariant (a read-modify-write needing SERIALIZABLE/row locks running
-      at READ COMMITTED). Presupposes explicit multi-statement transactions
-      with a settable isolation level; stores using advisory-lock + single
-      atomic upsert give this no surface. No corpus instance yet — prior-art
-      only; enrich when observed.
+    criteria: Qualifies when an explicit multi-statement transaction exists but its isolation level is too
+      weak for its invariant (a read-modify-write or a read-then-insert that needs SERIALIZABLE/REPEATABLE
+      READ or row locks running at READ COMMITTED). Presupposes a settable isolation level; stores using advisory-lock
+      + single atomic upsert give this no surface. When there is no transaction at all, cite DAT-D1B; when
+      the race is a read-modify-write with no lock or CAS and the fix is SELECT ... FOR UPDATE or a version
+      check rather than raising isolation, cite DAT-D1C. No corpus instance yet, prior-art only; enrich when
+      observed.
+    see_also:
+    - DAT-D1B
+    - DAT-D1C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The invariant the weak isolation can violate is an advisory counter or statistic that no
+          write-path decision (balance, quota, entitlement, uniqueness) reads.
   DAT-D1B:
     name: missing-transaction-boundary
     default_severity: HIGH
@@ -344,6 +565,18 @@ entries:
       that exit an open transaction without commit/rollback. A single
       non-transactional external side-effect leg lowers severity (no
       transactional fix available).
+    see_also:
+    - ARC-F1D
+    - COD-F1A
+    - DAT-D1A
+    - DAT-E1B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: One leg of the sequence is a non-transactional external side effect (an API call, a file
+          write), so no database transaction could make the whole sequence atomic.
   DAT-D1C:
     name: read-modify-write-race
     default_severity: HIGH
@@ -369,7 +602,21 @@ entries:
       check-then-insert locus lacks a unique constraint, prefer DAT-A1B for
       the fix and D1C for the exploit.
     see_also:
+    - COD-F1B
+    - COD-F1C
+    - DAT-A1B
+    - DAT-D1A
     - DAT-F1C
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The racing writers are all the same single-instance background job (no concurrent request
+          path can reach the read-modify-write).
+      - to: MEDIUM
+        condition: The raced value is a cosmetic or advisory field (a view count, a last-seen timestamp) where
+          a lost update has no downstream decision.
   DAT-D1D:
     name: long-running-transaction
     default_severity: MEDIUM
@@ -382,12 +629,23 @@ entries:
     examples:
     - Unbounded mass UPDATE in a single transaction holding locks on a hot table
     - Network I/O and thousands of row writes held inside one open transaction
-    criteria: >-
-      Qualifies when a single transaction is held open across expensive work
-      — an unbounded mass UPDATE, or network I/O and thousands of row writes
-      before one commit — holding locks on a hot table. An unbounded
-      remote-call batch inside one DB transaction routes here (vs C1C for the
-      unbounded set alone).
+    criteria: Qualifies when application runtime code holds a single transaction open across expensive work
+      (an unbounded mass UPDATE, or network I/O and thousands of row writes before one commit) so it holds
+      locks on a hot table for the duration. An unbounded remote-call batch inside one DB transaction routes
+      here (vs DAT-C1C for the unbounded set alone). The same lock-heavy pattern inside a schema migration
+      is DAT-B1B; a missing timeout on the network call itself is OPS-A1A.
+    see_also:
+    - COD-F2A
+    - DAT-B1B
+    - OPS-A1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The transaction touches only rows no other path reads or writes and its duration is bounded
+          by a fixed small batch size, so it neither blocks writers nor pins the MVCC snapshot horizon for
+          long.
   DAT-E1A:
     name: code-schema-drift-without-migration
     default_severity: HIGH
@@ -399,14 +657,24 @@ entries:
     recurrence: 1
     examples:
     - ORM model metadata drifted from migration DDL with no reconciling migration
-    criteria: >-
-      Qualifies when the code's schema view (ORM model metadata) drifts from
-      the migration DDL with no reconciling migration — in EITHER direction:
-      code ahead of migrations, or a migration ahead of the model (tests
-      permanently diverging from prod). Drift built live via
-      metadata.create_all is corroborating.
+    criteria: 'Qualifies when the code''s schema view (ORM model metadata) drifts from the migration DDL with
+      no reconciling migration, in EITHER direction: code ahead of migrations, or a migration ahead of the
+      model (tests permanently diverging from prod). Drift built live via metadata.create_all is corroborating.
+      When a specific migration that should have carried the change is empty or disabled, cite DAT-B1E; when
+      a committed generated artifact (not the DB schema) is stale with no build check, that is ARC-C1F; a
+      schema-vs-documentation divergence with no runtime break is ARC-D1B; a persisted file format with no
+      version marker is DAT-F2A.'
     see_also:
-    - DAT-E1D
+    - ARC-C1F
+    - DAT-B1E
+    - DAT-F2A
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The drift is in an object the running code never reads or writes (an unused column, an
+          index or constraint declared on one side only), so no query fails or returns wrong data.
   DAT-E1B:
     name: orphaned-rows-on-delete
     default_severity: MEDIUM
@@ -419,11 +687,20 @@ entries:
     examples:
     - Multi-step delete leaves index/parent row when a mid-sequence storage step fails
     - Bulk soft-delete bypasses cascade, orphaning child records
-    criteria: >-
-      Qualifies when a delete leaves rows that should have been removed — a
-      multi-step delete where a mid-sequence failure strands a parent/index
-      row, or a bulk soft-delete that bypasses the cascade/enqueue that
-      removes children.
+    criteria: 'Qualifies when a delete code path leaves rows or objects that should have been removed: a delete
+      spanning the database and another store (object storage, search index) where a mid-sequence failure
+      strands a parent/index row, or a bulk soft delete that bypasses the cascade/enqueue that removes children.
+      When all steps are in one database and a transaction would make them atomic, cite DAT-D1B; when the
+      orphans exist only because the schema has no FK, cite DAT-A1C; when the cascade never fires because
+      of soft-delete semantics in the schema, cite DAT-E1C.'
+    see_also:
+    - DAT-A1C
+    - DAT-D1B
+    - DAT-E1C
+    - SEC-C4C
+    severity_range:
+      floor: MEDIUM
+      ceiling: MEDIUM
   DAT-E1C:
     name: soft-delete-inconsistency
     default_severity: MEDIUM
@@ -438,13 +715,22 @@ entries:
     - Soft-delete tombstones one key column but a non-partial unique constraint still collides on re-create
     - FK ON DELETE CASCADE never fires because the model uses soft delete
     - Accessor filters for soft-deleted rows, inverted vs its sibling queries
-    criteria: >-
-      Qualifies when soft-delete semantics are applied inconsistently within
-      a schema — the cleanest trigger being a unique constraint that does NOT
-      exclude soft-deleted rows (full-unique vs partial-unique within one
-      soft-delete schema), so recreate-after-delete collides; also an
-      accessor filtering for soft-deleted rows (inverted vs siblings), or an
-      ON DELETE CASCADE that never fires because the model uses soft delete.
+    criteria: 'Qualifies when soft-delete semantics are applied inconsistently within a schema: a unique constraint
+      that does NOT exclude soft-deleted rows (full-unique vs partial-unique within one soft-delete schema),
+      so recreate-after-delete collides; an accessor filtering for soft-deleted rows inverted vs its siblings;
+      or an ON DELETE CASCADE that never fires because the model uses soft delete. A unique invariant with
+      no constraint at all is DAT-A1B; a bulk delete path that skips the cascade/enqueue code is DAT-E1B;
+      a missing FK is DAT-A1C.'
+    see_also:
+    - DAT-A1B
+    - DAT-E1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The inconsistency only causes a loud failure (a unique-violation error on re-create) on
+          an admin-only path, with no wrong data returned to readers.
   DAT-E1D:
     name: mirror-source-divergence
     default_severity: MEDIUM
@@ -456,14 +742,28 @@ entries:
     - Mirror row stuck at status=open while GitHub says verified-pass, never reconciled
     - Issue mirror silently truncates at --limit 1000 with no partial-mirror warning
     - Mirror fabricates created-at timestamp when source value is missing
-    criteria: >-
-      Qualifies when a mirror or derived store durably contradicts its
-      system-of-record with no reconciliation or self-heal path, so reads serve
-      stale/wrong data indefinitely. Includes silent partial mirroring
-      (truncation with no warning) and fabricated provenance (substituting
-      run-time values for missing source fields).
+    criteria: 'Qualifies when a mirror or derived store durably contradicts its system-of-record with no reconciliation
+      or self-heal path, so reads serve stale/wrong data indefinitely. Includes silent partial mirroring (truncation
+      with no warning) and fabricated provenance (substituting run-time values for missing source fields).
+      Durable is the test: an in-process cache that serves stale data until restart or TTL is COD-F3A; a one-off
+      truncation of output with no persisted mirror is COD-B2E; the ORM model drifting from migration DDL
+      is DAT-E1A.'
     see_also:
-    - DAT-E1A
+    - ARC-D1E
+    - ARC-F1A
+    - COD-B2E
+    - COD-F3A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: A billing, payout or invoicing computation reads the diverged mirror instead of the system
+          of record, so the wrong value is charged or paid for every affected record.
+      lower_when:
+      - to: LOW
+        condition: The mirror is display-only and each view links to or shows the source of record, so a reader
+          can see the authoritative value.
   DAT-F1A:
     name: destructive-rewrite-without-backup
     default_severity: HIGH
@@ -484,7 +784,16 @@ entries:
       (config/state/cache rewrites). A corrupt-input path that silently
       discards then overwrites recoverable data also qualifies.
     see_also:
+    - ARC-E2A
     - DAT-B1A
+    - DAT-F1B
+    severity_range:
+      floor: MEDIUM
+      ceiling: HIGH
+      lower_when:
+      - to: MEDIUM
+        condition: The overwritten file holds a handful of user-set preference values rather than accumulated
+          data (documents, history, inventory, state), so the loss is a re-entry cost, not lost records.
   DAT-F1B:
     name: non-atomic-file-write
     default_severity: MEDIUM
@@ -505,7 +814,21 @@ entries:
       / races). The presence of a correct atomic-write helper elsewhere in the
       same codebase that this path bypasses is corroborating evidence.
     see_also:
+    - COD-F1A
+    - DAT-F1A
     - DAT-F1C
+    - OPS-B1A
+    severity_range:
+      floor: LOW
+      ceiling: HIGH
+      raise_when:
+      - to: HIGH
+        condition: The file is the only copy of user-authored content (notes, documents, infrastructure state)
+          and the truncate-in-place path runs on every save, so a crash or full disk destroys that content.
+      lower_when:
+      - to: LOW
+        condition: The reader detects a torn or empty file (checksum, parse failure) and falls back to defaults
+          with a visible warning, and the file holds only settings the user can re-enter.
   DAT-F1C:
     name: lost-update-on-unsynchronized-file
     default_severity: MEDIUM
@@ -525,8 +848,18 @@ entries:
       atomic rename. Atomic-write that prevents torn files does NOT prevent
       lost updates.
     see_also:
+    - ARC-D2C
+    - COD-F1B
+    - COD-F1C
     - DAT-D1C
     - DAT-F1B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: Concurrent writers are only possible if the user runs two instances by hand, and the program
+          does not document or support that mode.
   DAT-F2A:
     name: unversioned-persisted-format
     default_severity: MEDIUM
@@ -538,13 +871,22 @@ entries:
     - qBittorrent RSS feeds.json has no version field, format sniffed heuristically
     - curl Netscape cookie file has no schema-version header
     - PrusaSlicer INI config persisted with no schema version for cross-version migration
-    criteria: >-
-      Qualifies when an on-disk or embedded-store format carries no
-      schema/format version marker, so format evolution silently misreads or
-      corrupts pre-existing files (versions are then sniffed heuristically).
-      Applies to flat files and embedded stores (BoltDB/bbolt, on-disk JSON).
+    criteria: Qualifies when an on-disk or embedded-store format (flat files, BoltDB/bbolt, on-disk JSON)
+      that the program writes and later reads back carries no schema/format version marker, so format evolution
+      silently misreads or corrupts pre-existing files (versions are then sniffed heuristically). Relational
+      schemas versioned by a migration history are out of scope; their drift is DAT-E1A. An unversioned data
+      contract exchanged between pipeline phases or components is ARC-D1F. A read of the file with no size
+      bound is DAT-F2B; deserialising an untrusted file into objects is SEC-A2B.
     see_also:
-    - DAT-F2B
+    - ARC-D1F
+    - DAT-E1A
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      lower_when:
+      - to: LOW
+        condition: The format has never changed shape across releases and the reader rejects unknown fields
+          or shapes with an error instead of misreading them.
   DAT-F2B:
     name: unbounded-persisted-file-read
     default_severity: LOW
@@ -564,4 +906,13 @@ entries:
       Distinct from SEC-F2A (unbounded read of a network response — different
       sink) and QAL-G2A (in-memory collection growth, not a file read).
     see_also:
-    - DAT-F2A
+    - QAL-G2A
+    - SEC-F2A
+    - SEC-H4B
+    severity_range:
+      floor: LOW
+      ceiling: MEDIUM
+      raise_when:
+      - to: MEDIUM
+        condition: The file is received from another party (downloaded, imported, shared, or written by a
+          peer) rather than written only by this program, so a crafted size or element count reaches the read.
