@@ -97,7 +97,6 @@ entries:
     - DAT-D1D
     - OPS-A1B
     - SEC-F2A
-    - TST-F1F
     - TST-G3B
     severity_range:
       floor: MEDIUM
